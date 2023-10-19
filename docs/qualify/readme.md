@@ -235,106 +235,51 @@ LABEL = %str(\li420 )
 ### 指定统计量的模式
 
 ```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1(keep = item n pos_n value));
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
 ```
 
 ![](./assets/example-2.png)
 
-### 指定权重变量
+上述例子中，使用参数 `PATTERN` 改变了默认的统计量输出模式，构成比使用中括号[]包围，结尾使用 `##` 对 `#` 进行转义
+
+### 指定分类排序方式
 
 ```sas
-data adeff;
-    set temp.adeff;
-    freq = _n_;
-run;
-
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            weight = freq);
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
 ```
 
 ![](./assets/example-3.png)
 
-### 指定校正置信区间的方法
+### 指定需要保留的变量
 
 ```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            adjust_method = cp);
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, outdata = t1(keep = seq item value));
 ```
 
-![](./assets/example-4-1.png)
+![](./assets/example-4.png)
 
-![](./assets/example-4-2.png)
-
-上述例子中，使用参数 `ADJUST_METHOD` 指定了置信区间的校正方法为 Clopper-Pearson，由于未指定校正条件，默认当计算的阳性符合率大于或等于 0.9 时，使用 Clopper-Pearson 法对置信区间进行校正，并在日志中显示校正条件成立的信息。
-
-### 指定校正置信区间的条件
+### 指定统计量的输出格式
 
 ```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            adjust_method = cp,
-            adjust_threshold = %str(#RATE >= 0.9 or #LCLM <= 0));
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0 #RATE = 5.3));
 ```
 
-![](./assets/example-5-1.png)
+![](./assets/example-5.png)
 
-![](./assets/example-5-2.png)
-
-### 指定显著性水平
+### 指定分析变量标签
 
 ```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            adjust_method = cp,
-            adjust_threshold = %str(#RATE >= 0.9 or #LCLM <= 0),
-            alpha = 0.1);
-```
-
-### 指定统计量输出格式
-
-```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTC = "阳性"),
-            cond_neg = %str(TSTP ^= "阳性" and TSTC = "阳性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            adjust_method = cp,
-            adjust_threshold = %str(#RATE >= 0.9 or #LCLM <= 0),
-            format = %str(#RATE = percentn11.4 #CLM = 5.3 #UCLM = dollar20.3));
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)));
 ```
 
 ![](./assets/example-6.png)
 
-### 指定无法计算构成比（率）及置信区间时显示的字符（串）
+### 指定缩进字符串
 
 ```sas
-%BinomialCI(indata = adeff(where = (CMPTFL = "Y")),
-            cond_pos = %str(TSTP = "阳性" and TSTP = "阴性"),
-            cond_neg = %str(TSTC = "阳性" and TSTC = "阴性"),
-            stat_note = %str(阳性符合率),
-            outdata = t1,
-            adjust_method = cp,
-            adjust_threshold = %str(#RATE >= 0.9 or #LCLM <= 0),
-            format = %str(#RATE = percentn11.4 #CLM = 5.3 #UCLM = dollar20.3),
-            placeholder = %str(%%%%));
+%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)), indent = %str(\li420 ));
 ```
 
 ![](./assets/example-7.png)
+
+上述例子中，使用参数 `INDENT` 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
