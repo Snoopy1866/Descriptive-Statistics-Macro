@@ -13,22 +13,7 @@ Version Date: 2023-03-08 V1.0.1
 
     /*打开帮助文档*/
     %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
-        /*
-        %let host = %bquote(192.168.0.199);
-        %let help = %bquote(\\&host\统计部\SAS宏\07 Qualify\05 帮助文档\readme.html);
-        %if %sysfunc(system(ping &host -n 1 -w 10)) = 0 %then %do;
-            %if %sysfunc(fileexist("&help")) %then %do;
-                X explorer "&help";
-            %end;
-            %else %do;
-                X mshta vbscript:msgbox("帮助文档不在线, 目标文件可能已被移动或删除！Orz",48,"提示")(window.close);
-            %end;
-        %end;
-        %else %do;
-                X mshta vbscript:msgbox("帮助文档不在线, 因为无法连接到服务器！ Orz",48,"提示")(window.close);
-        %end;
-        */
-        X explorer "https://www.bio-statistics.top/macro-help-doc/07%20Qualify/readme.html";
+        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify/readme.md";
         %goto exit;
     %end;
 
@@ -427,6 +412,3 @@ Version Date: 2023-03-08 V1.0.1
     %exit:
     %put NOTE: 宏 Qualify 已结束运行！;
 %mend;
-
-
-

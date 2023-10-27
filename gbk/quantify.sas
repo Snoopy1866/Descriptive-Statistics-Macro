@@ -12,23 +12,8 @@ Version Date: 2023-03-16 V1.3.1
 
 
     /*打开帮助文档*/
-    %if %superq(SYSPBUFF) = %bquote((HELP)) or %superq(SYSPBUFF) = %bquote(()) %then %do;
-        /*
-        %let host = %bquote(192.168.0.199);
-        %let help = %bquote(\\&host\统计部\SAS宏\06 quantify\05 帮助文档\readme.html);
-        %if %sysfunc(system(ping &host -n 1 -w 10)) = 0 %then %do;
-            %if %sysfunc(fileexist("&help")) %then %do;
-                X explorer "&help";
-            %end;
-            %else %do;
-                X mshta vbscript:msgbox("帮助文档不在线, 目标文件可能已被移动或删除！Orz",48,"提示")(window.close);
-            %end;
-        %end;
-        %else %do;
-                X mshta vbscript:msgbox("帮助文档不在线, 因为无法连接到服务器！ Orz",48,"提示")(window.close);
-        %end;
-        */
-        X explorer "https://www.bio-statistics.top/macro-help-doc/06%20quantify/readme.html";
+    %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
+        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify/readme.md";
         %goto exit;
     %end;
 
