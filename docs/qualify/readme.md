@@ -11,12 +11,12 @@
 
 ### 可选参数
 
-- [PATTERN]()
-- [BY]()
-- [OUTDATA]()
-- [STAT_FORMAT]()
-- [LABEL]()
-- [INDENT]()
+- [PATTERN](#pattern)
+- [BY](#by)
+- [OUTDATA](#outdata)
+- [STAT_FORMAT](#stat_format)
+- [LABEL](#label)
+- [INDENT](#indent)
 
 ## 参数说明
 
