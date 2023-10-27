@@ -1,13 +1,13 @@
 /*
 ===================================
-Macro Name: Quantify
+Macro Name: quantify
 Macro Label:定量指标分析
 Author: wtwang
 Version Date: 2023-03-16 V1.3.1
 ===================================
 */
 
-%macro Quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+%macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
                 OUTDATA = RES_&VAR, STAT_FORMAT = #NULL, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = %bquote(    )) /des = "定量指标分析" parmbuff;
 
 
@@ -15,7 +15,7 @@ Version Date: 2023-03-16 V1.3.1
     %if %superq(SYSPBUFF) = %bquote((HELP)) or %superq(SYSPBUFF) = %bquote(()) %then %do;
         /*
         %let host = %bquote(192.168.0.199);
-        %let help = %bquote(\\&host\统计部\SAS宏\06 Quantify\05 帮助文档\readme.html);
+        %let help = %bquote(\\&host\统计部\SAS宏\06 quantify\05 帮助文档\readme.html);
         %if %sysfunc(system(ping &host -n 1 -w 10)) = 0 %then %do;
             %if %sysfunc(fileexist("&help")) %then %do;
                 X explorer "&help";
@@ -28,7 +28,7 @@ Version Date: 2023-03-16 V1.3.1
                 X mshta vbscript:msgbox("帮助文档不在线, 因为无法连接到服务器！ Orz",48,"提示")(window.close);
         %end;
         */
-        X explorer "https://www.bio-statistics.top/macro-help-doc/06%20Quantify/readme.html";
+        X explorer "https://www.bio-statistics.top/macro-help-doc/06%20quantify/readme.html";
         %goto exit;
     %end;
 
@@ -516,5 +516,5 @@ Version Date: 2023-03-16 V1.3.1
 
 
     %exit:
-    %put NOTE: 宏 Quantify 已结束运行！;
+    %put NOTE: 宏 quantify 已结束运行！;
 %mend;
