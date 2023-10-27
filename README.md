@@ -10,7 +10,7 @@
 ## 详细文档
 
 - [qualify](./docs/qualify/readme.md)
-- [quantify](./docs/quantidy/readme.md)
+- [quantify](./docs/quantify/readme.md)
 
 ## 调用示例
 
