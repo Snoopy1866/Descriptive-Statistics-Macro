@@ -146,7 +146,7 @@ BY = SEXN
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = KEEP = SEQ ITEM VALUE)
+OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 ```
 
 ---
@@ -199,12 +199,12 @@ LABEL = %nrstr(性别, n(%%))
 
 **Tips** :
 
-1. 可以使用 RTF 控制符空值缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
+1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
 
 **Example** :
 
 ```sas
-LABEL = %str(\li420 )
+INDENT = %str(\li420 )
 ```
 
 ---
@@ -214,20 +214,20 @@ LABEL = %str(\li420 )
 ### 打开帮助文档
 
 ```sas
-%Qualify();
-%Qualify(help);
+%qualify();
+%qualify(help);
 ```
 
 ### 一般用法
 
 ```sas
-%Qualify(indata = adsl, var = sex);
+%qualify(indata = adsl, var = sex);
 ```
 
 ![](./assets/example-1-1.png)
 
 ```sas
-%Qualify(indata = adsl, var = sex("" = "Missing" "男" = "Male" "女" = "Female"));
+%qualify(indata = adsl, var = sex("" = "Missing" "男" = "Male" "女" = "Female"));
 ```
 
 ![](./assets/example-1-2.png)
@@ -235,7 +235,7 @@ LABEL = %str(\li420 )
 ### 指定统计量的模式
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
 ```
 
 ![](./assets/example-2.png)
@@ -245,7 +245,7 @@ LABEL = %str(\li420 )
 ### 指定分类排序方式
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
 ```
 
 ![](./assets/example-3.png)
@@ -253,7 +253,7 @@ LABEL = %str(\li420 )
 ### 指定需要保留的变量
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, outdata = t1(keep = seq item value));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, outdata = t1(keep = seq item value));
 ```
 
 ![](./assets/example-4.png)
@@ -261,7 +261,7 @@ LABEL = %str(\li420 )
 ### 指定统计量的输出格式
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0 #RATE = 5.3));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0 #RATE = 5.3));
 ```
 
 ![](./assets/example-5.png)
@@ -269,7 +269,7 @@ LABEL = %str(\li420 )
 ### 指定分析变量标签
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)));
 ```
 
 ![](./assets/example-6.png)
@@ -277,7 +277,7 @@ LABEL = %str(\li420 )
 ### 指定缩进字符串
 
 ```sas
-%Qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)), indent = %str(\li420 ));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)), indent = %str(\li420 ));
 ```
 
 ![](./assets/example-7.png)

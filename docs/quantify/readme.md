@@ -67,7 +67,7 @@ VAR = AGE
 
 指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。
 
-_`row-i-specification`_ 表示输出数据集中第 `i+1` 行（第 1 行固定为分析变量的标签）的统计量结果展示模式，输出数据集中的每一行均用一个 _`row-i-specification`_ 进行定义，不同行的定义间使用字符 `|` 隔开，其中 _`row-i-specification`_ 的语法如下：
+_`row-i-specification`_ 表示输出数据集中第 `i+1` 行（第 1 行固定为分析变量的标签）的统计量结果展示模式，输出数据集中的每一行均用一个 _`row-i-specification`_ 进行定义，不同行的定义之间使用字符 `|` 隔开，其中 _`row-i-specification`_ 的语法如下：
 
 - _string(s)_
 - #_statistic-keyword_
@@ -153,6 +153,8 @@ PATTERN = #N(#NMISS)|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SK
 
 **Default** : RES\_&_VAR_
 
+默认情况下，输出数据集的名称为 `RES_xxx`，其中 `xxx` 为参数 [VAR](#var) 指定的变量名。
+
 **Tips** :
 
 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
@@ -161,7 +163,7 @@ PATTERN = #N(#NMISS)|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SK
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = KEEP = SEQ ITEM VALUE)
+OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 ```
 
 ---
@@ -192,14 +194,54 @@ STAT_FORMAT = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1)
 
 **Default** : #NULL
 
-默认情况下，绝大部分统计量的说明文字与参数 [PATTERN](#pattern) 中对 _statistic-keyword_ 描述的含义一致，Q1 和 Q3 是例外，它们的说明文字如下：
+默认情况下，绝大部分统计量的说明文字与参数 [PATTERN](#pattern) 中对 _statistic-keyword_ 描述的含义一致，Q1 和 Q3 是例外，具体各统计量的说明文字如下：
 
-| 统计量 | 说明文字 |
-| ------ | -------- |
-| Q1     | Q1       |
-| Q3     | Q3       |
+| 统计量   | 简写 | 说明文字           |
+| -------- | ---- | ------------------ |
+| N        |      | 例数               |
+| NMISS    |      | 缺失               |
+| MEAN     |      | 均值               |
+| VAR      |      | 方差               |
+| STDDEV   | STD  | 标准差             |
+| STDERR   |      | 标准误             |
+| RANGE    |      | 极差               |
+| MEDIAN   |      | 中位数             |
+| MODE     |      | 众数               |
+| Q1       |      | Q1                 |
+| Q3       |      | Q3                 |
+| QRANGE   |      | 四分位间距         |
+| MIN      |      | 最小值             |
+| MAX      |      | 最大值             |
+| CV       |      | 变异系数           |
+| KURTOSIS | KURT | 峰度               |
+| SKEWNESS | SKEW | 偏度               |
+| LCLM     |      | 均值的 95%置信下限 |
+| UCLM     |      | 均值的 95%置信上限 |
+| SUM      |      | 总和               |
+| USS      |      | 未校正平方和       |
+| CSS      |      | 校正平方和         |
+| P1       |      | 第 1 百分位数      |
+| P5       |      | 第 5 百分位数      |
+| P10      |      | 第 10 百分位数     |
+| P20      |      | 第 20 百分位数     |
+| P30      |      | 第 30 百分位数     |
+| P40      |      | 第 40 百分位数     |
+| P50      |      | 第 50 百分位数     |
+| P60      |      | 第 60 百分位数     |
+| P70      |      | 第 70 百分位数     |
+| P75      |      | 第 75 百分位数     |
+| P80      |      | 第 80 百分位数     |
+| P90      |      | 第 90 百分位数     |
+| P95      |      | 第 95 百分位数     |
+| P99      |      | 第 99 百分位数     |
 
 ---
+
+**Example** :
+
+```sas
+STAT_NOTE = (#N = "靶区数" #MEAN = "平均值")
+```
 
 ### LABEL
 
@@ -231,12 +273,12 @@ LABEL = 年龄（岁）
 
 **Tips** :
 
-1. 可以使用 RTF 控制符空值缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
+1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
 
 **Example** :
 
 ```sas
-LABEL = %str(\li420 )
+INDENT = %str(\li420 )
 ```
 
 ---
@@ -246,14 +288,14 @@ LABEL = %str(\li420 )
 ### 打开帮助文档
 
 ```sas
-%Quantify();
-%Quantify(help);
+%quantify();
+%quantify(help);
 ```
 
 ### 一般用法
 
 ```sas
-%Quantify(indata = adsl, var = age);
+%quantify(indata = adsl, var = age);
 ```
 
 ![](./assets/example-1.png)
@@ -261,7 +303,7 @@ LABEL = %str(\li420 )
 ### 指定统计量的模式
 
 ```sas
-%Quantify(indata = adsl, var = age,
+%quantify(indata = adsl, var = age,
           pattern = %nrstr(#N(#NMISS)#Q1|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max));
 ```
 
@@ -272,7 +314,7 @@ LABEL = %str(\li420 )
 ### 指定需要保留的变量
 
 ```sas
-%Quantify(indata = adsl, var = age, outdata = t1(keep = seq item value));
+%quantify(indata = adsl, var = age, outdata = t1(keep = seq item value));
 ```
 
 ![](./assets/example-3.png)
@@ -280,7 +322,7 @@ LABEL = %str(\li420 )
 ### 指定统计量的输出格式
 
 ```sas
-%Quantify(indata = adsl, var = age,
+%quantify(indata = adsl, var = age,
           stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1));
 ```
 
@@ -289,7 +331,7 @@ LABEL = %str(\li420 )
 ### 指定统计量的说明文字
 
 ```sas
-%Quantify(indata = adsl, var = age,
+%quantify(indata = adsl, var = age,
           stat_note = (#N = "靶区数" #MEAN = "平均值" #Q1 = "下四分位数" #Q3 = "上四分位数"));
 ```
 
@@ -298,7 +340,7 @@ LABEL = %str(\li420 )
 ### 指定分析变量的标签
 
 ```sas
-%Quantify(indata = adsl, var = age,
+%quantify(indata = adsl, var = age,
           stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), label = 年龄(岁));
 ```
 
@@ -307,7 +349,7 @@ LABEL = %str(\li420 )
 ### 指定缩进字符串
 
 ```sas
-%Quantify(indata = adsl, var = age,
+%quantify(indata = adsl, var = age,
           stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), indent = %str(\li420 ));
 ```
 
