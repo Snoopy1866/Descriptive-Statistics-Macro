@@ -35,9 +35,9 @@ _dataset-options_: 数据集选项，兼容 SAS 系统支持的所有数据集�
 **Example** :
 
 ```sas
-- INDATA = ADSL
-- INDATA = SHKY.ADSL
-- INDATA = SHKY.ADSL(where = (FAS = "Y"))
+INDATA = ADSL
+INDATA = SHKY.ADSL
+INDATA = SHKY.ADSL(where = (FAS = "Y"))
 ```
 
 ---
