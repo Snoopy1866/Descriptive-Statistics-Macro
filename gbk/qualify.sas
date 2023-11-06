@@ -4,6 +4,7 @@ Macro Name: qualify
 Macro Label:定性指标分析
 Author: wtwang
 Version Date: 2023-03-08 V1.0.1
+Version Date: 2023-11-06 V1.0.2
 ===================================
 */
 
@@ -349,8 +350,8 @@ Version Date: 2023-03-08 V1.0.1
                 "&label" as ITEM,
                 ""       as VALUE
             from temp_indata(firstobs = 1 obs = 1)
-            outer union corr
             %do i = 1 %to &var_level_n;
+                outer union corr
                 select
                     &i as SEQ,
                     cat("&indent", %unquote(&&var_level_&i._note)) as ITEM,
@@ -376,13 +377,8 @@ Version Date: 2023-03-08 V1.0.1
                         %combpl_hash("&string_3")
                         ) as VALUE
                 from temp_indata
-                %if &i < &var_level_n %then %do;
-                    outer union corr
-                %end;
-                %else %do;
-                    %bquote(;)
-                %end;
             %end;
+            %bquote(;)
     quit;
 
 
