@@ -4,7 +4,8 @@ Macro Name: qualify
 Macro Label:定性指标分析
 Author: wtwang
 Version Date: 2023-03-08 V1.0.1
-Version Date: 2023-11-06 V1.0.2
+              2023-11-06 V1.0.2
+              2023-11-08 V1.0.3
 ===================================
 */
 
@@ -13,7 +14,7 @@ Version Date: 2023-11-06 V1.0.2
 
 
     /*打开帮助文档*/
-    %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
+    %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify/readme.md";
         %goto exit;
     %end;

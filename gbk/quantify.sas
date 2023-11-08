@@ -4,6 +4,7 @@ Macro Name: quantify
 Macro Label:定量指标分析
 Author: wtwang
 Version Date: 2023-03-16 V1.3.1
+              2023-11-08 V1.3.2
 ===================================
 */
 
@@ -12,7 +13,7 @@ Version Date: 2023-03-16 V1.3.1
 
 
     /*打开帮助文档*/
-    %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
+    %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify/readme.md";
         %goto exit;
     %end;
