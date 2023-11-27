@@ -356,6 +356,22 @@ Version Date: 2023-03-08 V1.0.1
                 select
                     &i as SEQ,
                     cat("&indent", %unquote(&&var_level_&i._note)) as ITEM,
+                    sum(&var_name = &&var_level_&i) as N,
+                    %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
+                        strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
+                    %end;
+                    %else %if %upcase(%bquote(&stat_2)) = %bquote(N) %then %do;
+                        strip(put(sum(&var_name = &&var_level_&i), &&&stat_2._format))
+                    %end;
+                        as N_FMT,
+                    sum(&var_name = &&var_level_&i)/count(*) as RATE,
+                    %if %upcase(%bquote(&stat_1)) = %bquote(RATE) %then %do;
+                        strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_1._format))
+                    %end;
+                    %else %if %upcase(%bquote(&stat_2)) = %bquote(RATE) %then %do;
+                        strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_2._format))
+                    %end;
+                        as RATE_FMT,
                     cat(%combpl_hash("&string_1"),
                         %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
                             strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
