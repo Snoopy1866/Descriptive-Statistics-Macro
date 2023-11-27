@@ -11,7 +11,7 @@ Version Date: 2023-03-08 V1.0.1
 */
 
 %macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #NULL,
-               OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST. #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = %bquote(    )) /des = "定性指标分析" parmbuff;
+               OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST. #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO) /des = "定性指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -349,6 +349,32 @@ Version Date: 2023-03-08 V1.0.1
     %end;
 
 
+    /*INDENT*/
+    %if %bquote(&indent) = %bquote() %then %do;
+        %let indent_sql_expr = %bquote();
+    %end;
+    %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
+        %let indent_sql_expr = %bquote(    );
+    %end;
+    %else %do;
+        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %if %sysfunc(prxmatch(&reg_indent_id, %superq(indent))) %then %do;
+            %let indent_pos_1 = %bquote(%sysfunc(prxposn(&reg_indent_id, 1, %superq(indent))));
+            %let indent_pos_2 = %bquote(%sysfunc(prxposn(&reg_indent_id, 2, %superq(indent))));
+            %let indent_pos_3 = %bquote(%sysfunc(prxposn(&reg_indent_id, 3, %superq(indent))));
+            %if %superq(indent_pos_1) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_1);
+            %end;
+            %else %if %superq(indent_pos_2) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_2);
+            %end;
+            %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_3);
+            %end;
+        %end;
+    %end;
+
+
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 复制分析数据*/
     proc sql noprint;
@@ -373,7 +399,7 @@ Version Date: 2023-03-08 V1.0.1
                 outer union corr
                 select
                     &i as SEQ,
-                    cat("&indent", %unquote(&&var_level_&i._note)) as ITEM,
+                    cat("&indent_sql_expr", %unquote(&&var_level_&i._note)) as ITEM,
                     sum(&var_name = &&var_level_&i) as N,
                     %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
                         strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))

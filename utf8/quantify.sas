@@ -10,7 +10,7 @@ Version Date: 2023-03-16 V1.3.1
 */
 
 %macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR, STAT_FORMAT = #NULL, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = %bquote(    )) /des = "定量指标分析" parmbuff;
+                OUTDATA = RES_&VAR, STAT_FORMAT = #NULL, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO) /des = "定量指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -403,6 +403,33 @@ Version Date: 2023-03-16 V1.3.1
     %end;
 
 
+
+    /*INDENT*/
+    %if %bquote(&indent) = %bquote() %then %do;
+        %let indent_sql_expr = %bquote();
+    %end;
+    %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
+        %let indent_sql_expr = %bquote(    );
+    %end;
+    %else %do;
+        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %if %sysfunc(prxmatch(&reg_indent_id, %superq(indent))) %then %do;
+            %let indent_pos_1 = %bquote(%sysfunc(prxposn(&reg_indent_id, 1, %superq(indent))));
+            %let indent_pos_2 = %bquote(%sysfunc(prxposn(&reg_indent_id, 2, %superq(indent))));
+            %let indent_pos_3 = %bquote(%sysfunc(prxposn(&reg_indent_id, 3, %superq(indent))));
+            %if %superq(indent_pos_1) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_1);
+            %end;
+            %else %if %superq(indent_pos_2) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_2);
+            %end;
+            %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
+                %let indent_sql_expr = %superq(indent_pos_3);
+            %end;
+        %end;
+    %end;
+
+
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 检查参数 PATTERN 是否指定了统计量*/
     %let IS_NO_STAT_SPECIFIED = TRUE;
@@ -457,7 +484,7 @@ Version Date: 2023-03-16 V1.3.1
                 select
                     &i as SEQ,
                     cat(%unquote(
-                                 "&indent" %bquote(,)
+                                 "&indent_sql_expr" %bquote(,)
                                  %do j = 1 %to &&stat_&i;
                                      %temp_combpl_hash("&&string_&i._&j") %bquote(,)
                                      "&&&&&&stat_&i._&j.._note" %bquote(,)
