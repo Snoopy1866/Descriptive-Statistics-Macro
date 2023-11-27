@@ -380,8 +380,25 @@ Version Date: 2023-03-16 V1.3.1
             select
                 (case when label ^= "" then cats(label)
                       else cats(name, "-n(%)") end)
-                into: label from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&VAR";
+                into: label_sql_expr from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&VAR";
         quit;
+    %end;
+    %else %do;
+        %let reg_label_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %if %sysfunc(prxmatch(&reg_label_id, %superq(label))) %then %do;
+            %let label_pos_1 = %bquote(%sysfunc(prxposn(&reg_label_id, 1, %superq(label))));
+            %let label_pos_2 = %bquote(%sysfunc(prxposn(&reg_label_id, 2, %superq(label))));
+            %let label_pos_3 = %bquote(%sysfunc(prxposn(&reg_label_id, 3, %superq(label))));
+            %if %superq(label_pos_1) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_1);
+            %end;
+            %else %if %superq(label_pos_2) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_2);
+            %end;
+            %else %if %superq(label_pos_3) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_3);
+            %end;
+        %end;
     %end;
 
 
@@ -430,9 +447,9 @@ Version Date: 2023-03-16 V1.3.1
     proc sql noprint;
         create table temp_out as
             select
-                0        as SEQ,
-                "&label" as ITEM,
-                ""       as VALUE
+                0                 as SEQ,
+                "&label_sql_expr" as ITEM,
+                ""                as VALUE
             from temp_stat
             outer union corr
             %do i = 1 %to &part_n;
