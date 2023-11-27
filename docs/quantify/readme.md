@@ -256,7 +256,7 @@ STAT_NOTE = (#N = "靶区数" #MEAN = "平均值")
 **Example** :
 
 ```sas
-LABEL = 年龄（岁）
+LABEL = "年龄（岁）"
 ```
 
 ---
@@ -267,18 +267,18 @@ LABEL = 年龄（岁）
 
 指定输出结果各分类的缩进字符串。
 
-**Default** : %bquote( )
+**Default** : #AUTO
 
 默认情况下，各分类前使用 4 个英文空格作为缩进字符。
 
 **Tips** :
 
-1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
+1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`
 
 **Example** :
 
 ```sas
-INDENT = %str(\li420 )
+INDENT = "\li420 "
 ```
 
 ---
@@ -341,7 +341,7 @@ INDENT = %str(\li420 )
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), label = 年龄(岁));
+          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), label = "年龄(岁)");
 ```
 
 ![](./assets/example-6.png)
@@ -350,7 +350,7 @@ INDENT = %str(\li420 )
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), indent = %str(\li420 ));
+          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), indent = "\li420 ");
 ```
 
 上述例子中，使用参数 `INDENT` 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。

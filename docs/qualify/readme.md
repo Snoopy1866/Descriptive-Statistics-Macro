@@ -47,8 +47,8 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 **Syntax** :
 
 - _variable_
-- _variable_("_category-1_" <"_category-2_" ...>)
-- _variable_("_category-1_" <= "_note-1_"> <"_category-2_" <= "_note-2_">>)
+- _variable_("_category-1_"<, "_category-2_", ...>)
+- _variable_("_category-1_"<= "_note-1_"><, "_category-2_"<="_note-2_">, ...>)
 
 指定定性分析的变量，_`category`_ 表示需要统计的分类名称，_`note`_ 表示该分类在输出数据集中的展示名称（可以与分类名称不同）。
 
@@ -182,7 +182,7 @@ STAT_FORMAT = (#N = percent9.2 #RATE = 4.1)
 **Example** :
 
 ```sas
-LABEL = %nrstr(性别, n(%%))
+LABEL = "性别-n(%)"
 ```
 
 ---
@@ -193,18 +193,18 @@ LABEL = %nrstr(性别, n(%%))
 
 指定输出结果各分类的缩进字符串。
 
-**Default** : %bquote( )
+**Default** : #AUTO
 
 默认情况下，各分类前使用 4 个英文空格作为缩进字符。
 
 **Tips** :
 
-1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = %str(\li420 )`
+1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`
 
 **Example** :
 
 ```sas
-INDENT = %str(\li420 )
+INDENT = "\li420 "
 ```
 
 ---
@@ -227,7 +227,7 @@ INDENT = %str(\li420 )
 ![](./assets/example-1-1.png)
 
 ```sas
-%qualify(indata = adsl, var = sex("" = "Missing" "男" = "Male" "女" = "Female"));
+%qualify(indata = adsl, var = sex("" = "Missing", "男" = "Male", "女" = "Female"));
 ```
 
 ![](./assets/example-1-2.png)
@@ -269,7 +269,7 @@ INDENT = %str(\li420 )
 ### 指定分析变量标签
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = "肿瘤部位，n(%)");
 ```
 
 ![](./assets/example-6.png)
@@ -277,7 +277,7 @@ INDENT = %str(\li420 )
 ### 指定缩进字符串
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)), indent = %str(\li420 ));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = "肿瘤部位，n(%)", indent = "\li420 ");
 ```
 
 ![](./assets/example-7.png)
