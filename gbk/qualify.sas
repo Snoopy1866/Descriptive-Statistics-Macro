@@ -75,7 +75,7 @@ Version Date: 2023-03-08 V1.0.1
         %goto exit;
     %end;
 
-    %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:\s*".*"\s*(?:=\s*".*")?)+\s*)?\))?$/);
+    %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:[\s,]*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*(?:=\s*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))?)+\s*)?\))?$/);
     %let reg_var_id = %sysfunc(prxparse(&reg_var));
     %if %sysfunc(prxmatch(&reg_var_id, %bquote(&var))) = 0 %then %do;
         %put ERROR: 参数 VAR = %bquote(&var) 格式不正确！;
@@ -105,7 +105,7 @@ Version Date: 2023-03-08 V1.0.1
         %else %do;
             %let IS_LEVEL_SPECIFIED = TRUE; /*已指定各水平名称*/
             /*拆分变量水平*/
-            %let reg_var_level_expr_unit = %bquote(/\s*(".*?")\s*(?:=\s*(".*?"))?/);
+            %let reg_var_level_expr_unit = %bquote(/\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*(?:=\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))?/);
             %let reg_var_level_expr_unit_id = %sysfunc(prxparse(&reg_var_level_expr_unit));
             %let start = 1;
             %let stop = %length(&var_level);
@@ -114,7 +114,7 @@ Version Date: 2023-03-08 V1.0.1
             %let i = 1;
             %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %do %until(&position = 0); /*连续匹配正则表达式*/
-                %let var_level_&i._str = %substr(&var_level, &position, &length); /*第i个水平名称和别名*/
+                %let var_level_&i._str = %substr(%bquote(&var_level), &position, &length); /*第i个水平名称和别名*/
                 %if %sysfunc(prxmatch(&reg_var_level_expr_unit_id, %bquote(&&var_level_&i._str))) %then %do;
                     %let var_level_&i = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._str))); /*拆分第i个水平名称*/
                     %let var_level_&i._note = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._str))); /*拆分第i个水平别名*/
@@ -326,8 +326,25 @@ Version Date: 2023-03-08 V1.0.1
             select
                 (case when label ^= "" then cats(label)
                       else cats(name, "-n(%)") end)
-                into: label from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&var_name";
+                into: label_sql_expr from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&var_name";
         quit;
+    %end;
+    %else %do;
+        %let reg_label_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %if %sysfunc(prxmatch(&reg_label_id, %superq(label))) %then %do;
+            %let label_pos_1 = %bquote(%sysfunc(prxposn(&reg_label_id, 1, %superq(label))));
+            %let label_pos_2 = %bquote(%sysfunc(prxposn(&reg_label_id, 2, %superq(label))));
+            %let label_pos_3 = %bquote(%sysfunc(prxposn(&reg_label_id, 3, %superq(label))));
+            %if %superq(label_pos_1) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_1);
+            %end;
+            %else %if %superq(label_pos_2) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_2);
+            %end;
+            %else %if %superq(label_pos_3) ^= %bquote() %then %do;
+                %let label_sql_expr = %superq(label_pos_3);
+            %end;
+        %end;
     %end;
 
 
@@ -347,9 +364,9 @@ Version Date: 2023-03-08 V1.0.1
     proc sql noprint;
         create table temp_out as
             select
-                0        as SEQ,
-                "&label" as ITEM,
-                ""       as VALUE
+                0                 as SEQ,
+                "&label_sql_expr" as ITEM,
+                ""                as VALUE
             from temp_indata(firstobs = 1 obs = 1)
             %do i = 1 %to &var_level_n;
                 outer union corr
