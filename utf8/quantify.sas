@@ -6,12 +6,11 @@ Author: wtwang
 Version Date: 2023-03-16 V1.3.1
               2023-11-08 V1.3.2
               2023-11-27 V1.3.3
-              2023-11-28 V1.3.4
 ===================================
 */
 
 %macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
+                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #AUTO, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -408,7 +407,7 @@ Version Date: 2023-03-16 V1.3.1
         %goto exit;
     %end; 
 
-    %if %bquote(&stat_note) ^= #NULL %then %do;
+    %if %bquote(&stat_note) ^= #AUTO %then %do;
         %let stat_note_n = %eval(%sysfunc(kcountw(%bquote(&stat_note), %bquote(=), q)) - 1);
         %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*"((?:.|\n)*)"\s*);
         %let reg_stat_note_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_note_expr_unit, %eval(&stat_note_n - 1)))\)?$/i);
