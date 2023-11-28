@@ -254,7 +254,7 @@ Version Date: 2023-03-16 V1.3.1
     %end;
 
     /*提取每一行的统计量和字符串*/
-    %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)(?:(?<!#)#(&stat_supported))\.?);
+    %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)\.?(?:(?<!#)#(&stat_supported))\.?);
     %do i = 1 %to &part_n;
         %let stat_&i = %eval(%sysfunc(count(%bquote(&&part_&i), %bquote(#))) - %sysfunc(count(%bquote(&&part_&i), %bquote(#|)))
                                                                              - %sysfunc(count(%bquote(&&part_&i), %bquote(##)))*2);
