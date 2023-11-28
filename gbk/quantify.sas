@@ -369,16 +369,16 @@ Version Date: 2023-03-16 V1.3.1
     %end;
     %else %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
-        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)\s*);
+        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
         %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 
         %if %sysfunc(prxmatch(&reg_stat_format_id, %bquote(&stat_format))) %then %do;
             %let IS_VALID_STAT_FORMAT = TRUE;
             %do i = 1 %to &stat_format_n;
-                %let stat_whose_format_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 2), &stat_format)));
-                %let stat_new_format = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 1), &stat_format));
-                %let stat_new_format_base = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3), &stat_format));
+                %let stat_whose_format_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 2), %bquote(&stat_format))));
+                %let stat_new_format = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 1), %bquote(&stat_format)));
+                %let stat_new_format_base = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3), %bquote(&stat_format)));
                 %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format); /*更新统计量的输出格式*/
 
                 %if %bquote(&stat_new_format_base) ^= %bquote() %then %do;
