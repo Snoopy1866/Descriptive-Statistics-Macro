@@ -10,7 +10,7 @@ Version Date: 2023-03-16 V1.3.1
 */
 
 %macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO) /des = "定量指标分析" parmbuff;
+                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -25,6 +25,7 @@ Version Date: 2023-03-16 V1.3.1
     %let var                  = %upcase(%sysfunc(strip(%bquote(&var))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(KURTOSIS|SKEWNESS|MEDIAN|QRANGE|STDDEV|STDERR|NMISS|RANGE|KURT|LCLM|MEAN|MODE|SKEW|UCLM|CSS|MAX|MIN|P10|P20|P25|P30|P40|P50|P60|P70|P75|P80|P90|P95|P99|STD|SUM|USS|VAR|CV|P1|P5|Q1|Q3|N);
@@ -588,12 +589,14 @@ Version Date: 2023-03-16 V1.3.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    proc datasets noprint nowarn;
-        delete temp_stat
-               temp_out
-               temp_valuefmt
-               ;
-    quit;
+    %if &DEL_TEMP_DATA = TRUE %then %do;
+        proc datasets noprint nowarn;
+            delete temp_stat
+                   temp_out
+                   temp_valuefmt
+                   ;
+        quit;
+    %end;
 
     /*删除临时宏*/
     proc catalog catalog = work.sasmacr;

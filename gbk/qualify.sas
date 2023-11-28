@@ -11,7 +11,7 @@ Version Date: 2023-03-08 V1.0.1
 */
 
 %macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #NULL,
-               OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST. #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO) /des = "定性指标分析" parmbuff;
+               OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST. #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定性指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -27,6 +27,7 @@ Version Date: 2023-03-08 V1.0.1
     %let by                   = %upcase(%sysfunc(strip(%bquote(&by))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*统计量对应的输出格式*/
     %let N_format = %bquote(best.);
@@ -458,12 +459,14 @@ Version Date: 2023-03-08 V1.0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    proc datasets noprint nowarn;
-        delete temp_indata
-               temp_distinct_var
-               temp_out
-               ;
-    quit;
+    %if &DEL_TEMP_DATA = TRUE %then %do;
+        proc datasets noprint nowarn;
+            delete temp_indata
+                   temp_distinct_var
+                   temp_out
+                   ;
+        quit;
+    %end;
 
 
     %exit:
