@@ -6,11 +6,12 @@ Author: wtwang
 Version Date: 2023-03-16 V1.3.1
               2023-11-08 V1.3.2
               2023-11-27 V1.3.3
+              2023-11-28 V1.3.4
 ===================================
 */
 
 %macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR, STAT_FORMAT = #NULL, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO) /des = "定量指标分析" parmbuff;
+                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #NULL, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -25,6 +26,7 @@ Version Date: 2023-03-16 V1.3.1
     %let var                  = %upcase(%sysfunc(strip(%bquote(&var))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(KURTOSIS|SKEWNESS|MEDIAN|QRANGE|STDDEV|STDERR|NMISS|RANGE|KURT|LCLM|MEAN|MODE|SKEW|UCLM|CSS|MAX|MIN|P10|P20|P25|P30|P40|P50|P60|P70|P75|P80|P90|P95|P99|STD|SUM|USS|VAR|CV|P1|P5|Q1|Q3|N);
@@ -253,7 +255,7 @@ Version Date: 2023-03-16 V1.3.1
     %end;
 
     /*提取每一行的统计量和字符串*/
-    %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)(?:(?<!#)#(&stat_supported))\.?);
+    %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)\.?(?:(?<!#)#(&stat_supported))\.?);
     %do i = 1 %to &part_n;
         %let stat_&i = %eval(%sysfunc(count(%bquote(&&part_&i), %bquote(#))) - %sysfunc(count(%bquote(&&part_&i), %bquote(#|)))
                                                                              - %sysfunc(count(%bquote(&&part_&i), %bquote(##)))*2);
@@ -312,7 +314,61 @@ Version Date: 2023-03-16 V1.3.1
         %goto exit;
     %end;
 
-    %if %bquote(&stat_format) ^= #NULL %then %do;
+    %if %bquote(&stat_format) = #AUTO %then %do;
+        data temp_valuefmt;
+            set &indata(keep = &var);
+            &var._fmt = strip(vvalue(&var));
+        run;
+
+        /*计算整数部分和小数部分的位数*/
+        proc sql noprint;
+            select max(lengthn(scan(&var._fmt, 1, "."))) into : int_len trimmed from temp_valuefmt;
+            select max(lengthn(scan(&var._fmt, 2, "."))) into : dec_len trimmed from temp_valuefmt;
+        quit;
+
+        /*修改统计量的输出格式*/
+        %let KURTOSIS_format = %eval(&int_len + %sysfunc(min(&dec_len + 3, 4)) + 2).%sysfunc(min(&dec_len + 3, 4)); /*比原始数据小数位数多3，最多不超过4*/
+        %let SKEWNESS_format = &KURTOSIS_format;
+        %let MEDIAN_format   = %eval(&int_len + %sysfunc(min(&dec_len + 1, 4)) + 2).%sysfunc(min(&dec_len + 1, 4)); /*比原始数据小数位数多1，最多不超过4*/
+        %let QRANGE_format   = &MEDIAN_format;
+        %let STDDEV_format   = %eval(&int_len + %sysfunc(min(&dec_len + 2, 4)) + 2).%sysfunc(min(&dec_len + 2, 4)); /*比原始数据小数位数多2，最多不超过4*/
+        %let STDERR_format   = &STDDEV_format;
+        %let NMISS_format    = best.; /*计数统计量，由 SAS 决定输出格式*/
+        %let RANGE_format    = %eval(&int_len + &dec_len + 2).&dec_len; /*与原始数据小数位数相同*/
+        %let KURT_format     = &KURTOSIS_format;
+        %let LCLM_format     = &MEDIAN_format;
+        %let MEAN_format     = &MEDIAN_format;
+        %let MODE_format     = &RANGE_format;
+        %let SKEW_format     = &SKEWNESS_format;
+        %let UCLM_format     = &LCLM_format;
+        %let CSS_format      = &STDDEV_format;
+        %let MAX_format      = &RANGE_format;
+        %let MIN_format      = &RANGE_format;
+        %let P10_format      = &MEDIAN_format;
+        %let P20_format      = &MEDIAN_format;
+        %let P25_format      = &MEDIAN_format;
+        %let P30_format      = &MEDIAN_format;
+        %let P40_format      = &MEDIAN_format;
+        %let P50_format      = &MEDIAN_format;
+        %let P60_format      = &MEDIAN_format;
+        %let P70_format      = &MEDIAN_format;
+        %let P75_format      = &MEDIAN_format;
+        %let P80_format      = &MEDIAN_format;
+        %let P90_format      = &MEDIAN_format;
+        %let P95_format      = &MEDIAN_format;
+        %let P99_format      = &MEDIAN_format;
+        %let STD_format      = &STDDEV_format;
+        %let SUM_format      = &RANGE_format;
+        %let USS_format      = &CSS_format;
+        %let VAR_format      = &STD_format;
+        %let CV_format       = &STD_format;
+        %let P1_format       = &MEDIAN_format;
+        %let P5_format       = &MEDIAN_format;
+        %let Q1_format       = &MEDIAN_format;
+        %let Q3_format       = &MEDIAN_format;
+        %let N_format        = &NMISS_format;
+    %end;
+    %else %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
         %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)\s*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
@@ -534,11 +590,14 @@ Version Date: 2023-03-16 V1.3.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    proc datasets noprint nowarn;
-        delete temp_stat
-               temp_out
-               ;
-    quit;
+    %if &DEL_TEMP_DATA = TRUE %then %do;
+        proc datasets noprint nowarn;
+            delete temp_stat
+                   temp_out
+                   temp_valuefmt
+                   ;
+        quit;
+    %end;
 
     /*删除临时宏*/
     proc catalog catalog = work.sasmacr;
