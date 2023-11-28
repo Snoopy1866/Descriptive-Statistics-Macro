@@ -17,6 +17,7 @@
 - [STAT_NOTE](#stat_note)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [DEL_TEMP_DATA](#del_temp_data)
 
 ## 参数说明
 
@@ -124,7 +125,9 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `|`，�
 
 1. 若紧跟在 _statistic-keyword_ 之后的 _string(s)_ 的部分字符与 _statistic-keyword_ 可以组合成另一个 _statistic-keyword_，为了避免混淆，应当在 _statistic-keyword_ 后添加一个 `.`，然后再添加 _string(s)_。例如：`PATTERN = #N(#N.MISS)|#MEAN(#STD)`，其中 `#N.MISS` 代表将计算例数与字符串 `MISS` 进行连接；
 2. 若 _statistic-keyword_ 之后的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = #N(#N..MISS)|#MEAN(#STD)`；
-3. 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
+3. 若 #_statistic-keyword_ 之前的第一个字符是 `#`，则需要使用 `#.` 才能正确表示。例如：`PATTERN = ##.#MEAN`；
+4. 若 #_statistic-keyword_ 之前的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = ..#MEAN`；
+5. 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
 
 **Example** :
 
@@ -153,7 +156,7 @@ PATTERN = #N(#NMISS)|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SK
 
 **Default** : RES\_&_VAR_
 
-默认情况下，输出数据集的名称为 `RES_xxx`，其中 `xxx` 为参数 [VAR](#var) 指定的变量名。
+默认情况下，输出数据集的名称为 `RES_`_`var`_，其中 `var` 为参数 [VAR](#var) 指定的变量名。
 
 **Tips** :
 
@@ -170,29 +173,78 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 ### STAT_FORMAT
 
-**Syntax** : <(> #_statistic-keyword-1_ = _format-1_ <#_statistic-keyword-2_ = _format-2_> <...> <)>
+**Syntax** : <(> #_statistic-keyword-1_ = _format-1_ <, #_statistic-keyword-2_ = _format-2_ <, ...>> <)>
 
 指定输出结果中统计量的输出格式。
 
-**Default** : #NULL
+**Default** : #AUTO
 
-默认情况下，频数的输出格式为 `BEST.`，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式，_`statistic-keyword`_ 的用法详见 [PATTERN](#pattern)。
+默认情况下，宏程序将根据参数 [VAR](#var) 指定的变量在数据集中的具体值，决定各统计量的输出格式，具体如下：
+
+| 统计量   | 简写 | 输出格式 _w_                  | 输出格式 _d_      |
+| -------- | ---- | ----------------------------- | ----------------- |
+| N        |      | 由 SAS 决定                   | 由 SAS 决定       |
+| NMISS    |      | 由 SAS 决定                   | 由 SAS 决定       |
+| MEAN     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| VAR      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| STDDEV   | STD  | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| STDERR   |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| RANGE    |      | _int_ + _dec_ + 2             | _dec_             |
+| MEDIAN   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| MODE     |      | _int_ + _dec_ + 2             | _dec_             |
+| Q1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| Q3       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| QRANGE   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| MIN      |      | _int_ + _dec_ + 2             | _dec_             |
+| MAX      |      | _int_ + _dec_ + 2             | _dec_             |
+| CV       |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| KURTOSIS | KURT | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
+| SKEWNESS | SKEW | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
+| LCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| UCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| SUM      |      | _int_ + _dec_ + 2             | _dec_             |
+| USS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| CSS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| P1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P5       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P10      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P20      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P30      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P40      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P50      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P60      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P70      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P75      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P80      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P90      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P95      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P99      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+
+其中，_int_ 表示变量 [VAR](_var_) 在数据集中使用默认输出格式打印后的整数部分的最大长度，_dec_ 表示变量 [VAR](_var_) 在数据集中使用默认输出格式打印后的小数部分的最大长度，_w.d_ 表示统计量的输出格式。
+
+举例说明：
+
+1. 均值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 1 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 1 位（若超过 4 位则只保留 4 位）；
+2. 标准差的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 2 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 2 位（若超过 4 位则只保留 4 位）；
+3. 最大值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 实际小数位数 + 2（用于表示小数点和负号），_d_ 部分为实际小数位数；
+
+当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式，_`statistic-keyword`_ 的用法详见 [PATTERN](#pattern)。
 
 **Example** :
 
 ```sas
-STAT_FORMAT = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1)
+STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1)
 ```
 
 ---
 
 ### STAT_NOTE
 
-**Syntax** : <(> #_statisic-keyword-1_ = _string-1_ <#_statistic-keyword-2_ = _string-2_ <...>> <)>
+**Syntax** : <(> #_statisic-keyword-1_ = _string-1_ <, #_statistic-keyword-2_ = _string-2_ <, ...>> <)>
 
 指定输出结果中统计量的说明文字，该说明文字将会出现在输出数据集的 `ITEM` 列中。
 
-**Default** : #NULL
+**Default** : #AUTO
 
 默认情况下，绝大部分统计量的说明文字与参数 [PATTERN](#pattern) 中对 _statistic-keyword_ 描述的含义一致，Q1 和 Q3 是例外，具体各统计量的说明文字如下：
 
@@ -240,7 +292,7 @@ STAT_FORMAT = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1)
 **Example** :
 
 ```sas
-STAT_NOTE = (#N = "靶区数" #MEAN = "平均值")
+STAT_NOTE = (#N = "靶区数", #MEAN = "平均值")
 ```
 
 ### LABEL
@@ -280,6 +332,20 @@ LABEL = "年龄（岁）"
 ```sas
 INDENT = "\li420 "
 ```
+
+---
+
+### DEL_TEMP_DATA
+
+**Syntax** : TRUE|FALSE
+
+指定是否删除宏程序运行过程生成的中间数据集。
+
+**Default** : TRUE
+
+默认情况下，宏程序会自动删除运行过程生成的中间数据集。
+
+⚠ 此参数用于开发者调试，一般无需关注。
 
 ---
 
@@ -323,7 +389,7 @@ INDENT = "\li420 "
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1));
+          stat_format = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1));
 ```
 
 ![](./assets/example-4.png)
@@ -332,7 +398,7 @@ INDENT = "\li420 "
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_note = (#N = "靶区数" #MEAN = "平均值" #Q1 = "下四分位数" #Q3 = "上四分位数"));
+          stat_note = (#N = "靶区数", #MEAN = "平均值", #Q1 = "下四分位数", #Q3 = "上四分位数"));
 ```
 
 ![](./assets/example-5.png)
@@ -341,7 +407,7 @@ INDENT = "\li420 "
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), label = "年龄(岁)");
+          stat_format = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1), label = "年龄(岁)");
 ```
 
 ![](./assets/example-6.png)
@@ -350,7 +416,7 @@ INDENT = "\li420 "
 
 ```sas
 %quantify(indata = adsl, var = age,
-          stat_format = (#MEAN = 4.1 #STD = 5.2 #MEDIAN = 4.1 #Q1 = 4.1 #Q3 = 4.1), indent = "\li420 ");
+          stat_format = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1), indent = "\li420 ");
 ```
 
 上述例子中，使用参数 `INDENT` 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。

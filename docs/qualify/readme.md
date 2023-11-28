@@ -17,6 +17,7 @@
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [DEL_TEMP_DATA](#del_temp_data)
 
 ## 参数说明
 
@@ -138,6 +139,10 @@ BY = SEXN
 
 其中，变量 `ITEM` 和 `VALUE` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
+**Default** : #AUTO
+
+默认情况下，输出数据集被命名为 `RES_`_`var`_，其中 _`var`_ 为参数 [VAR](#var) 指定的变量的名称。
+
 **Tips** :
 
 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
@@ -153,7 +158,7 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 ### STAT_FORMAT
 
-**Syntax** : <(> #_statistic-keyword-1_ = _format-1_ <#_statistic-keyword-2_ = _format-2_> <...> <)>
+**Syntax** : <(> #_statistic-keyword-1_ = _format-1_ <, #_statistic-keyword-2_ = _format-2_ <, ...>><)>
 
 指定输出结果中统计量的输出格式。
 
@@ -164,7 +169,7 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 **Example** :
 
 ```sas
-STAT_FORMAT = (#N = percent9.2 #RATE = 4.1)
+STAT_FORMAT = (#N = percent9.2, #RATE = 4.1)
 ```
 
 ---
@@ -177,7 +182,7 @@ STAT_FORMAT = (#N = percent9.2 #RATE = 4.1)
 
 **Default** : #AUTO
 
-默认情况下，宏程序将自动获取变量 `VAR` 的标签，若标签为空，则使用变量 `VAR` 的变量名作为标签。
+默认情况下，宏程序将自动获取变量 [VAR](#var) 的标签，若标签为空，则使用变量 [VAR](#var) 的变量名作为标签。
 
 **Example** :
 
@@ -206,6 +211,20 @@ LABEL = "性别-n(%)"
 ```sas
 INDENT = "\li420 "
 ```
+
+---
+
+### DEL_TEMP_DATA
+
+**Syntax** : TRUE|FALSE
+
+指定是否删除宏程序运行过程生成的中间数据集。
+
+**Default** : TRUE
+
+默认情况下，宏程序会自动删除运行过程生成的中间数据集。
+
+⚠ 此参数用于开发者调试，一般无需关注。
 
 ---
 
@@ -261,7 +280,7 @@ INDENT = "\li420 "
 ### 指定统计量的输出格式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0 #RATE = 5.3));
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0, #RATE = 5.3));
 ```
 
 ![](./assets/example-5.png)
