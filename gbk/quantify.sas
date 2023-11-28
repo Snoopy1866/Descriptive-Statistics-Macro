@@ -409,14 +409,14 @@ Version Date: 2023-03-16 V1.3.1
 
     %if %bquote(&stat_note) ^= #AUTO %then %do;
         %let stat_note_n = %eval(%sysfunc(kcountw(%bquote(&stat_note), %bquote(=), q)) - 1);
-        %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*"((?:.|\n)*)"\s*);
+        %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*"((?:.|\n)*)"[\s,]*);
         %let reg_stat_note_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_note_expr_unit, %eval(&stat_note_n - 1)))\)?$/i);
         %let reg_stat_note_id = %sysfunc(prxparse(&reg_stat_note_expr));
 
         %if %sysfunc(prxmatch(&reg_stat_note_id, %bquote(&stat_note))) %then %do;
             %do i = 1 %to &stat_note_n;
-                %let stat_whose_note_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_note_id, %eval(&i * 2 - 1), &stat_note)));
-                %let stat_new_note = %sysfunc(prxposn(&reg_stat_note_id, %eval(&i * 2), &stat_note));
+                %let stat_whose_note_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_note_id, %eval(&i * 2 - 1), %bquote(&stat_note))));
+                %let stat_new_note = %sysfunc(prxposn(&reg_stat_note_id, %eval(&i * 2), %bquote(&stat_note)));
                 %let &stat_whose_note_2be_update._note = %bquote(&stat_new_note); /*更新统计量的说明文字*/
             %end;
         %end;
