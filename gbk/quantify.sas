@@ -315,8 +315,9 @@ Version Date: 2023-03-16 V1.3.1
 
     %if %bquote(&stat_format) = #AUTO %then %do;
         data temp_valuefmt;
-            set &indata(keep = &var);
+            set &indata;
             &var._fmt = strip(vvalue(&var));
+            keep &var &var._fmt;
         run;
 
         /*计算整数部分和小数部分的位数*/
@@ -333,7 +334,7 @@ Version Date: 2023-03-16 V1.3.1
         %let STDDEV_format   = %eval(&int_len + %sysfunc(min(&dec_len + 2, 4)) + 2).%sysfunc(min(&dec_len + 2, 4)); /*比原始数据小数位数多2，最多不超过4*/
         %let STDERR_format   = &STDDEV_format;
         %let NMISS_format    = best.; /*计数统计量，由 SAS 决定输出格式*/
-        %let RANGE_format    = %eval(&int_len + &dec_len + 2).&dec_len; /*与原始数据小数位数相同*/
+        %let RANGE_format    = %eval(&int_len + %sysfunc(min(&dec_len, 4)) + 2).%sysfunc(min(&dec_len, 4)); /*与原始数据小数位数相同，最多不超过4*/
         %let KURT_format     = &KURTOSIS_format;
         %let LCLM_format     = &MEDIAN_format;
         %let MEAN_format     = &MEDIAN_format;
