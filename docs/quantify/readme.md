@@ -68,7 +68,7 @@ VAR = AGE
 
 指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。
 
-_`row-i-specification`_ 表示输出数据集中第 `i+1` 行（第 1 行固定为分析变量的标签）的统计量结果展示模式，输出数据集中的每一行均用一个 _`row-i-specification`_ 进行定义，不同行的定义之间使用字符 `|` 隔开，其中 _`row-i-specification`_ 的语法如下：
+_`row-i-specification`_ 表示输出数据集中第 _`i`_`+ 1` 行（第 1 行固定为分析变量的标签）的统计量结果展示模式，输出数据集中的每一行均用一个 _`row-i-specification`_ 进行定义，不同行的定义之间使用字符 `|` 隔开，其中 _`row-i-specification`_ 的语法如下：
 
 - _string(s)_
 - #_statistic-keyword_
@@ -189,20 +189,20 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 | VAR      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
 | STDDEV   | STD  | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
 | STDERR   |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| RANGE    |      | _int_ + _dec_ + 2             | _dec_             |
+| RANGE    |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
 | MEDIAN   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| MODE     |      | _int_ + _dec_ + 2             | _dec_             |
+| MODE     |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
 | Q1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
 | Q3       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
 | QRANGE   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| MIN      |      | _int_ + _dec_ + 2             | _dec_             |
-| MAX      |      | _int_ + _dec_ + 2             | _dec_             |
+| MIN      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| MAX      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
 | CV       |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
 | KURTOSIS | KURT | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
 | SKEWNESS | SKEW | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
 | LCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
 | UCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| SUM      |      | _int_ + _dec_ + 2             | _dec_             |
+| SUM      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
 | USS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
 | CSS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
 | P1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
@@ -226,7 +226,7 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 1. 均值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 1 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 1 位（若超过 4 位则只保留 4 位）；
 2. 标准差的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 2 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 2 位（若超过 4 位则只保留 4 位）；
-3. 最大值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 实际小数位数 + 2（用于表示小数点和负号），_d_ 部分为实际小数位数；
+3. 最大值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 实际小数位数（若超过 4 位则只保留 4 位） + 2（用于表示小数点和负号），_d_ 部分为实际小数位数（若超过 4 位则只保留 4 位）；
 
 当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式，_`statistic-keyword`_ 的用法详见 [PATTERN](#pattern)。
 
