@@ -9,7 +9,7 @@ Version Date: 2023-03-16 V1.3.1
 ===================================
 */
 
-%macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+%macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
                 OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #AUTO, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
 
 
@@ -71,7 +71,7 @@ Version Date: 2023-03-16 V1.3.1
     %let Q1_note       = %bquote(Q1);
     %let Q3_note       = %bquote(Q3);
     %let N_note        = %bquote(例数);
-    
+
 
     /*统计量对应的PROC MEANS过程输出的数据集中的变量名*/
     %let KURTOSIS_var = %bquote(&var._Kurt);
@@ -114,8 +114,7 @@ Version Date: 2023-03-16 V1.3.1
     %let Q1_var       = %bquote(&var._Q1);
     %let Q3_var       = %bquote(&var._Q3);
     %let N_var        = %bquote(&var._N);
-    
-    
+
 
     /*统计量对应的输出格式*/
     %let KURTOSIS_format = %bquote(best.);
@@ -159,21 +158,26 @@ Version Date: 2023-03-16 V1.3.1
     %let Q3_format       = %bquote(best.);
     %let N_format        = %bquote(best.);
 
+    /*声明全局变量*/
+    %global quantify_exit_with_error;
+    %let quantify_exit_with_error = FALSE;
 
     /*声明局部变量*/
-    %local i j;
+    %local i j
+           libname_in memname_in dataset_options_in
+           libname_out memname_out dataset_options_out;
 
     /*----------------------------------------------参数检查----------------------------------------------*/
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
         %put ERROR: 未指定分析数据集！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, %bquote(&indata))) = 0 %then %do;
             %put ERROR: 参数 INDATA = %bquote(&indata) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, %bquote(&indata))));
@@ -185,14 +189,23 @@ Version Date: 2023-03-16 V1.3.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: &libname_in 逻辑库不存在！;
-                %goto exit;
+                %goto exit_with_error;
             %end;
+
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
-                %goto exit;
+                %goto exit_with_error;
+            %end;
+
+            proc sql noprint;
+                select count(*) into : nobs from &indata;
+            quit;
+            %if &nobs = 0 %then %do;
+                %put ERROR: 分析数据集 &indata 为空！;
+                %goto exit_with_error;
             %end;
         %end;
     %end;
@@ -201,14 +214,14 @@ Version Date: 2023-03-16 V1.3.1
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
         %put ERROR: 未指定分析变量！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
     %let reg_var_id = %sysfunc(prxparse(&reg_var));
     %if %sysfunc(prxmatch(&reg_var_id, %bquote(&var))) = 0 %then %do;
         %put ERROR: 参数 VAR = %bquote(&var) 格式不正确！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         proc sql noprint;
@@ -216,11 +229,11 @@ Version Date: 2023-03-16 V1.3.1
         quit;
         %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
             %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &var;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         %else %if &type = char %then %do; /*分析变量是一个字符型变量*/
             %put ERROR: 无法对字符型变量 &var 进行定量分析！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
     %end;
 
@@ -228,7 +241,7 @@ Version Date: 2023-03-16 V1.3.1
     /*PATTERN*/
     %if %bquote(&pattern) = %bquote() %then %do;
         %put ERROR: 参数 PATTERN 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     /*提取每一行的模式*/
@@ -250,7 +263,7 @@ Version Date: 2023-03-16 V1.3.1
     %end;
     %else %do;
         %put ERROR: 参数 PATTERN = %bquote(&pattern) 格式不正确！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     /*提取每一行的统计量和字符串*/
@@ -276,20 +289,20 @@ Version Date: 2023-03-16 V1.3.1
         %end;
         %else %do;
             %put ERROR: 在对参数 PATTERN 解析第 &i 行统计量名称及其他字符时发生了错误，导致错误的原因可能是指定了不受支持的统计量，或者未使用“##”对字符“#”进行转义！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
     %end;
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
         %put ERROR: 参数 OUTDATA 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
             %put ERROR: 参数 OUTDATA = %bquote(&outdata) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
@@ -301,7 +314,7 @@ Version Date: 2023-03-16 V1.3.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: &libname_out 逻辑库不存在！;
-                %goto exit;
+                %goto exit_with_error;
             %end;
         %end;
         %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
@@ -310,7 +323,7 @@ Version Date: 2023-03-16 V1.3.1
     /*STAT_FORMAT*/
     %if %bquote(&stat_format) = %bquote() %then %do;
         %put ERROR: 参数 STAT_FORMAT 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     %if %bquote(&stat_format) = #AUTO %then %do;
@@ -393,19 +406,19 @@ Version Date: 2023-03-16 V1.3.1
                 %end;
             %end;
             %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
-                %goto exit;
+                %goto exit_with_error;
             %end;
         %end;
         %else %do;
             %put ERROR: 参数 STAT_FORMAT = %bquote(&stat_format) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
     %end;
 
     /*STAT_NOTE*/
     %if %bquote(&stat_note) = %bquote() %then %do;
         %put ERROR: 参数 STAT_NOTE 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end; 
 
     %if %bquote(&stat_note) ^= #AUTO %then %do;
@@ -423,14 +436,14 @@ Version Date: 2023-03-16 V1.3.1
         %end;
         %else %do;
             %put ERROR: 参数 STAT_NOTE = %bquote(&stat_note) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
     %end;
 
     /*LABEL*/
     %if %superq(label) = %bquote() %then %do;
         %put ERROR: 参数 LABEL 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %if %qupcase(&label) = #AUTO %then %do;
         proc sql noprint;
@@ -603,8 +616,13 @@ Version Date: 2023-03-16 V1.3.1
     proc catalog catalog = work.sasmacr;
         delete temp_combpl_hash.macro;
     quit;
+    %goto exit;
 
+    /*异常退出*/
+    %exit_with_error:
+    %let quantify_exit_with_error = TRUE;
 
+    /*正常退出*/
     %exit:
     %put NOTE: 宏 quantify 已结束运行！;
 %mend;
