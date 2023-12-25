@@ -11,9 +11,4 @@
 
 - [qualify](./docs/qualify/readme.md)
 - [quantify](./docs/quantify/readme.md)
-
-## 调用示例
-
-```sas
-/*TODO*/
-```
+- [quantify_multi](./docs/quantify_multi/readme.md)
