@@ -149,6 +149,15 @@ Version Date: 2023-12-21 0.1
                 %let groupby_var = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
                 %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
 
+                /*检查排序变量存在性*/
+                proc sql noprint;
+                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
+                quit;
+                %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
+                    %put ERROR: 在 &libname_in..&memname_in 中没有找到分组排序变量 &groupby_var;
+                    %goto exit_with_error;
+                %end;
+
                 proc sql noprint;
                     create table temp_groupby_sorted_indata as
                         select
