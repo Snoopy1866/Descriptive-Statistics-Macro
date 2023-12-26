@@ -326,7 +326,7 @@ Version Date: 2023-03-16 V1.3.1
         %goto exit_with_error;
     %end;
 
-    data temp_valuefmt;
+    data tmp_quantify_valuefmt;
         set &indata;
         &var._fmt = strip(vvalue(&var));
         keep &var &var._fmt;
@@ -334,8 +334,8 @@ Version Date: 2023-03-16 V1.3.1
 
     /*计算整数部分和小数部分的位数*/
     proc sql noprint;
-        select max(lengthn(scan(&var._fmt, 1, "."))) into : int_len trimmed from temp_valuefmt;
-        select max(lengthn(scan(&var._fmt, 2, "."))) into : dec_len trimmed from temp_valuefmt;
+        select max(lengthn(scan(&var._fmt, 1, "."))) into : int_len trimmed from tmp_quantify_valuefmt;
+        select max(lengthn(scan(&var._fmt, 2, "."))) into : dec_len trimmed from tmp_quantify_valuefmt;
     quit;
 
     /*自动计算统计量的输出格式*/
@@ -518,7 +518,7 @@ Version Date: 2023-03-16 V1.3.1
                                   noprint
                                   ;
             var &var;
-            output out = temp_stat %do i = 1 %to &part_n;
+            output out = tmp_quantify_stat %do i = 1 %to &part_n;
                                        %do j = 1 %to &&stat_&i;
                                            %bquote(&&stat_&i._&j)%bquote(=)%bquote( )
                                        %end;
@@ -526,9 +526,9 @@ Version Date: 2023-03-16 V1.3.1
                                    /autoname autolabel;
         run;
     %end;
-    %else %do; /*未指定任何统计量，仍然输出 temp_stat 数据集，以兼容后续程序步骤*/
+    %else %do; /*未指定任何统计量，仍然输出 tmp_quantify_stat 数据集，以兼容后续程序步骤*/
         %put NOTE: 未指定任何统计量！;
-        data temp_stat;
+        data tmp_quantify_stat;
             INFO = "NO_STAT_SPECIFIED";
         run;
     %end;
@@ -543,12 +543,12 @@ Version Date: 2023-03-16 V1.3.1
     %let reg_digit_format_id = %sysfunc(prxparse(%bquote(/\d+\.(\d+)?/))); /*w.d输出格式，改用 round 函数处理，避免舍入错误*/
 
     proc sql noprint;
-        create table temp_out as
+        create table tmp_quantify_outdata as
             select
                 0                 as SEQ,
                 "&label_sql_expr" as ITEM,
                 ""                as VALUE
-            from temp_stat
+            from tmp_quantify_stat
             outer union corr
             %do i = 1 %to &part_n;
                 select
@@ -582,7 +582,7 @@ Version Date: 2023-03-16 V1.3.1
                                 )
                         )
                         as VALUE
-                from temp_stat
+                from tmp_quantify_stat
                 %if &i < &part_n %then %do;
                     outer union corr
                 %end;
@@ -599,16 +599,16 @@ Version Date: 2023-03-16 V1.3.1
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        set temp_out;
+        set tmp_quantify_outdata;
     run;
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
-            delete temp_stat
-                   temp_out
-                   temp_valuefmt
+            delete tmp_quantify_stat
+                   tmp_quantify_outdata
+                   tmp_quantify_valuefmt
                    ;
         quit;
     %end;

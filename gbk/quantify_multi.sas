@@ -159,14 +159,14 @@ Version Date: 2023-12-21 0.1
                 %end;
 
                 proc sql noprint;
-                    create table temp_groupby_sorted_indata as
+                    create table tmp_quantify_m_groupby_sorted as
                         select
                             distinct
                             &group_var,
                             &groupby_var
                         from %superq(indata) order by &groupby_var &groupby_direction, &group_var;
-                    select quote(strip(&group_var)) into : group_level_1- from temp_groupby_sorted_indata;
-                    select count(distinct &group_var) into : group_level_n from temp_groupby_sorted_indata;
+                    select quote(strip(&group_var)) into : group_level_1- from tmp_quantify_m_groupby_sorted;
+                    select count(distinct &group_var) into : group_level_n from tmp_quantify_m_groupby_sorted;
                 quit;
             %end;
             %else %do;
@@ -209,15 +209,16 @@ Version Date: 2023-12-21 0.1
 
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 复制数据*/
-    data temp_indata;
+    data tmp_quantify_m_indata;
         %unquote(set %superq(indata));
     run;
 
     /*2. 整体统计*/
-    %quantify(INDATA = temp_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
-                                                               &&group_level_&i %bquote(,)
-                                                           %end;))),
-              VAR = %superq(VAR), OUTDATA = temp_res_sum(rename = (value = value_sum)), PATTERN = %superq(PATTERN),
+    %put NOTE: ===================================合计===================================;
+    %quantify(INDATA = tmp_quantify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
+                                                                         &&group_level_&i %bquote(,)
+                                                                     %end;))),
+              VAR = %superq(VAR), OUTDATA = tmp_quantify_m_res_sum(rename = (value = value_sum)), PATTERN = %superq(PATTERN),
               STAT_FORMAT = %superq(STAT_FORMAT), STAT_NOTE = %superq(STAT_NOTE), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
 
     %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
@@ -226,7 +227,9 @@ Version Date: 2023-12-21 0.1
 
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
-        %quantify(INDATA = temp_indata(where = (&group_var = &&group_level_&i)), VAR = %superq(VAR), OUTDATA = temp_res_group_level_&i(rename = (value = value_&i)), PATTERN = %superq(PATTERN),
+        %put NOTE: ===================================&&group_level_&i===================================;
+        %quantify(INDATA = tmp_quantify_m_indata(where = (&group_var = &&group_level_&i)),
+                  VAR = %superq(VAR), OUTDATA = temp_res_group_level_&i(rename = (value = value_&i)), PATTERN = %superq(PATTERN),
                   STAT_FORMAT = %superq(STAT_FORMAT), STAT_NOTE = %superq(STAT_NOTE), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
 
         %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
@@ -235,11 +238,11 @@ Version Date: 2023-12-21 0.1
     %end;
 
     /*4. 合并上述结果*/
-    data temp_outdata;
+    data tmp_quantify_m_outdata;
         merge %do i = 1 %to &group_level_n;
                   temp_res_group_level_&i
               %end;
-              temp_res_sum
+              tmp_quantify_m_res_sum
               ;
         label %do i = 1 %to &group_level_n;
                   value_&i = &&group_level_&i
@@ -248,7 +251,7 @@ Version Date: 2023-12-21 0.1
               item = "统计量";
     run;
 
-    /*4. 输出数据集*/
+    /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item %do i = 1 %to &group_level_n;
                                                         value_&i
@@ -260,17 +263,17 @@ Version Date: 2023-12-21 0.1
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        set temp_outdata;
+        set tmp_quantify_m_outdata;
     run;
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
-            delete temp_indata
-                   temp_outdata
-                   temp_groupby_sorted_indata
-                   temp_res_sum
+            delete tmp_quantify_m_indata
+                   tmp_quantify_m_outdata
+                   tmp_quantify_m_groupby_sorted
+                   tmp_quantify_m_res_sum
                    %do i = 1 %to &group_level_n;
                        temp_res_group_level_&i
                    %end;
