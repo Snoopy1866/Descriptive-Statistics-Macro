@@ -102,23 +102,27 @@ PATTERN = #N[#RATE]##
 
 **Syntax** :
 
-- #FREQ_MAX|#FREQ_MIN
+- #FREQ<(ASC\<ENDING\>|DESC\<ENDING\>)>
 - _variable_<(ASC\<ENDING\>|DESC\<ENDING\>)>
+- _format_<(ASC\<ENDING\>|DESC\<ENDING\>)>
 
-指定各分类在输出数据集中的排列顺序。
+指定各分类在输出数据集中的排列顺序依据。
 
-**Default** : `#FREQ_MAX`
+**Default** : #FREQ(DESCENDING)
 
 默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。
 
 **Caution** :
 
-1. 若参数 `VAR` 指定了分析变量的分类名称，则按照各分类在参数 `VAR` 中指定的顺序显示在输出数据集中，此时参数 `BY` 无效。
+1. 若参数 `VAR` 指定了分析变量的分类名称，则按照各分类在参数 `VAR` 中指定的顺序显示在输出数据集中，此时参数 `BY` 无效；
+2. 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
 **Example** :
 
 ```sas
-BY = SEXN
+BY = #freq
+BY = SEXN(asc)
+BY = SEXN.(descending)
 ```
 
 ---
@@ -254,7 +258,7 @@ INDENT = "\li420 "
 ### 指定统计量的模式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, pattern = %str(#n[#rate]##));
 ```
 
 ![](./assets/example-2.png)
@@ -264,7 +268,7 @@ INDENT = "\li420 "
 ### 指定分类排序方式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq_max);
+%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq(desc));
 ```
 
 ![](./assets/example-3.png)
