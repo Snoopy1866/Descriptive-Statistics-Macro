@@ -8,10 +8,11 @@ Version Date: 2023-03-08 V1.0.1
               2023-11-08 V1.0.3
               2023-11-27 V1.0.4
               2023-11-28 V1.0.5
+              2023-12-26 V1.0.6
 ===================================
 */
 
-%macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #NULL,
+%macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO,
                OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定性指标分析" parmbuff;
 
 
@@ -34,20 +35,26 @@ Version Date: 2023-03-08 V1.0.1
     %let N_format = %bquote(best.);
     %let RATE_format = %bquote(percentn9.2);
 
+    /*声明全局变量*/
+    %global qualify_exit_with_error;
+    %let qualify_exit_with_error = FALSE;
+
     /*声明局部变量*/
-    %local i j;
+    %local i j
+           libname_in memname_in dataset_options_in
+           libname_out memname_out dataset_options_out;
 
     /*----------------------------------------------参数检查----------------------------------------------*/
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
         %put ERROR: 未指定分析数据集！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, %bquote(&indata))) = 0 %then %do;
             %put ERROR: 参数 INDATA = %bquote(&indata) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, %bquote(&indata))));
@@ -59,30 +66,31 @@ Version Date: 2023-03-08 V1.0.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: &libname_in 逻辑库不存在！;
-                %goto exit;
+                %goto exit_with_error;
             %end;
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
-                %goto exit;
+                %goto exit_with_error;
             %end;
         %end;
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
 
+
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
         %put ERROR: 未指定分析变量！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:[\s,]*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*(?:=\s*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))?)+\s*)?\))?$/);
     %let reg_var_id = %sysfunc(prxparse(&reg_var));
     %if %sysfunc(prxmatch(&reg_var_id, %bquote(&var))) = 0 %then %do;
         %put ERROR: 参数 VAR = %bquote(&var) 格式不正确！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         %let var_name = %upcase(%sysfunc(prxposn(&reg_var_id, 1, %bquote(&var)))); /*变量名*/
@@ -94,12 +102,12 @@ Version Date: 2023-03-08 V1.0.1
         quit;
         %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
             %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &var_name;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         /*检查变量类型*/
         %if %bquote(&type) = num %then %do;
             %put ERROR: 参数 VAR 不支持数值型变量！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         
         %if %bquote(&var_level) = %bquote() %then %do;
@@ -127,7 +135,7 @@ Version Date: 2023-03-08 V1.0.1
                 %end;
                 %else %do;
                     %put ERROR: 在对参数 VAR 解析第 &i 个分类名称时发生了意料之外的错误！;
-                    %goto exit;
+                    %goto exit_with_error;
                 %end;
                 %let i = %eval(&i + 1);
                 %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
@@ -139,85 +147,117 @@ Version Date: 2023-03-08 V1.0.1
 
     /*BY*/
     %if %bquote(&IS_LEVEL_SPECIFIED) = TRUE %then %do; /*已指定顺序的情况下，参数 by 不起作用*/
-        %if %bquote(&by) ^= %bquote() and %bquote(&by) ^= #NULL %then %do;
+        %if %bquote(&by) ^= %bquote() and %bquote(&by) ^= #AUTO %then %do;
             %put WARNING: 已通过参数 VAR 指定各分类的顺序，参数 BY 已被忽略！;
         %end;
     %end;
     %else %do; /*未指定顺序的情况，参数 by 用于指定顺序*/
         %if %bquote(&by) = %bquote() %then %do;
             %put ERROR: 参数 BY 为空！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
-        %else %if %bquote(&by) = #NULL %then %do;
+        %else %if %bquote(&by) = #AUTO %then %do;
             %put NOTE: 未指定各分类的排序方式，将按照各分类的频数从大到小进行排序！;
-            %let by = #FREQ_MAX;
+            %let by = #FREQ(DESCENDING);
         %end;
 
         /*解析参数 by, 检查合法性*/
-        %if %bquote(&by) = #FREQ_MAX %then %do;
-            %let by_var = #FREQ;
-            %let by_direction = DESCENDING;
-        %end;
-        %else %if %bquote(&by) = #FREQ_MIN %then %do;
-            %let by_var = #FREQ;
-            %let by_direction = ASCENDING;
-        %end;
-        %else %do;
-            %let reg_by_expr = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(\s*(?:(DESC(?:ENDING)?|ASC(?:ENDING)?))?\s*\))?$/);
-            %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
-            %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
-                %let by_var = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*排序变量*/
-                %let by_direction = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*排序方向*/
+        %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
+        %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
+        %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
+            %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*排序基于的统计量*/
+            %let by_var       = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*排序基于的变量*/
+            %let by_fmt       = %sysfunc(prxposn(&reg_by_id, 3, %bquote(&by))); /*排序基于的输出格式*/
+            %let by_direction = %sysfunc(prxposn(&reg_by_id, 4, %bquote(&by))); /*排序方向*/
 
+            %if %bquote(&by_var) ^= %bquote() %then %do;
                 /*检查排序变量存在性*/
                 proc sql noprint;
                     select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&by_var";
                 quit;
                 %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
                     %put ERROR: 在 &libname_in..&memname_in 中没有找到排序变量 &by_var;
-                    %goto exit;
+                    %goto exit_with_error;
                 %end;
+            %end;
 
-                /*检查排序方向*/
-                %if %bquote(&by_direction) = %bquote() %then %do;
-                    %put NOTE: 未指定排序方向，默认升序排列！;
-                    %let by_direction = ASCENDING;
+            %if %bquote(&by_fmt) ^= %bquote() %then %do;
+                /*检查排序格式存在性*/
+                proc sql noprint;
+                    select libname, memname, source into : by_fmt_libname, : by_fmt_memname, : by_fmt_source from DICTIONARY.FORMATS where fmtname = "&by_fmt";
+                quit;
+                %if &SQLOBS = 0 %then %do;
+                    %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不存在！;
+                    %goto exit_with_error;
                 %end;
-                %else %if %bquote(&by_direction) = ASC %then %do;
-                    %let by_direction = ASCENDING;
-                %end;
-                %else %if %bquote(&by_direction) = DESC %then %do;
-                    %let by_direction = DESCENDING;
+                %else %do;
+                    %if &by_fmt_source ^= C %then %do;
+                        %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不是 CATALOG-BASED！;
+                        %goto exit_with_error;
+                    %end;
                 %end;
             %end;
-            %else %do;
-                %put ERROR: 参数 BY = %bquote(&by) 格式不正确！;
-                %goto exit;
+
+            /*检查排序方向*/
+            %if %bquote(&by_direction) = %bquote() %then %do;
+                %put NOTE: 未指定排序方向，默认升序排列！;
+                %let by_direction = ASCENDING;
             %end;
+            %else %if %bquote(&by_direction) = ASC %then %do;
+                %let by_direction = ASCENDING;
+            %end;
+            %else %if %bquote(&by_direction) = DESC %then %do;
+                %let by_direction = DESCENDING;
+            %end;
+        %end;
+        %else %do;
+            %put ERROR: 参数 BY = %bquote(&by) 格式不正确！;
+            %goto exit_with_error;
         %end;
 
         /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
-        %if %bquote(&by_var) = #FREQ %then %do;
+        %if %bquote(&by_stat) ^= %bquote() %then %do;
             proc sql noprint;
                 create table temp_distinct_var as
-                    select distinct &var_name, count(&var_name) as &var_name._freq from &libname_in..&memname_in(&dataset_options_in)
-                    group by &var_name
-                    order by &var_name._freq &by_direction, &var_name ascending
-                                             ;
+                    select
+                        distinct
+                        &var_name        as var_level,
+                        count(&var_name) as var_level_by_criteria
+                    from &libname_in..&memname_in(&dataset_options_in)
+                    group by var_level
+                    order by var_level_by_criteria &by_direction, var_level ascending;
             quit;
         %end;
-        %else %do;
+        %else %if %bquote(&by_var) ^= %bquote() %then %do;
             proc sql noprint;
                 create table temp_distinct_var as
-                    select distinct &var_name, &by_var from &libname_in..&memname_in(&dataset_options_in)
-                    order by &by_var &by_direction, &var_name ascending;
+                    select
+                        distinct
+                        &var_name as var_level,
+                        &by_var   as var_level_by_criteria
+                    from &libname_in..&memname_in(&dataset_options_in)
+                    order by var_level_by_criteria &by_direction, var_level ascending;
+            quit;
+        %end;
+        %else %if %bquote(&by_fmt) ^= %bquote() %then %do;
+            proc format library = &by_fmt_libname..&by_fmt_memname cntlout = temp_by_fmt;
+                select &by_fmt;
+            run;
+            proc sql noprint;
+                create table temp_distinct_var as
+                    select
+                        label                   as var_level,
+                        input(strip(start), 8.) as var_level_by_criteria
+                    from temp_by_fmt
+                    order by var_level_by_criteria &by_direction, var_level ascending;
             quit;
         %end;
 
         proc sql noprint;
-            select count(*) into :var_level_n from temp_distinct_var;
+            select quote(strip(var_level)) into : var_level_1- from temp_distinct_var;
+            select count(var_level)        into : var_level_n  from temp_distinct_var;
+
             %do i = 1 %to &var_level_n;
-                select cat("""", trimn(&var_name), """") into :var_level_&i from temp_distinct_var(firstobs = &i obs = &i);
                 %let var_level_&i._note = %bquote(&&var_level_&i);
             %end;
         quit;
@@ -227,7 +267,7 @@ Version Date: 2023-03-08 V1.0.1
     /*PATTERN*/
     %if %bquote(&pattern) = %bquote() %then %do;
         %put ERROR: 参数 PATTERN 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     %let reg_pattern_expr = %bquote(/^((?:.|\n)*?)(?<!#)#(RATE|N)((?:.|\n)*?)(?:(?<!#)#(RATE|N)((?:.|\n)*?))?$/i);
@@ -242,14 +282,14 @@ Version Date: 2023-03-08 V1.0.1
     %end;
     %else %do;
         %put ERROR: 参数 PATTERN = %bquote(&pattern) 格式不正确！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
         %put ERROR: 参数 OUTDATA 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %do;
         %if %bquote(%upcase(&outdata)) = %bquote(#AUTO) %then %do;
@@ -259,7 +299,7 @@ Version Date: 2023-03-08 V1.0.1
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
             %put ERROR: 参数 OUTDATA = %bquote(&outdata) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
@@ -271,7 +311,7 @@ Version Date: 2023-03-08 V1.0.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: &libname_out 逻辑库不存在！;
-                %goto exit;
+                %goto exit_with_error;
             %end;
         %end;
         %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
@@ -281,7 +321,7 @@ Version Date: 2023-03-08 V1.0.1
     /*STAT_FORMAT*/
     %if %bquote(&stat_format) = %bquote() %then %do;
         %put ERROR: 参数 STAT_FORMAT 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
 
     %if %bquote(&stat_format) ^= #NULL %then %do;
@@ -309,12 +349,12 @@ Version Date: 2023-03-08 V1.0.1
                 %end;
             %end;
             %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
-                %goto exit;
+                %goto exit_with_error;
             %end;
         %end;
         %else %do;
             %put ERROR: 参数 STAT_FORMAT = %bquote(&stat_format) 格式不正确！;
-            %goto exit;
+            %goto exit_with_error;
         %end;
     %end;
 
@@ -322,7 +362,7 @@ Version Date: 2023-03-08 V1.0.1
     /*LABEL*/
     %if %bquote(&label) = %bquote() %then %do;
         %put ERROR: 参数 LABEL 为空！;
-        %goto exit;
+        %goto exit_with_error;
     %end;
     %else %if %bquote(%upcase(&label)) = #AUTO %then %do;
         proc sql noprint;
@@ -384,6 +424,7 @@ Version Date: 2023-03-08 V1.0.1
             select * from &libname_in..&memname_in(&dataset_options_in);
     quit;
 
+
     /*2. 计算频数频率*/
     /*替换 "#|" 为 "|", "##" 为 "#"*/
     %macro combpl_hash(string);
@@ -391,7 +432,7 @@ Version Date: 2023-03-08 V1.0.1
     %mend;
 
     proc sql noprint;
-        create table temp_out as
+        create table temp_outdata as
             select
                 0                 as SEQ,
                 "&label_sql_expr" as ITEM,
@@ -452,24 +493,27 @@ Version Date: 2023-03-08 V1.0.1
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        set temp_out;
+        set temp_outdata;
     run;
 
     
-
-
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete temp_indata
+                   temp_by_fmt
                    temp_distinct_var
-                   temp_out
+                   temp_outdata
                    ;
         quit;
     %end;
 
+    /*异常退出*/
+    %exit_with_error:
+    %let qualify_exit_with_error = TRUE;
 
+    /*正常退出*/
     %exit:
     %put NOTE: 宏 Qualify 已结束运行！;
 %mend;
