@@ -218,7 +218,7 @@ Version Date: 2023-03-08 V1.0.1
         /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
         %if %bquote(&by_stat) ^= %bquote() %then %do;
             proc sql noprint;
-                create table temp_distinct_var as
+                create table tmp_qualify_distinct_var as
                     select
                         distinct
                         &var_name        as var_level,
@@ -230,7 +230,7 @@ Version Date: 2023-03-08 V1.0.1
         %end;
         %else %if %bquote(&by_var) ^= %bquote() %then %do;
             proc sql noprint;
-                create table temp_distinct_var as
+                create table tmp_qualify_distinct_var as
                     select
                         distinct
                         &var_name as var_level,
@@ -240,22 +240,22 @@ Version Date: 2023-03-08 V1.0.1
             quit;
         %end;
         %else %if %bquote(&by_fmt) ^= %bquote() %then %do;
-            proc format library = &by_fmt_libname..&by_fmt_memname cntlout = temp_by_fmt;
+            proc format library = &by_fmt_libname..&by_fmt_memname cntlout = tmp_qualify_by_fmt;
                 select &by_fmt;
             run;
             proc sql noprint;
-                create table temp_distinct_var as
+                create table tmp_qualify_distinct_var as
                     select
                         label                   as var_level,
                         input(strip(start), 8.) as var_level_by_criteria
-                    from temp_by_fmt
+                    from tmp_qualify_by_fmt
                     order by var_level_by_criteria &by_direction, var_level ascending;
             quit;
         %end;
 
         proc sql noprint;
-            select quote(strip(var_level)) into : var_level_1- from temp_distinct_var;
-            select count(var_level)        into : var_level_n  from temp_distinct_var;
+            select quote(strip(var_level)) into : var_level_1- from tmp_qualify_distinct_var;
+            select count(var_level)        into : var_level_n  from tmp_qualify_distinct_var;
 
             %do i = 1 %to &var_level_n;
                 %let var_level_&i._note = %bquote(&&var_level_&i);
@@ -420,24 +420,24 @@ Version Date: 2023-03-08 V1.0.1
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 复制分析数据*/
     proc sql noprint;
-        create table temp_indata as
+        create table tmp_qualify_indata as
             select * from &libname_in..&memname_in(&dataset_options_in);
     quit;
 
 
     /*2. 计算频数频率*/
     /*替换 "#|" 为 "|", "##" 为 "#"*/
-    %macro combpl_hash(string);
+    %macro temp_combpl_hash(string);
         transtrn(transtrn(&string, "#|", "|"), "##", "#")
     %mend;
 
     proc sql noprint;
-        create table temp_outdata as
+        create table tmp_qualify_outdata as
             select
                 0                 as SEQ,
                 "&label_sql_expr" as ITEM,
                 ""                as VALUE
-            from temp_indata(firstobs = 1 obs = 1)
+            from tmp_qualify_indata(firstobs = 1 obs = 1)
             %do i = 1 %to &var_level_n;
                 outer union corr
                 select
@@ -459,7 +459,7 @@ Version Date: 2023-03-08 V1.0.1
                         strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_2._format))
                     %end;
                         as RATE_FMT,
-                    cat(%combpl_hash("&string_1"),
+                    cat(%temp_combpl_hash("&string_1"),
                         %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
                             strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
                         %end;
@@ -467,7 +467,7 @@ Version Date: 2023-03-08 V1.0.1
                             strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_1._format))
                         %end;
                         ,
-                        %combpl_hash("&string_2"),
+                        %temp_combpl_hash("&string_2"),
                         %if %upcase(%bquote(&stat_2)) = %bquote(N) %then %do;
                             strip(put(sum(&var_name = &&var_level_&i), &&&stat_2._format))
                         %end;
@@ -478,9 +478,9 @@ Version Date: 2023-03-08 V1.0.1
                             ""
                         %end;
                         ,
-                        %combpl_hash("&string_3")
+                        %temp_combpl_hash("&string_3")
                         ) as VALUE
-                from temp_indata
+                from tmp_qualify_indata
             %end;
             %bquote(;)
     quit;
@@ -493,7 +493,7 @@ Version Date: 2023-03-08 V1.0.1
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        set temp_outdata;
+        set tmp_qualify_outdata;
     run;
 
     
@@ -501,13 +501,19 @@ Version Date: 2023-03-08 V1.0.1
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
-            delete temp_indata
-                   temp_by_fmt
-                   temp_distinct_var
-                   temp_outdata
+            delete tmp_qualify_indata
+                   tmp_qualify_by_fmt
+                   tmp_qualify_distinct_var
+                   tmp_qualify_outdata
                    ;
         quit;
     %end;
+
+    /*删除临时宏*/
+    proc catalog catalog = work.sasmacr;
+        delete temp_combpl_hash.macro;
+    quit;
+    %goto exit;
 
     /*异常退出*/
     %exit_with_error:
