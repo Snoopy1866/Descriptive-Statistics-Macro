@@ -8,7 +8,7 @@ Version Date: 2023-12-26 0.1
 ===================================
 */
 
-%macro qualify_multi(INDATA, VAR, GROUP, GROUPBY = #AUTO, OUTDATA = RES_&VAR, PATTERN = %nrstr(#N(#RATE)), 
+%macro qualify_multi(INDATA, VAR, GROUP, GROUPBY = #AUTO, OUTDATA = RES_&VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO,
                      STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -222,7 +222,7 @@ Version Date: 2023-12-26 0.1
                                                                            n_fmt = n_sum_fmt
                                                                            rate = rate_sum
                                                                            rate_fmt = rate_sum_fmt)),
-             PATTERN = %superq(PATTERN), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+             PATTERN = %superq(PATTERN), BY = %superq(BY), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -237,7 +237,7 @@ Version Date: 2023-12-26 0.1
                                                                                  n_fmt = n_&i._fmt
                                                                                  rate = rate_&i
                                                                                  rate_fmt = rate_&i._fmt)),
-                 PATTERN = %superq(PATTERN), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+                 PATTERN = %superq(PATTERN), BY = %superq(BY), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
