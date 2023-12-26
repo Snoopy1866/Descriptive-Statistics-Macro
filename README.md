@@ -10,5 +10,6 @@
 ## 详细文档
 
 - [qualify](./docs/qualify/readme.md)
+- [qualify_multi](./docs/qualify_multi/readme.md)
 - [quantify](./docs/quantify/readme.md)
 - [quantify_multi](./docs/quantify_multi/readme.md)
