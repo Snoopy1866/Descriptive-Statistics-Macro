@@ -3,16 +3,17 @@
 Macro Name: qualify
 Macro Label:定性指标分析
 Author: wtwang
-Version Date: 2023-03-08 V1.0.1
-              2023-11-06 V1.0.2
-              2023-11-08 V1.0.3
-              2023-11-27 V1.0.4
-              2023-11-28 V1.0.5
-              2023-12-26 V1.0.6
+Version Date: 2023-03-08 1.0.1
+              2023-11-06 1.0.2
+              2023-11-08 1.0.3
+              2023-11-27 1.0.4
+              2023-11-28 1.0.5
+              2023-12-26 1.0.6
+              2023-12-28 1.0.7
 ===================================
 */
 
-%macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO,
+%macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO, MISSING = FALSE, MISSING_NOTE = "缺失", MISSING_POSITION = LAST,
                OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定性指标分析" parmbuff;
 
 
@@ -27,6 +28,8 @@ Version Date: 2023-03-08 V1.0.1
     %let indata               = %sysfunc(strip(%bquote(&indata)));
     %let var                  = %sysfunc(strip(%bquote(&var)));
     %let by                   = %upcase(%sysfunc(strip(%bquote(&by))));
+    %let missing              = %upcase(%sysfunc(strip(%bquote(&missing))));
+    %let missing_position     = %upcase(%sysfunc(strip(%bquote(&missing_position))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
@@ -262,7 +265,72 @@ Version Date: 2023-03-08 V1.0.1
             %end;
         quit;
     %end;
+
+
+    /*MISSING*/
+    %if %superq(missing) = %bquote() %then %do;
+        %put ERROR: 参数 MISSING 为空！;
+        %goto exit_with_error;
+    %end;
     
+    %if %superq(missing) ^= TRUE and %superq(missing) ^= FALSE %then %do;
+        %put ERROR: 参数 MISSING 只能是 TRUE 或 FALSE！;
+        %goto exit_with_error;
+    %end;
+
+
+    /*MISSING_NOTE*/
+    %if %superq(missing) = TRUE %then %do;
+        %if %superq(missing_note) = %bquote() %then %do;
+            %put ERROR: 参数 MISSING_NOTE 为空！;
+            %goto exit_with_error;
+        %end;
+        %else %do;
+            %let reg_missing_note_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+            %if %sysfunc(prxmatch(&reg_missing_note_id, %superq(missing_note))) %then %do;
+                %let missing_note_pos_1 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 1, %superq(missing_note))));
+                %let missing_note_pos_2 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 2, %superq(missing_note))));
+                %let missing_note_pos_3 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 3, %superq(missing_note))));
+                %if %superq(missing_note_pos_1) ^= %bquote() %then %do;
+                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_1)));
+                %end;
+                %else %if %superq(missing_note_pos_2) ^= %bquote() %then %do;
+                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_2)));
+                %end;
+                %else %if %superq(missing_note_pos_3) ^= %bquote() %then %do;
+                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_3)));
+                %end;
+            %end;
+        %end;
+    %end;
+
+
+    /*MISSING_POSITION*/
+    %if %superq(missing) = TRUE %then %do;
+        %if %superq(missing_position) = %bquote() %then %do;
+            %put ERROR: 参数 MISSING_POSITION 为空！;
+            %goto exit_with_error;
+        %end;
+        %else %if %superq(missing_position) = FIRST %then %do;
+            %let var_level_n = %eval(&var_level_n + 1);
+            %do i = &var_level_n %to 2 %by -1;
+                %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
+                %let var_level_&i._note = &&var_level_&i;
+            %end;
+            %let var_level_1 = "";
+            %let var_level_1_note = %superq(missing_note_quoted);
+        %end;
+        %else %if %superq(missing_position) = LAST %then %do;
+            %let var_level_n = %eval(&var_level_n + 1);
+            %let var_level_&var_level_n = "";
+            %let var_level_&var_level_n._note = %superq(missing_note_quoted);
+        %end;
+        %else %do;
+            %put ERROR: 参数 MISSING_POSITION 只能是 FIRST 或 LAST！;
+            %goto exit_with_error;
+        %end;
+    %end;
+
 
     /*PATTERN*/
     %if %bquote(&pattern) = %bquote() %then %do;
@@ -295,7 +363,7 @@ Version Date: 2023-03-08 V1.0.1
         %if %bquote(%upcase(&outdata)) = %bquote(#AUTO) %then %do;
             %let outdata = RES_&var_name;
         %end;
- 
+
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
             %put ERROR: 参数 OUTDATA = %bquote(&outdata) 格式不正确！;
