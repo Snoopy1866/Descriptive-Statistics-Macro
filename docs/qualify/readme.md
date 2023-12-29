@@ -13,6 +13,9 @@
 
 - [PATTERN](#pattern)
 - [BY](#by)
+- [MISSING](#missing)
+- [MISSING_NOTE](#missing_note)
+- [MISSING_POSITION](#missing_position)
 - [OUTDATA](#outdata)
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
@@ -112,6 +115,18 @@ PATTERN = #N[#RATE]##
 
 默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。
 
+当指定一个输出格式作为排序依据时，该输出格式应当使用 `VALUE` 语句生成，例如：
+
+```sas
+proc format;
+    value sexn
+        1 = "男"
+        2 = "女";
+run;
+```
+
+宏程序将根据格式化之前的数值对各分类进行排序。
+
 **Caution** :
 
 1. 若参数 `VAR` 指定了分析变量的分类名称，则按照各分类在参数 `VAR` 中指定的顺序显示在输出数据集中，此时参数 `BY` 无效；
@@ -123,6 +138,62 @@ PATTERN = #N[#RATE]##
 BY = #freq
 BY = SEXN(asc)
 BY = SEXN.(descending)
+```
+
+---
+
+### MISSING
+
+**Syntax** : TRUE|FALSE
+
+指定是否统计缺失分类。
+
+**Default** : FALSE
+
+默认情况下，宏程序不统计缺失分类的频数和频率。
+
+**Example** :
+
+```sas
+MISSING = TRUE
+```
+
+---
+
+### MISSING_NOTE
+
+**Syntax** : _string(s)_
+
+指定缺失分类的的说明文字，可以使用或不使用引号包围。
+
+当指定 `MISSING = FALSE` 时，该参数将被忽略。
+
+**Default** : "缺失"
+
+**Example** :
+
+```sas
+MISSING_NOTE = "缺失"
+MISSING_NOTE = '缺失'
+MISSINF_NOTE = %str(缺失)
+```
+
+---
+
+### MISSING_POSITION
+
+**Syntax** : FIRST|LAST
+
+指定缺失分类在输出数据集中显示的位置。FIRST 表示显示在所有分类前面，LAST 表示显示在所有分类后面。
+
+当指定 `MISSING = FALSE` 时，该参数将被忽略。
+
+**Default** : LAST
+
+**Example** :
+
+```sas
+MISSING_POSITION = FIRST
 ```
 
 ---
@@ -248,65 +319,111 @@ INDENT = "\li420 "
 ### 一般用法
 
 ```sas
-%qualify(indata = adsl, var = sex);
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig);
 ```
 
-![](./assets/example-1-1.png)
+![](./assets/example-var.png)
 
 ```sas
-%qualify(indata = adsl, var = sex("" = "Missing", "男" = "Male", "女" = "Female"));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig("正常", "异常无临床意义", "异常有临床意义"));
 ```
 
-![](./assets/example-1-2.png)
+![](./assets/example-var-category.png)
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig("" = "缺失", "正常", "异常无临床意义" = "NCS", "异常有临床意义" = "CS"));
+```
+
+![](./assets/example-var-category-note.png)
 
 ### 指定统计量的模式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, pattern = %str(#n[#rate]##));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, pattern = %str(#n[#rate]##));
 ```
 
-![](./assets/example-2.png)
+![](./assets/example-pattern.png)
 
-上述例子中，使用参数 `PATTERN` 改变了默认的统计量输出模式，构成比使用中括号[]包围，结尾使用 `##` 对 `#` 进行转义
+上述例子中，使用参数 `PATTERN` 改变了默认的统计量输出模式，构成比使用中括号[]包围，结尾使用 `##` 对 `#` 进行转义。
 
 ### 指定分类排序方式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = #freq(desc));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = #freq(desc));
 ```
 
-![](./assets/example-3.png)
+![](./assets/example-by-freq.png)
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = ecgcsign);
+```
+
+![](./assets/example-by-var.png)
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig.);
+```
+
+![](./assets/example-by-format.png)
+
+输出格式 `clsig.` 包含的具体分类如下：
+
+![](./assets/example-by-format-label.png)
+
+### 指定是否统计缺失分类
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true);
+```
+
+![](./assets/example-missing.png)
+
+### 指定缺失分类的说明文字
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, missing_note = "不适用");
+```
+
+![](./assets/example-missing-note.png)
+
+### 指定缺失分类的显示位置
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, missing_note = "不适用", missing_position = first);
+```
+
+![](./assets/example-missing-position.png)
 
 ### 指定需要保留的变量
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, outdata = t1(keep = seq item value));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, outdata = t1(keep = seq item value n rate));
 ```
 
-![](./assets/example-4.png)
+![](./assets/example-outdata.png)
 
 ### 指定统计量的输出格式
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, stat_format = (#N = 4.0, #RATE = 5.3));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, stat_format = (#N = z4., #RATE = 5.3));
 ```
 
-![](./assets/example-5.png)
+![](./assets/example-stat-format.png)
 
 ### 指定分析变量标签
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = "肿瘤部位，n(%)");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定-n(%)");
 ```
 
-![](./assets/example-6.png)
+![](./assets/example-label.png)
 
 ### 指定缩进字符串
 
 ```sas
-%qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = "肿瘤部位，n(%)", indent = "\li420 ");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定-n(%)", indent = "\li420 ");
 ```
 
-![](./assets/example-7.png)
+![](./assets/example-indent.png)
 
-上述例子中，使用参数 `INDENT` 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
+上述例子中，使用参数 `INDENT` 指定了 RTF 控制符 `\li420` 作为缩进字符串。如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
