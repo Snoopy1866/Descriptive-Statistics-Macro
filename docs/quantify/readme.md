@@ -239,6 +239,16 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1)
 ```
 
+**Special Usage** :
+
+_STAT_FORMAT = #PREV_
+
+重复调用 `%quantify()` 时，如果第一次调用后即可确定后续调用时需要的统计量输出格式，可在第二次及之后调用 `%quantify()` 时，指定 `STAT_FORMAT = #PREV`。
+
+**Caution** :
+
+1. 首次调用 `quantify()` 时，不可指定 `STAT_FORMAT = #PREV`。
+
 ---
 
 ### STAT_NOTE
