@@ -3,14 +3,23 @@
 Macro Name: quantify
 Macro Label:定量指标分析
 Author: wtwang
-Version Date: 2023-03-16 V1.3.1
-              2023-11-08 V1.3.2
-              2023-11-27 V1.3.3
+Version Date: 2023-03-16 1.3.1
+              2023-11-08 1.3.2
+              2023-11-27 1.3.3
+              2024-01-05 1.3.4
 ===================================
 */
 
-%macro quantify(INDATA, VAR, PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR, STAT_FORMAT = #AUTO, STAT_NOTE = #AUTO, LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定量指标分析" parmbuff;
+%macro quantify(INDATA,
+                VAR,
+                PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+                OUTDATA = RES_&VAR,
+                STAT_FORMAT = #AUTO,
+                STAT_NOTE = #AUTO,
+                LABEL = #AUTO,
+                INDENT = #AUTO,
+                DEL_TEMP_DATA = TRUE)
+                /des = "定量指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -116,49 +125,49 @@ Version Date: 2023-03-16 V1.3.1
     %let N_var        = %bquote(&var._N);
 
 
-    /*统计量对应的输出格式*/
-    %let KURTOSIS_format = %bquote(best.);
-    %let SKEWNESS_format = %bquote(best.);
-    %let MEDIAN_format   = %bquote(best.);
-    %let QRANGE_format   = %bquote(best.);
-    %let STDDEV_format   = %bquote(best.);
-    %let STDERR_format   = %bquote(best.);
-    %let NMISS_format    = %bquote(best.);
-    %let RANGE_format    = %bquote(best.);
-    %let KURT_format     = %bquote(best.);
-    %let LCLM_format     = %bquote(best.);
-    %let MEAN_format     = %bquote(best.);
-    %let MODE_format     = %bquote(best.);
-    %let SKEW_format     = %bquote(best.);
-    %let UCLM_format     = %bquote(best.);
-    %let CSS_format      = %bquote(best.);
-    %let MAX_format      = %bquote(best.);
-    %let MIN_format      = %bquote(best.);
-    %let P10_format      = %bquote(best.);
-    %let P20_format      = %bquote(best.);
-    %let P25_format      = %bquote(best.);
-    %let P30_format      = %bquote(best.);
-    %let P40_format      = %bquote(best.);
-    %let P50_format      = %bquote(best.);
-    %let P60_format      = %bquote(best.);
-    %let P70_format      = %bquote(best.);
-    %let P75_format      = %bquote(best.);
-    %let P80_format      = %bquote(best.);
-    %let P90_format      = %bquote(best.);
-    %let P95_format      = %bquote(best.);
-    %let P99_format      = %bquote(best.);
-    %let STD_format      = %bquote(best.);
-    %let SUM_format      = %bquote(best.);
-    %let USS_format      = %bquote(best.);
-    %let VAR_format      = %bquote(best.);
-    %let CV_format       = %bquote(best.);
-    %let P1_format       = %bquote(best.);
-    %let P5_format       = %bquote(best.);
-    %let Q1_format       = %bquote(best.);
-    %let Q3_format       = %bquote(best.);
-    %let N_format        = %bquote(best.);
-
     /*声明全局变量*/
+    /*全局输出格式*/
+    %global KURTOSIS_format
+            SKEWNESS_format
+            MEDIAN_format
+            QRANGE_format
+            STDDEV_format
+            STDERR_format
+            NMISS_format
+            RANGE_format
+            KURT_format
+            LCLM_format
+            MEAN_format
+            MODE_format
+            SKEW_format
+            UCLM_format
+            CSS_format
+            MAX_format
+            MIN_format
+            P10_format
+            P20_format
+            P25_format
+            P30_format
+            P40_format
+            P50_format
+            P60_format
+            P70_format
+            P75_format
+            P80_format
+            P90_format
+            P95_format
+            P99_format
+            STD_format
+            SUM_format
+            USS_format
+            VAR_format
+            CV_format
+            P1_format
+            P5_format
+            Q1_format
+            Q3_format
+            N_format
+            ;
     %global quantify_exit_with_error;
     %let quantify_exit_with_error = FALSE;
 
@@ -326,62 +335,65 @@ Version Date: 2023-03-16 V1.3.1
         %goto exit_with_error;
     %end;
 
-    data tmp_quantify_valuefmt;
-        set &indata;
-        &var._fmt = strip(vvalue(&var));
-        keep &var &var._fmt;
-    run;
+    %if %bquote(&stat_format) = #AUTO %then %do;
+        data tmp_quantify_valuefmt;
+            set &indata;
+            &var._fmt = strip(vvalue(&var));
+            keep &var &var._fmt;
+        run;
 
-    /*计算整数部分和小数部分的位数*/
-    proc sql noprint;
-        select max(lengthn(scan(&var._fmt, 1, "."))) into : int_len trimmed from tmp_quantify_valuefmt;
-        select max(lengthn(scan(&var._fmt, 2, "."))) into : dec_len trimmed from tmp_quantify_valuefmt;
-    quit;
+        /*计算整数部分和小数部分的位数*/
+        proc sql noprint;
+            select max(lengthn(scan(&var._fmt, 1, "."))) into : int_len trimmed from tmp_quantify_valuefmt;
+            select max(lengthn(scan(&var._fmt, 2, "."))) into : dec_len trimmed from tmp_quantify_valuefmt;
+        quit;
 
-    /*自动计算统计量的输出格式*/
-    %let KURTOSIS_format = %eval(&int_len + %sysfunc(min(&dec_len + 3, 4)) + 2).%sysfunc(min(&dec_len + 3, 4)); /*比原始数据小数位数多3，最多不超过4*/
-    %let SKEWNESS_format = &KURTOSIS_format;
-    %let MEDIAN_format   = %eval(&int_len + %sysfunc(min(&dec_len + 1, 4)) + 2).%sysfunc(min(&dec_len + 1, 4)); /*比原始数据小数位数多1，最多不超过4*/
-    %let QRANGE_format   = &MEDIAN_format;
-    %let STDDEV_format   = %eval(&int_len + %sysfunc(min(&dec_len + 2, 4)) + 2).%sysfunc(min(&dec_len + 2, 4)); /*比原始数据小数位数多2，最多不超过4*/
-    %let STDERR_format   = &STDDEV_format;
-    %let NMISS_format    = best.; /*计数统计量，由 SAS 决定输出格式*/
-    %let RANGE_format    = %eval(&int_len + %sysfunc(min(&dec_len, 4)) + 2).%sysfunc(min(&dec_len, 4)); /*与原始数据小数位数相同，最多不超过4*/
-    %let KURT_format     = &KURTOSIS_format;
-    %let LCLM_format     = &MEDIAN_format;
-    %let MEAN_format     = &MEDIAN_format;
-    %let MODE_format     = &RANGE_format;
-    %let SKEW_format     = &SKEWNESS_format;
-    %let UCLM_format     = &LCLM_format;
-    %let CSS_format      = &STDDEV_format;
-    %let MAX_format      = &RANGE_format;
-    %let MIN_format      = &RANGE_format;
-    %let P10_format      = &MEDIAN_format;
-    %let P20_format      = &MEDIAN_format;
-    %let P25_format      = &MEDIAN_format;
-    %let P30_format      = &MEDIAN_format;
-    %let P40_format      = &MEDIAN_format;
-    %let P50_format      = &MEDIAN_format;
-    %let P60_format      = &MEDIAN_format;
-    %let P70_format      = &MEDIAN_format;
-    %let P75_format      = &MEDIAN_format;
-    %let P80_format      = &MEDIAN_format;
-    %let P90_format      = &MEDIAN_format;
-    %let P95_format      = &MEDIAN_format;
-    %let P99_format      = &MEDIAN_format;
-    %let STD_format      = &STDDEV_format;
-    %let SUM_format      = &RANGE_format;
-    %let USS_format      = &CSS_format;
-    %let VAR_format      = &STD_format;
-    %let CV_format       = &STD_format;
-    %let P1_format       = &MEDIAN_format;
-    %let P5_format       = &MEDIAN_format;
-    %let Q1_format       = &MEDIAN_format;
-    %let Q3_format       = &MEDIAN_format;
-    %let N_format        = &NMISS_format;
-
-
-    %if %bquote(&stat_format) ^= #AUTO %then %do;
+        /*自动计算统计量的输出格式*/
+        %let KURTOSIS_format = %eval(&int_len + %sysfunc(min(&dec_len + 3, 4)) + 2).%sysfunc(min(&dec_len + 3, 4)); /*比原始数据小数位数多3，最多不超过4*/
+        %let SKEWNESS_format = &KURTOSIS_format;
+        %let MEDIAN_format   = %eval(&int_len + %sysfunc(min(&dec_len + 1, 4)) + 2).%sysfunc(min(&dec_len + 1, 4)); /*比原始数据小数位数多1，最多不超过4*/
+        %let QRANGE_format   = &MEDIAN_format;
+        %let STDDEV_format   = %eval(&int_len + %sysfunc(min(&dec_len + 2, 4)) + 2).%sysfunc(min(&dec_len + 2, 4)); /*比原始数据小数位数多2，最多不超过4*/
+        %let STDERR_format   = &STDDEV_format;
+        %let NMISS_format    = best.; /*计数统计量，由 SAS 决定输出格式*/
+        %let RANGE_format    = %eval(&int_len + %sysfunc(min(&dec_len, 4)) + 2).%sysfunc(min(&dec_len, 4)); /*与原始数据小数位数相同，最多不超过4*/
+        %let KURT_format     = &KURTOSIS_format;
+        %let LCLM_format     = &MEDIAN_format;
+        %let MEAN_format     = &MEDIAN_format;
+        %let MODE_format     = &RANGE_format;
+        %let SKEW_format     = &SKEWNESS_format;
+        %let UCLM_format     = &LCLM_format;
+        %let CSS_format      = &STDDEV_format;
+        %let MAX_format      = &RANGE_format;
+        %let MIN_format      = &RANGE_format;
+        %let P10_format      = &MEDIAN_format;
+        %let P20_format      = &MEDIAN_format;
+        %let P25_format      = &MEDIAN_format;
+        %let P30_format      = &MEDIAN_format;
+        %let P40_format      = &MEDIAN_format;
+        %let P50_format      = &MEDIAN_format;
+        %let P60_format      = &MEDIAN_format;
+        %let P70_format      = &MEDIAN_format;
+        %let P75_format      = &MEDIAN_format;
+        %let P80_format      = &MEDIAN_format;
+        %let P90_format      = &MEDIAN_format;
+        %let P95_format      = &MEDIAN_format;
+        %let P99_format      = &MEDIAN_format;
+        %let STD_format      = &STDDEV_format;
+        %let SUM_format      = &RANGE_format;
+        %let USS_format      = &CSS_format;
+        %let VAR_format      = &STD_format;
+        %let CV_format       = &STD_format;
+        %let P1_format       = &MEDIAN_format;
+        %let P5_format       = &MEDIAN_format;
+        %let Q1_format       = &MEDIAN_format;
+        %let Q3_format       = &MEDIAN_format;
+        %let N_format        = &NMISS_format;
+    %end;
+    %else %if %bquote(&stat_format) = #PREV %then %do;
+        %put NOTE: 使用上一次调用时的统计量输出格式！;
+    %end;
+    %else %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
         %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
