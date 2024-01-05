@@ -10,7 +10,7 @@ Version Date: 2024-01-05 0.1
 %macro quantify_multi_test(INDATA,
                            VAR,
                            GROUP,
-                           GROUPBY = #AUTO,
+                           GROUPBY,
                            OUTDATA = RES_&VAR,
                            PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX), 
                            STAT_FORMAT = #AUTO,
@@ -200,7 +200,7 @@ Version Date: 2024-01-05 0.1
     %if %superq(p_format) = #AUTO %then %do;
         /*P值输出格式*/
         proc format;
-            picture spvalue(round  max = 7) /*P值一般原则*/
+            picture spvalue(round  max = 7)
                     low - < 0.0001 = "<0.0001"(noedit)
                     other = "9.9999";
         run;
