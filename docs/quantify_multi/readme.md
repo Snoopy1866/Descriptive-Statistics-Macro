@@ -19,6 +19,7 @@
 - [STAT_NOTE](#stat_note)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [PROCHTTP_PROXY](#prochttp_proxy)
 
 ### 调试参数
 
@@ -147,6 +148,18 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 ### INDENT
 
 用法同 [INDENT](../quantify/readme.md#indent)。
+
+---
+
+### PROCHTTP_PROXY
+
+**Syntax** : _host_:_port_
+
+指定代理主机和端口。
+
+本宏程序将自动检查前置依赖程序是否已经导入，若发现前置依赖程序未导入，则尝试从网络上下载最新版本程序文件，使用此参数可指定网络连接使用的代理主机和端口。
+
+**Default** : 127.0.0.1:7890
 
 ---
 
