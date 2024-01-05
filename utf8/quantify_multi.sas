@@ -199,7 +199,7 @@ Version Date: 2023-12-21 0.1
                             distinct
                             &group_var,
                             &groupby_var
-                        from %superq(indata) order by &groupby_var &groupby_direction, &group_var;
+                        from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
                     select quote(strip(&group_var)) into : group_level_1- from tmp_quantify_m_groupby_sorted;
                     select count(distinct &group_var) into : group_level_n from tmp_quantify_m_groupby_sorted;
                 quit;
