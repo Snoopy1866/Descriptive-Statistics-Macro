@@ -250,11 +250,16 @@ Version Date: 2023-12-21 0.1
 
     /*2. 整体统计*/
     %put NOTE: ===================================合计===================================;
-    %quantify(INDATA = tmp_quantify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
-                                                                         &&group_level_&i %bquote(,)
-                                                                     %end;))),
-              VAR = %superq(VAR), OUTDATA = tmp_quantify_m_res_sum(rename = (value = value_sum)), PATTERN = %superq(PATTERN),
-              STAT_FORMAT = %superq(STAT_FORMAT), STAT_NOTE = %superq(STAT_NOTE), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+    %quantify(INDATA      = tmp_quantify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
+                                                                              &&group_level_&i %bquote(,)
+                                                                          %end;))),
+              VAR         = %superq(VAR),
+              OUTDATA     = tmp_quantify_m_res_sum(rename = (value = value_sum)),
+              PATTERN     = %superq(PATTERN),
+              STAT_FORMAT = %superq(STAT_FORMAT),
+              STAT_NOTE   = %superq(STAT_NOTE),
+              LABEL       = %superq(LABEL),
+              INDENT      = %superq(INDENT));
 
     %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -263,9 +268,14 @@ Version Date: 2023-12-21 0.1
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
-        %quantify(INDATA = tmp_quantify_m_indata(where = (&group_var = &&group_level_&i)),
-                  VAR = %superq(VAR), OUTDATA = temp_res_group_level_&i(rename = (value = value_&i)), PATTERN = %superq(PATTERN),
-                  STAT_FORMAT = %superq(STAT_FORMAT), STAT_NOTE = %superq(STAT_NOTE), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+        %quantify(INDATA      = tmp_quantify_m_indata(where = (&group_var = &&group_level_&i)),
+                  VAR         = %superq(VAR),
+                  OUTDATA     = temp_res_group_level_&i(rename = (value = value_&i)),
+                  PATTERN     = %superq(PATTERN),
+                  STAT_FORMAT = #PREV,
+                  STAT_NOTE   = %superq(STAT_NOTE),
+                  LABEL       = %superq(LABEL),
+                  INDENT      = %superq(INDENT));
 
         %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
