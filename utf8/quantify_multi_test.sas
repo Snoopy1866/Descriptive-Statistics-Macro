@@ -4,6 +4,7 @@ Macro Name: quantify_multi_test
 Macro Label:多组别定量指标汇总统计
 Author: wtwang
 Version Date: 2024-01-05 0.1
+              2024-01-18 0.2
 ===================================
 */
 
@@ -41,7 +42,7 @@ Version Date: 2024-01-05 0.1
 
     /*声明局部变量*/
     %local i j
-           libname_in memname_in dataset_options_in
+           libname_in  memname_in  dataset_options_in
            libname_out memname_out dataset_options_out;
 
     /*检查依赖*/
@@ -195,6 +196,10 @@ Version Date: 2024-01-05 0.1
                     STAT_NOTE   = %superq(STAT_NOTE),
                     LABEL       = %superq(LABEL),
                     INDENT      = %superq(INDENT));
+
+    %if %bquote(&quantify_multi_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
+        %goto exit_with_error;
+    %end;
 
     /*3. 统计推断*/
     %if %superq(p_format) = #AUTO %then %do;
