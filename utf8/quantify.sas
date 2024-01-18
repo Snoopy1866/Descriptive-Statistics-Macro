@@ -7,6 +7,7 @@ Version Date: 2023-03-16 1.3.1
               2023-11-08 1.3.2
               2023-11-27 1.3.3
               2024-01-05 1.3.4
+              2024-01-18 1.3.5
 ===================================
 */
 
@@ -173,7 +174,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*声明局部变量*/
     %local i j
-           libname_in memname_in dataset_options_in
+           libname_in  memname_in  dataset_options_in
            libname_out memname_out dataset_options_out;
 
     /*----------------------------------------------参数检查----------------------------------------------*/
@@ -456,8 +457,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*LABEL*/
     %if %superq(label) = %bquote() %then %do;
-        %put ERROR: 参数 LABEL 为空！;
-        %goto exit_with_error;
+        %let label_sql_expr = %bquote();
     %end;
     %else %if %qupcase(&label) = #AUTO %then %do;
         proc sql noprint;
@@ -481,6 +481,9 @@ Version Date: 2023-03-16 1.3.1
             %end;
             %else %if %superq(label_pos_3) ^= %bquote() %then %do;
                 %let label_sql_expr = %superq(label_pos_3);
+            %end;
+            %else %do;
+                %let label_sql_expr = "";
             %end;
         %end;
     %end;
@@ -507,6 +510,9 @@ Version Date: 2023-03-16 1.3.1
             %end;
             %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
                 %let indent_sql_expr = %superq(indent_pos_3);
+            %end;
+            %else %do;
+                %let indent_sql_expr = %bquote();
             %end;
         %end;
     %end;
@@ -557,16 +563,16 @@ Version Date: 2023-03-16 1.3.1
     proc sql noprint;
         create table tmp_quantify_outdata as
             select
-                0                 as SEQ,
-                "&label_sql_expr" as ITEM,
-                ""                as VALUE
+                0                                as SEQ,
+                %sysfunc(quote(&label_sql_expr)) as ITEM,
+                ""                               as VALUE
             from tmp_quantify_stat
             outer union corr
             %do i = 1 %to &part_n;
                 select
                     &i as SEQ,
-                    cat(%unquote(
-                                 "&indent_sql_expr" %bquote(,)
+                    cat(%sysfunc(quote(&indent_sql_expr)),
+                        %unquote(
                                  %do j = 1 %to &&stat_&i;
                                      %temp_combpl_hash("&&string_&i._&j") %bquote(,)
                                      "&&&&&&stat_&i._&j.._note" %bquote(,)

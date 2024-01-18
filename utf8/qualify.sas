@@ -10,6 +10,7 @@ Version Date: 2023-03-08 1.0.1
               2023-11-28 1.0.5
               2023-12-26 1.0.6
               2023-12-28 1.0.7
+              2024-01-18 1.0.8
 ===================================
 */
 
@@ -44,7 +45,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*声明局部变量*/
     %local i j
-           libname_in memname_in dataset_options_in
+           libname_in  memname_in  dataset_options_in
            libname_out memname_out dataset_options_out;
 
     /*----------------------------------------------参数检查----------------------------------------------*/
@@ -429,8 +430,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*LABEL*/
     %if %bquote(&label) = %bquote() %then %do;
-        %put ERROR: 参数 LABEL 为空！;
-        %goto exit_with_error;
+        %let label_sql_expr = %bquote();
     %end;
     %else %if %bquote(%upcase(&label)) = #AUTO %then %do;
         proc sql noprint;
@@ -454,6 +454,9 @@ Version Date: 2023-03-08 1.0.1
             %end;
             %else %if %superq(label_pos_3) ^= %bquote() %then %do;
                 %let label_sql_expr = %superq(label_pos_3);
+            %end;
+            %else %do;
+                %let label_sql_expr = %bquote();
             %end;
         %end;
     %end;
@@ -481,6 +484,9 @@ Version Date: 2023-03-08 1.0.1
             %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
                 %let indent_sql_expr = %superq(indent_pos_3);
             %end;
+            %else %do;
+                %let indent_sql_expr = %bquote();
+            %end;
         %end;
     %end;
 
@@ -502,15 +508,15 @@ Version Date: 2023-03-08 1.0.1
     proc sql noprint;
         create table tmp_qualify_outdata as
             select
-                0                 as SEQ,
-                "&label_sql_expr" as ITEM,
-                ""                as VALUE
+                0                                as SEQ,
+                %sysfunc(quote(&label_sql_expr)) as ITEM,
+                ""                               as VALUE
             from tmp_qualify_indata(firstobs = 1 obs = 1)
             %do i = 1 %to &var_level_n;
                 outer union corr
                 select
                     &i as SEQ,
-                    cat("&indent_sql_expr", %unquote(&&var_level_&i._note)) as ITEM,
+                    cat(%sysfunc(quote(&indent_sql_expr)), %unquote(&&var_level_&i._note)) as ITEM,
                     sum(&var_name = &&var_level_&i) as N,
                     %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
                         strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
