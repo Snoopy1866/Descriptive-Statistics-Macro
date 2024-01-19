@@ -35,6 +35,9 @@ Version Date: 2023-03-08 1.0.1
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
+    /*受支持的统计量*/
+    %let stat_supported = %bquote(RATE|N);
+
     /*统计量对应的输出格式*/
     %let N_format = %bquote(best.);
     %let RATE_format = %bquote(percentn9.2);
@@ -339,18 +342,26 @@ Version Date: 2023-03-08 1.0.1
         %goto exit_with_error;
     %end;
 
-    %let reg_pattern_expr = %bquote(/^((?:.|\n)*?)(?<!#)#(RATE|N)((?:.|\n)*?)(?:(?<!#)#(RATE|N)((?:.|\n)*?))?$/i);
-    %let reg_pattern_id = %sysfunc(prxparse(&reg_pattern_expr));
+    %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)\.?(?:(?<!#)#(&stat_supported))\.?);
+    %let stat_n = %eval(%sysfunc(count(%bquote(&pattern), %bquote(#))) - %sysfunc(count(%bquote(&pattern), %bquote(##)))*2);
 
-    %if %sysfunc(prxmatch(&reg_pattern_id, %bquote(&pattern))) %then %do;
-        %let string_1 = %sysfunc(prxposn(&reg_pattern_id, 1, %bquote(&pattern))); /*字符串1*/
-        %let stat_1   = %sysfunc(prxposn(&reg_pattern_id, 2, %bquote(&pattern))); /*统计量1*/
-        %let string_2 = %sysfunc(prxposn(&reg_pattern_id, 3, %bquote(&pattern))); /*字符串2*/
-        %let stat_2   = %sysfunc(prxposn(&reg_pattern_id, 4, %bquote(&pattern))); /*统计量2*/
-        %let string_3 = %sysfunc(prxposn(&reg_pattern_id, 5, %bquote(&pattern))); /*字符串3*/
+    %if &stat_n = 0 %then %do;
+        %let reg_stat_expr = %bquote(/^((?:.|\n)*?)$/i);
     %end;
     %else %do;
-        %put ERROR: 参数 PATTERN = %bquote(&pattern) 格式不正确！;
+        %let reg_stat_expr = %bquote(/^%sysfunc(repeat(%bquote(&reg_stat_expr_unit), %eval(&stat_n - 1)))((?:.|\n)*?)$/i);
+    %end;
+    %let reg_stat_id = %sysfunc(prxparse(&reg_stat_expr));
+
+    %if %sysfunc(prxmatch(&reg_stat_id, %bquote(&pattern))) %then %do;
+        %do i = 1 %to &stat_n;
+            %let string_&i = %bquote(%sysfunc(prxposn(&reg_stat_id, %eval(&i * 2 - 1), %bquote(&pattern))));
+            %let stat_&i   = %upcase(%sysfunc(prxposn(&reg_stat_id, %eval(&i * 2), %bquote(&pattern))));
+        %end;
+        %let string_&i = %sysfunc(prxposn(&reg_stat_id, %eval(&stat_n * 2 + 1), %bquote(&pattern)));
+    %end;
+    %else %do;
+        %put ERROR: 在对参数 PATTERN 解析统计量名称及其他字符时发生了错误，导致错误的原因可能是指定了不受支持的统计量，或者未使用“##”对字符“#”进行转义！;
         %goto exit_with_error;
     %end;
 
@@ -395,7 +406,7 @@ Version Date: 2023-03-08 1.0.1
 
     %if %bquote(&stat_format) ^= #NULL %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
-        %let reg_stat_format_expr_unit = %bquote(\s*#(RATE|N)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
+        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
         %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 
@@ -515,45 +526,19 @@ Version Date: 2023-03-08 1.0.1
             %do i = 1 %to &var_level_n;
                 outer union corr
                 select
-                    &i as SEQ,
+                    &i                                                                     as SEQ,
                     cat(%sysfunc(quote(&indent_sql_expr)), %unquote(&&var_level_&i._note)) as ITEM,
-                    sum(&var_name = &&var_level_&i) as N,
-                    %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
-                        strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
-                    %end;
-                    %else %if %upcase(%bquote(&stat_2)) = %bquote(N) %then %do;
-                        strip(put(sum(&var_name = &&var_level_&i), &&&stat_2._format))
-                    %end;
-                        as N_FMT,
-                    sum(&var_name = &&var_level_&i)/count(*) as RATE,
-                    %if %upcase(%bquote(&stat_1)) = %bquote(RATE) %then %do;
-                        strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_1._format))
-                    %end;
-                    %else %if %upcase(%bquote(&stat_2)) = %bquote(RATE) %then %do;
-                        strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_2._format))
-                    %end;
-                        as RATE_FMT,
-                    cat(%temp_combpl_hash("&string_1"),
-                        %if %upcase(%bquote(&stat_1)) = %bquote(N) %then %do;
-                            strip(put(sum(&var_name = &&var_level_&i), &&&stat_1._format))
-                        %end;
-                        %else %if %upcase(%bquote(&stat_1)) = %bquote(RATE) %then %do;
-                            strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_1._format))
-                        %end;
-                        ,
-                        %temp_combpl_hash("&string_2"),
-                        %if %upcase(%bquote(&stat_2)) = %bquote(N) %then %do;
-                            strip(put(sum(&var_name = &&var_level_&i), &&&stat_2._format))
-                        %end;
-                        %else %if %upcase(%bquote(&stat_2)) = %bquote(RATE) %then %do;
-                            strip(put(sum(&var_name = &&var_level_&i)/count(*), &&&stat_2._format))
-                        %end;
-                        %else %if %upcase(%bquote(&stat_2)) = %bquote() %then %do;
-                            ""
-                        %end;
-                        ,
-                        %temp_combpl_hash("&string_3")
-                        ) as VALUE
+                    sum(&var_name = &&var_level_&i)                                        as N,
+                    strip(put(calculated N, &N_format))                                    as N_FMT,
+                    sum(&var_name = &&var_level_&i)/count(*)                               as RATE,
+                    strip(put(calculated RATE, &RATE_FORMAT))                              as RATE_FMT,
+                    cat(%unquote(
+                                 %do j = 1 %to &stat_n;
+                                     %temp_combpl_hash("&&string_&j") %bquote(,) strip(calculated &&stat_&j.._FMT) %bquote(,)
+                                 %end;
+                                 %temp_combpl_hash("&&string_&j")
+                                )
+                        )                                                                  as VALUE
                 from tmp_qualify_indata
             %end;
             %bquote(;)
