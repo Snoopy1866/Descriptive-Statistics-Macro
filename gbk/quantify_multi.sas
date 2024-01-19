@@ -6,6 +6,7 @@ Author: wtwang
 Version Date: 2023-12-21 0.1
               2023-12-25 0.2
               2024-01-05 0.3
+              2024-01-19 0.4
 ===================================
 */
 
@@ -36,6 +37,7 @@ Version Date: 2023-12-21 0.1
 
     /*声明全局变量*/
     %global quantify_multi_exit_with_error;
+    %let quantify_multi_exit_with_error = FALSE;
 
     /*声明局部变量*/
     %local i j
@@ -325,10 +327,13 @@ Version Date: 2023-12-21 0.1
                    ;
         quit;
     %end;
+    %goto exit;
 
+    /*异常退出*/
     %exit_with_error:
     %let quantify_multi_exit_with_error = TRUE;
 
+    /*正常退出*/
     %exit:
     %put NOTE: 宏 quantify_multi 已结束运行！;
 %mend;

@@ -38,7 +38,8 @@ Version Date: 2024-01-05 0.1
     %let p_format             = %upcase(%sysfunc(strip(%bquote(&p_format))));
 
     /*声明全局变量*/
-    %global qmt_exit_with_error;
+    %global qtmt_exit_with_error;
+    %let qtmt_exit_with_error = FALSE;
 
     /*声明局部变量*/
     %local i j
@@ -316,10 +317,13 @@ Version Date: 2024-01-05 0.1
                    ;
         quit;
     %end;
+    %goto exit;
 
+    /*异常退出*/
     %exit_with_error:
-    %let qmt_exit_with_error = TRUE;
+    %let qtmt_exit_with_error = TRUE;
 
+    /*正常退出*/
     %exit:
     %put NOTE: 宏 quantify_multi_test 已结束运行！;
 %mend;

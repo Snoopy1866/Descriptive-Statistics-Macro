@@ -4,12 +4,23 @@ Macro Name: qualify_multi
 Macro Label:多组别定性指标分析
 Author: wtwang
 Version Date: 2023-12-26 0.1
-
+              2024-01-19 0.2
 ===================================
 */
 
-%macro qualify_multi(INDATA, VAR, GROUP, GROUPBY = #AUTO, OUTDATA = RES_&VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO,
-                     STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "多组别定性指标分析" parmbuff;
+%macro qualify_multi(INDATA,
+                     VAR,
+                     GROUP,
+                     GROUPBY = #AUTO,
+                     OUTDATA = RES_&VAR,
+                     PATTERN = %nrstr(#N(#RATE)),
+                     BY = #AUTO,
+                     STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2),
+                     LABEL = #AUTO,
+                     INDENT = #AUTO,
+                     PROCHTTP_PROXY = 127.0.0.1:7890,
+                     DEL_TEMP_DATA = TRUE)
+                     /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
@@ -24,6 +35,7 @@ Version Date: 2023-12-26 0.1
 
     /*声明全局变量*/
     %global qualify_multi_exit_with_error;
+    %let qualify_multi_exit_with_error = FALSE;
 
     /*声明局部变量*/
     %local i j
@@ -35,8 +47,32 @@ Version Date: 2023-12-26 0.1
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUALIFY";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put ERROR: 本宏程序存在前置依赖，请先载入 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
-        %goto exit;
+        %put WARNING: 前置依赖缺失，正在尝试从网络上下载......;
+        
+        %let cur_encoding = %sysfunc(getOption(ENCODING));
+        %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
+            %let sub_folder = gbk;
+        %end;
+        %else %if %bquote(&cur_encoding) = %bquote(UTF-8) %then %do;
+            %let sub_folder = utf8;
+        %end;
+
+        filename predpc "quantify.sas";
+        proc http url = "https://raw.githubusercontent.com/Snoopy1866/Descriptive-Statistics-Macro/main/&sub_folder/qualify.sas" out = predpc;
+        run;
+        %if %symexist(SYS_PROCHTTP_STATUS_CODE) %then %do;
+            %if &SYS_PROCHTTP_STATUS_CODE = 200 %then %do;
+                %include predpc;
+            %end;
+            %else %do;
+                %put ERROR: 远程主机连接成功，但并未成功获取目标文件，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
+                %goto exit_with_error;
+            %end;
+        %end;
+        %else %do;
+            %put ERROR: 远程主机连接失败，请检查网络连接和代理设置，或手动导入前置依赖 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
+            %goto exit_with_error;
+        %end;
     %end;
 
 
@@ -296,10 +332,13 @@ Version Date: 2023-12-26 0.1
                    ;
         quit;
     %end;
+    %goto exit;
 
+    /*异常退出*/
     %exit_with_error:
     %let qualify_multi_exit_with_error = TRUE;
 
+    /*正常退出*/
     %exit:
     %put NOTE: 宏 qualify_multi 已结束运行！;
 %mend;
