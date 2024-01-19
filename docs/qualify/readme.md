@@ -80,7 +80,7 @@ VAR = SEX("" = "Missing" "男" = "Male" "女" = "Female")
 
 ### PATTERN
 
-**Syntax** : <_string(s)_>#_statistic-keyword-1_<_string(s)_><#_statistic-keyword-2_<_string(s)_>>
+**Syntax** : <_string(s)_>#_statistic-keyword-1_<_string(s)_><#_statistic-keyword-2_<_string(s)_>><...>
 
 指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。
 
