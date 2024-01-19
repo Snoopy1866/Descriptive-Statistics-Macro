@@ -11,6 +11,8 @@
 
 - [qualify](./docs/qualify/readme.md)
 - [qualify_multi](./docs/qualify_multi/readme.md)
+- [qualify_multi_test](./docs/qualify_multi_test/readme.md)
 - [quantify](./docs/quantify/readme.md)
 - [quantify_multi](./docs/quantify_multi/readme.md)
+- [quantify_multi_test](./docs/quantify_multi_test/readme.md)
 - [desc_coun](./docs/desc_coun/readme.md)
