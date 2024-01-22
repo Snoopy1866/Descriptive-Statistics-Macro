@@ -19,6 +19,7 @@
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [SUFFIX](#suffix)
 
 ### 调试参数
 
@@ -155,6 +156,12 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 ### INDENT
 
 用法同 [INDENT](../qualify/readme.md#indent)。
+
+---
+
+### SUFFIX
+
+用法同 [SUFFIX](../qualify/readme.md#suffix)。
 
 ---
 

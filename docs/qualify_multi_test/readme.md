@@ -19,6 +19,7 @@
 - [STAT_NOTE](#stat_note)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [SUFFIX](#suffix)
 - [T_FORMAT](#t_format)
 - [P_FORMAT](#p_format)
 - [PROCHTTP_PROXY](#prochttp_proxy)
@@ -141,6 +142,12 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 ### INDENT
 
 用法同 [INDENT](../qualify/readme.md#indent)。
+
+---
+
+### SUFFIX
+
+用法同 [SUFFIX](../qualify/readme.md#suffix)。
 
 ---
 

@@ -20,6 +20,7 @@
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
 - [INDENT](#indent)
+- [SUFFIX](#suffix)
 
 ### 调试参数
 
@@ -334,6 +335,43 @@ INDENT = "\li420 "
 
 ---
 
+### SUFFIX
+
+**Syntax** : _string_
+
+指定输出结果各分类名称的后缀，以下三种传参方式都是可接受的：
+
+- `SUFFIX = "`_`string`_`"`
+- `SUFFIX = '`_`string`_`'`
+- `SUFFIX = `_`string`_
+
+如果指定的 `SUFFIX` 中含有不匹配的引号，例如，需要指定 `SUFFIX` 为一个单引号，可以选择以下传参方式：
+
+```sas
+SUFFIX = "'"
+SUFFIX = %str(%')
+```
+
+但不能使用以下传参方式：
+
+```sas
+SUFFIX = ''''
+```
+
+⚠ 尽管在一般情况下，由单引号包围的字符串中，连续两个单引号被视为一个单引号，但在本宏程序中，由于技术限制，连续两个单引号仍然被视为两个单引号；同理，在由双引号包围的字符串中，连续两个双引号仍然被视为两个双引号。
+
+**Default** : #AUTO
+
+默认情况下，各分类名称不添加后缀。
+
+**Example** :
+
+```sas
+SUFFIX = "，n(%)"
+```
+
+---
+
 ### DEL_TEMP_DATA
 
 **Syntax** : TRUE|FALSE
@@ -468,3 +506,11 @@ INDENT = "\li420 "
 ![](./assets/example-indent.png)
 
 上述例子中，使用参数 `INDENT` 指定了 RTF 控制符 `\li420` 作为缩进字符串。如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
+
+### 指定分类名称后缀
+
+```sas
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定", indent = "\li420 ", suffix = "，n(%)");
+```
+
+![](./assets/example-suffix.png)

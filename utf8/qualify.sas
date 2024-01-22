@@ -11,11 +11,24 @@ Version Date: 2023-03-08 1.0.1
               2023-12-26 1.0.6
               2023-12-28 1.0.7
               2024-01-18 1.0.8
+              2024-01-22 1.0.9
 ===================================
 */
 
-%macro qualify(INDATA, VAR, PATTERN = %nrstr(#N(#RATE)), BY = #AUTO, MISSING = FALSE, MISSING_NOTE = "缺失", MISSING_POSITION = LAST,
-               OUTDATA = #AUTO, STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2), LABEL = #AUTO, INDENT = #AUTO, DEL_TEMP_DATA = TRUE) /des = "定性指标分析" parmbuff;
+%macro qualify(INDATA,
+               VAR,
+               PATTERN = %nrstr(#N(#RATE)),
+               BY = #AUTO,
+               MISSING = FALSE,
+               MISSING_NOTE = "缺失",
+               MISSING_POSITION = LAST,
+               OUTDATA = #AUTO,
+               STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2),
+               LABEL = #AUTO,
+               INDENT = #AUTO,
+               SUFFIX = #AUTO,
+               DEL_TEMP_DATA = TRUE)
+               /des = "定性指标分析" parmbuff;
 
 
     /*打开帮助文档*/
@@ -478,7 +491,7 @@ Version Date: 2023-03-08 1.0.1
         %let indent_sql_expr = %bquote();
     %end;
     %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
-        %let indent_sql_expr = %bquote(    );
+        %let indent_sql_expr = %bquote();
     %end;
     %else %do;
         %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
@@ -497,6 +510,35 @@ Version Date: 2023-03-08 1.0.1
             %end;
             %else %do;
                 %let indent_sql_expr = %bquote();
+            %end;
+        %end;
+    %end;
+
+
+    /*SUFFIX*/
+    %if %bquote(&suffix) = %bquote() %then %do;
+        %let suffix_sql_expr = %bquote();
+    %end;
+    %else %if %bquote(%upcase(&suffix)) = #AUTO %then %do;
+        %let suffix_sql_expr = %bquote(    );
+    %end;
+    %else %do;
+        %let reg_suffix_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %if %sysfunc(prxmatch(&reg_suffix_id, %superq(suffix))) %then %do;
+            %let suffix_pos_1 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 1, %superq(suffix))));
+            %let suffix_pos_2 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 2, %superq(suffix))));
+            %let suffix_pos_3 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 3, %superq(suffix))));
+            %if %superq(suffix_pos_1) ^= %bquote() %then %do;
+                %let suffix_sql_expr = %superq(suffix_pos_1);
+            %end;
+            %else %if %superq(suffix_pos_2) ^= %bquote() %then %do;
+                %let suffix_sql_expr = %superq(suffix_pos_2);
+            %end;
+            %else %if %superq(suffix_pos_3) ^= %bquote() %then %do;
+                %let suffix_sql_expr = %superq(suffix_pos_3);
+            %end;
+            %else %do;
+                %let suffix_sql_expr = %bquote();
             %end;
         %end;
     %end;
@@ -527,7 +569,9 @@ Version Date: 2023-03-08 1.0.1
                 outer union corr
                 select
                     &i                                                                     as SEQ,
-                    cat(%sysfunc(quote(&indent_sql_expr)), %unquote(&&var_level_&i._note)) as ITEM,
+                    cat(%sysfunc(quote(&indent_sql_expr)),
+                        %unquote(&&var_level_&i._note),
+                        %sysfunc(quote(&suffix_sql_expr)))                                 as ITEM,
                     sum(&var_name = &&var_level_&i)                                        as N,
                     strip(put(calculated N, &N_format))                                    as N_FMT,
                     sum(&var_name = &&var_level_&i)/count(*)                               as RATE,

@@ -5,6 +5,7 @@ Macro Label:多组别定性指标汇总统计
 Author: wtwang
 Version Date: 2024-01-08 0.1
               2024-01-18 0.2
+              2024-01-22 0.3
 ===================================
 */
 
@@ -18,6 +19,7 @@ Version Date: 2024-01-08 0.1
                           STAT_FORMAT = (#N = BEST. #RATE = PERCENT9.2),
                           LABEL = #AUTO,
                           INDENT = #AUTO,
+                          SUFFIX = #AUTO,
                           T_FORMAT = #AUTO,
                           P_FORMAT = #AUTO,
                           PROCHTTP_PROXY = 127.0.0.1:7890,
@@ -260,7 +262,8 @@ Version Date: 2024-01-08 0.1
                    MISSING     = FALSE,
                    STAT_FORMAT = %superq(STAT_FORMAT),
                    LABEL       = %superq(LABEL),
-                   INDENT      = %superq(INDENT));
+                   INDENT      = %superq(INDENT),
+                   SUFFIX      = %superq(SUFFIX));
 
     %if %bquote(&qualify_multi_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;

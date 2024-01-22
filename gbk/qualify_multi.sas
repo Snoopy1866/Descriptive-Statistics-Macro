@@ -5,6 +5,7 @@ Macro Label:多组别定性指标分析
 Author: wtwang
 Version Date: 2023-12-26 0.1
               2024-01-19 0.2
+              2024-01-22 0.3
 ===================================
 */
 
@@ -18,6 +19,7 @@ Version Date: 2023-12-26 0.1
                      STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2),
                      LABEL = #AUTO,
                      INDENT = #AUTO,
+                     SUFFIX = #AUTO,
                      PROCHTTP_PROXY = 127.0.0.1:7890,
                      DEL_TEMP_DATA = TRUE)
                      /des = "多组别定性指标分析" parmbuff;
@@ -253,12 +255,18 @@ Version Date: 2023-12-26 0.1
     %qualify(INDATA = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
                                                                        &&group_level_&i %bquote(,)
                                                                    %end;))),
-             VAR = %superq(VAR), OUTDATA = tmp_qualify_m_res_sum(rename = (value = value_sum
-                                                                           n = n_sum
-                                                                           n_fmt = n_sum_fmt
-                                                                           rate = rate_sum
-                                                                           rate_fmt = rate_sum_fmt)),
-             PATTERN = %superq(PATTERN), BY = %superq(BY), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+             VAR = %superq(VAR),
+             OUTDATA = tmp_qualify_m_res_sum(rename = (value = value_sum
+                                                       n = n_sum
+                                                       n_fmt = n_sum_fmt
+                                                       rate = rate_sum
+                                                       rate_fmt = rate_sum_fmt)),
+             PATTERN = %superq(PATTERN),
+             BY = %superq(BY),
+             STAT_FORMAT = %superq(STAT_FORMAT),
+             LABEL = %superq(LABEL),
+             INDENT = %superq(INDENT),
+             SUFFIX = %superq(SUFFIX));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -268,12 +276,18 @@ Version Date: 2023-12-26 0.1
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
         %qualify(INDATA = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
-                 VAR = %superq(VAR), OUTDATA = temp_res_group_level_&i(rename = (value = value_&i
-                                                                                 n = n_&i
-                                                                                 n_fmt = n_&i._fmt
-                                                                                 rate = rate_&i
-                                                                                 rate_fmt = rate_&i._fmt)),
-                 PATTERN = %superq(PATTERN), BY = %superq(BY), STAT_FORMAT = %superq(STAT_FORMAT), LABEL = %superq(LABEL), INDENT = %superq(INDENT));
+                 VAR = %superq(VAR),
+                 OUTDATA = temp_res_group_level_&i(rename = (value = value_&i
+                                                             n = n_&i
+                                                             n_fmt = n_&i._fmt
+                                                             rate = rate_&i
+                                                             rate_fmt = rate_&i._fmt)),
+                 PATTERN = %superq(PATTERN),
+                 BY = %superq(BY),
+                 STAT_FORMAT = %superq(STAT_FORMAT),
+                 LABEL = %superq(LABEL),
+                 INDENT = %superq(INDENT),
+                 SUFFIX = %superq(SUFFIX));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
