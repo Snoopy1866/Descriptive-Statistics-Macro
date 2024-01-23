@@ -50,7 +50,7 @@ Version Date: 2023-03-08 1.0.1
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
-    %let stat_supported = %bquote(RATE|TS|N|P);
+    %let stat_supported = %bquote(RATE|N);
 
     /*统计量对应的输出格式*/
     %let N_format = %bquote(best.);
@@ -420,7 +420,7 @@ Version Date: 2023-03-08 1.0.1
 
     %if %bquote(&stat_format) ^= #NULL %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
-        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
+        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
         %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 

@@ -222,7 +222,6 @@ Version Date: 2023-03-16 1.3.1
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
 
-
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
         %put ERROR: 未指定分析变量！;
@@ -310,7 +309,6 @@ Version Date: 2023-03-16 1.3.1
         %goto exit_with_error;
     %end;
 
-
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
         %put ERROR: 参数 OUTDATA 为空！;
@@ -337,7 +335,6 @@ Version Date: 2023-03-16 1.3.1
         %end;
         %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
     %end;
-
 
     /*STAT_FORMAT*/
     %if %bquote(&stat_format) = %bquote() %then %do;
