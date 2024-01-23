@@ -8,6 +8,7 @@ Version Date: 2023-03-16 1.3.1
               2023-11-27 1.3.3
               2024-01-05 1.3.4
               2024-01-18 1.3.5
+              2024-01-23 1.3.6
 ===================================
 */
 
@@ -221,6 +222,7 @@ Version Date: 2023-03-16 1.3.1
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
 
+
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
         %put ERROR: 未指定分析变量！;
@@ -278,6 +280,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*提取每一行的统计量和字符串*/
     %let reg_stat_expr_unit = %bquote(((?:.|\n)*?)\.?(?:(?<!#)#(&stat_supported))\.?);
+    %let IS_VALID_PATTERN_PART = TRUE;
     %do i = 1 %to &part_n;
         %let stat_&i = %eval(%sysfunc(count(%bquote(&&part_&i), %bquote(#))) - %sysfunc(count(%bquote(&&part_&i), %bquote(#|)))
                                                                              - %sysfunc(count(%bquote(&&part_&i), %bquote(##)))*2);
@@ -298,10 +301,15 @@ Version Date: 2023-03-16 1.3.1
             %let string_&i._&j = %sysfunc(prxposn(&reg_stat_id, %eval(&&stat_&i * 2 + 1), %bquote(&&part_&i)));
         %end;
         %else %do;
-            %put ERROR: 在对参数 PATTERN 解析第 &i 行统计量名称及其他字符时发生了错误，导致错误的原因可能是指定了不受支持的统计量，或者未使用“##”对字符“#”进行转义！;
-            %goto exit_with_error;
+            %put ERROR: 在对参数 PATTERN 解析第 &i 行 %bquote(&&part_&i) 统计量名称及其他字符时发生了错误，导致错误的原因可能是指定了不受支持的统计量，或者未使用“##”对字符“#”进行转义！;
+            %let IS_VALID_PATTERN_PART = FALSE;
         %end;
     %end;
+
+    %if &IS_VALID_PATTERN_PART = FALSE %then %do;
+        %goto exit_with_error;
+    %end;
+
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
@@ -329,6 +337,7 @@ Version Date: 2023-03-16 1.3.1
         %end;
         %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
     %end;
+
 
     /*STAT_FORMAT*/
     %if %bquote(&stat_format) = %bquote() %then %do;
@@ -396,7 +405,7 @@ Version Date: 2023-03-16 1.3.1
     %end;
     %else %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
-        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
+        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
         %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 

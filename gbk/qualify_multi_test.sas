@@ -6,6 +6,7 @@ Author: wtwang
 Version Date: 2024-01-08 0.1
               2024-01-18 0.2
               2024-01-22 0.3
+              2024-01-23 0.4
 ===================================
 */
 
@@ -20,8 +21,6 @@ Version Date: 2024-01-08 0.1
                           LABEL = #AUTO,
                           INDENT = #AUTO,
                           SUFFIX = #AUTO,
-                          T_FORMAT = #AUTO,
-                          P_FORMAT = #AUTO,
                           PROCHTTP_PROXY = 127.0.0.1:7890,
                           DEL_TEMP_DATA = TRUE)
                           /des = "多组别定性指标汇总统计" parmbuff;
@@ -36,8 +35,6 @@ Version Date: 2024-01-08 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
-    %let t_format             = %upcase(%sysfunc(strip(%bquote(&t_format))));
-    %let p_format             = %upcase(%sysfunc(strip(%bquote(&p_format))));
 
     /*声明全局变量*/
     %global qlmt_exit_with_error;
@@ -252,6 +249,8 @@ Version Date: 2024-01-08 0.1
     run;
 
     /*2. 统计描述*/
+    %let p_format  = #AUTO;
+    %let ts_format = #AUTO;
     %qualify_multi(INDATA      = tmp_qmt_indata,
                    VAR         = %superq(VAR),
                    GROUP       = %superq(GROUP),
@@ -270,17 +269,17 @@ Version Date: 2024-01-08 0.1
     %end;
 
     /*3. 统计推断*/
-    %if %superq(p_format) = #AUTO %then %do;
+    %if &p_format = #AUTO %then %do;
         /*P值输出格式*/
         proc format;
-            picture spvalue(round  max = 7)
+            picture qlmt_pvalue(round  max = 7)
                     low - < 0.0001 = "<0.0001"(noedit)
                     other = "9.9999";
         run;
-        %let p_format = spvalue.;
+        %let p_format = qlmt_pvalue.;
     %end;
 
-    /*4. 卡方和Fisher精确检验*/
+    /*卡方和Fisher精确检验*/
     proc freq data = tmp_qmt_indata noprint;
         tables &var_name*%superq(GROUPBY) /chisq(warn = (output nolog)) fisher;
         output out = tmp_qmt_chisq chisq;
@@ -315,15 +314,15 @@ Version Date: 2024-01-08 0.1
                     from tmp_qmt_chisq;
             %end;
             %else %do; /*卡方检验适用*/
-                %if %superq(t_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(_PCHI_))) + 6, 7) into : t_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
-                    %let t_format = &t_fmt_width..4;
+                %if &ts_format = #AUTO %then %do;
+                    select max(ceil(log10(abs(_PCHI_))) + 6, 7) into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
+                    %let ts_format = &ts_fmt_width..4;
                 %end;
                 create table tmp_qmt_stat as
                     select
                         "&indent_sql_expr.统计量" as item,
                         "卡方检验" as value_1,
-                        strip(put(_PCHI_, &t_format)) as value_2
+                        strip(put(_PCHI_, &ts_format)) as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
@@ -334,7 +333,7 @@ Version Date: 2024-01-08 0.1
         %end;
     quit;
 
-    /*5. 合并结果*/
+    /*4. 合并结果*/
     proc sql noprint;
         create table tmp_qmt_outdata as
             select * from tmp_qmt_desc outer union corr

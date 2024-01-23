@@ -12,6 +12,7 @@ Version Date: 2023-03-08 1.0.1
               2023-12-28 1.0.7
               2024-01-18 1.0.8
               2024-01-22 1.0.9
+              2024-01-23 1.0.10
 ===================================
 */
 
@@ -49,7 +50,7 @@ Version Date: 2023-03-08 1.0.1
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
-    %let stat_supported = %bquote(RATE|N);
+    %let stat_supported = %bquote(RATE|TS|N|P);
 
     /*统计量对应的输出格式*/
     %let N_format = %bquote(best.);

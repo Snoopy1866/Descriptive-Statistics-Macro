@@ -166,7 +166,7 @@ MISSING = TRUE
 
 ### MISSING_NOTE
 
-**Syntax** : _string(s)_
+**Syntax** : _string_
 
 指定缺失分类的的说明文字，可以使用或不使用引号包围。
 
@@ -245,14 +245,37 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 指定输出结果中统计量的输出格式。
 
-**Default** : (#N = BEST. #RATE = PERCENT9.2)
+其中，_`statistic-keyword`_ 可以指定以下统计量：
 
-默认情况下，频数的输出格式为 `BEST.`，构成比（率）的输出格式为 `PERCENT9.2`，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式，_`statistic-keyword`_ 的用法详见 [PATTERN](#pattern)。
+| 统计量          | 含义          | 默认值               |
+| --------------- | ------------- | -------------------- |
+| RATE            | 构成比（率）  | BEST.                |
+| N               | 频数          | PERCENTN9.2          |
+| TS <sup>1</sup> | 检验统计量    | _#AUTO_ <sup>2</sup> |
+| P <sup>1</sup>  | 假设检验 P 值 | _#AUTO_ <sup>3</sup> |
+
+<sup>1</sup> 仅在宏 `%qualify_multi_test` 中可用；
+
+<sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+
+- _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+- _d_ = 4
+
+<sup>3</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+
+```sas
+proc format;
+    picture qlmt_pvalue(round  max = 7)
+            low - < 0.0001 = "<0.0001"(noedit)
+            other = "9.9999";
+run;
+```
 
 **Example** :
 
 ```sas
-STAT_FORMAT = (#N = percent9.2, #RATE = 4.1)
+STAT_FORMAT = (#N = z4., #RATE = percentn9.2)
+STAT_FORMAT = (#RATE = qual., #TS = 8.4, #P = pv.)
 ```
 
 ---

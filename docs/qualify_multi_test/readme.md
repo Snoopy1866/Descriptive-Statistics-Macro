@@ -20,8 +20,6 @@
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
-- [T_FORMAT](#t_format)
-- [P_FORMAT](#p_format)
 - [PROCHTTP_PROXY](#prochttp_proxy)
 
 ### 调试参数
@@ -148,53 +146,6 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 ### SUFFIX
 
 用法同 [SUFFIX](../qualify/readme.md#suffix)。
-
----
-
-### T_FORMAT
-
-**Syntax** : _format_
-
-指定卡方统计量的输出格式。
-
-**Default** : #AUTO
-
-默认情况下，宏程序会自动计算合适的统计量的输出格式 _w.d_，其中：
-
-- _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
-- _d_ = 4
-
-**Example** :
-
-```sas
-T_FORMAT = 8.3
-```
-
----
-
-### P_FORMAT
-
-**Syntax** : _format_
-
-指定 P 值的输出格式。
-
-**Default** : #AUTO
-
-默认情况下，宏程序使用 `spvalue.` 作为 P 值的输出格式，生成输出格式 `spvalue.` 的代码如下：
-
-```sas
-proc format;
-    picture spvalue(round  max = 7)
-            low - < 0.0001 = "<0.0001"(noedit)
-            other = "9.9999";
-run;
-```
-
-**Example** :
-
-```sas
-F_FORMAT = 8.3
-```
 
 ---
 

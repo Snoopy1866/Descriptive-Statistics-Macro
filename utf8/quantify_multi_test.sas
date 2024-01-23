@@ -5,6 +5,7 @@ Macro Label:多组别定量指标汇总统计
 Author: wtwang
 Version Date: 2024-01-05 0.1
               2024-01-18 0.2
+              2024-01-23 0.3
 ===================================
 */
 
@@ -18,8 +19,6 @@ Version Date: 2024-01-05 0.1
                            STAT_NOTE = #AUTO,
                            LABEL = #AUTO,
                            INDENT = #AUTO,
-                           T_FORMAT = #AUTO,
-                           P_FORMAT = #AUTO,
                            PROCHTTP_PROXY = 127.0.0.1:7890,
                            DEL_TEMP_DATA = TRUE)
                            /des = "多组别定量指标汇总统计" parmbuff;
@@ -34,8 +33,6 @@ Version Date: 2024-01-05 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
-    %let t_format             = %upcase(%sysfunc(strip(%bquote(&t_format))));
-    %let p_format             = %upcase(%sysfunc(strip(%bquote(&p_format))));
 
     /*声明全局变量*/
     %global qtmt_exit_with_error;
@@ -187,6 +184,8 @@ Version Date: 2024-01-05 0.1
     run;
 
     /*2. 统计描述*/
+    %let p_format  = #AUTO;
+    %let ts_format = #AUTO;
     %quantify_multi(INDATA      = tmp_qmt_indata,
                     VAR         = %superq(VAR),
                     GROUP       = %superq(GROUP),
@@ -206,11 +205,11 @@ Version Date: 2024-01-05 0.1
     %if %superq(p_format) = #AUTO %then %do;
         /*P值输出格式*/
         proc format;
-            picture spvalue(round  max = 7)
+            picture qtmt_pvalue(round  max = 7)
                     low - < 0.0001 = "<0.0001"(noedit)
                     other = "9.9999";
         run;
-        %let p_format = spvalue.;
+        %let p_format = qtmt_pvalue.;
     %end;
 
     /*正态性检验*/
@@ -233,14 +232,14 @@ Version Date: 2024-01-05 0.1
             output out = tmp_qmt_wcxtest wilcoxon;
         run;
         proc sql noprint;
-            %if %superq(t_format) = #AUTO %then %do;
-                select max(ceil(log10(abs(Z_WIL))) + 6, 7) into : t_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
-                %let t_format = &t_fmt_width..4;
+            %if %superq(ts_format) = #AUTO %then %do;
+                select max(ceil(log10(abs(Z_WIL))) + 6, 7) into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
+                %let ts_format = &ts_fmt_width..4;
             %end;
             insert into tmp_qmt_outdata
                 set item = "&indent_sql_expr.统计量",
                     value_1 = "Wilcoxon秩和检验",
-                    value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &t_format));
+                    value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &ts_format));
             insert into tmp_qmt_outdata
                 set item = "&indent_sql_expr.P值",
                     value_1 = strip(put((select P2_WIL from tmp_qmt_wcxtest), &p_format));
@@ -264,14 +263,14 @@ Version Date: 2024-01-05 0.1
         %if &homovar_reject > 0 %then %do;
             %put NOTE: 方差不齐，使用 Satterthwaite t 检验！;
             proc sql noprint;
-                %if %superq(t_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : t_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
-                    %let t_format = &t_fmt_width..4;
+                %if %superq(ts_format) = #AUTO %then %do;
+                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
+                    %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
                     set item = "&indent_sql_expr.统计量",
                         value_1 = "t检验",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &t_format));
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &ts_format));
                 insert into tmp_qmt_outdata
                     set item = "&indent_sql_expr.P值",
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "不等于"), &p_format));
@@ -279,14 +278,14 @@ Version Date: 2024-01-05 0.1
         %end;
         %else %do;
             proc sql noprint;
-                %if %superq(t_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : t_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
-                    %let t_format = &t_fmt_width..4;
+                %if %superq(ts_format) = #AUTO %then %do;
+                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
+                    %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
                     set item = "&indent_sql_expr.统计量",
                         value_1 = "t检验",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &t_format));
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &ts_format));
                 insert into tmp_qmt_outdata
                     set item = "&indent_sql_expr.P值",
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "等于"), &p_format));

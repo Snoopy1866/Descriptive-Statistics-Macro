@@ -184,44 +184,46 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 默认情况下，宏程序将根据参数 [VAR](#var) 指定的变量在数据集中的具体值，决定各统计量的输出格式，具体如下：
 
-| 统计量   | 简写 | 输出格式 _w_                  | 输出格式 _d_      |
-| -------- | ---- | ----------------------------- | ----------------- |
-| N        |      | 由 SAS 决定                   | 由 SAS 决定       |
-| NMISS    |      | 由 SAS 决定                   | 由 SAS 决定       |
-| MEAN     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| VAR      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| STDDEV   | STD  | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| STDERR   |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| RANGE    |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
-| MEDIAN   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| MODE     |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
-| Q1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| Q3       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| QRANGE   |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| MIN      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
-| MAX      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
-| CV       |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| KURTOSIS | KURT | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
-| SKEWNESS | SKEW | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
-| LCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| UCLM     |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| SUM      |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
-| USS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| CSS      |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
-| P1       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P5       |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P10      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P20      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P30      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P40      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P50      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P60      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P70      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P75      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P80      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P90      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P95      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
-| P99      |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| 统计量          | 简写 | 输出格式 _w_                  | 输出格式 _d_      |
+| --------------- | ---- | ----------------------------- | ----------------- |
+| N               |      | 由 SAS 决定                   | 由 SAS 决定       |
+| NMISS           |      | 由 SAS 决定                   | 由 SAS 决定       |
+| MEAN            |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| VAR             |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| STDDEV          | STD  | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| STDERR          |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| RANGE           |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| MEDIAN          |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| MODE            |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| Q1              |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| Q3              |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| QRANGE          |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| MIN             |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| MAX             |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| CV              |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| KURTOSIS        | KURT | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
+| SKEWNESS        | SKEW | _int_ + min(_dec_ + 3, 4) + 2 | min(_dec_ + 3, 4) |
+| LCLM            |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| UCLM            |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| SUM             |      | _int_ + min(_dec_, 4) + 2     | min(_dec_, 4)     |
+| USS             |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| CSS             |      | _int_ + min(_dec_ + 2, 4) + 2 | min(_dec_ + 2, 4) |
+| P1              |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P5              |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P10             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P20             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P30             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P40             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P50             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P60             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P70             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P75             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P80             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P90             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P95             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| P99             |      | _int_ + min(_dec_ + 1, 4) + 2 | min(_dec_ + 1, 4) |
+| TS <sup>1</sup> |      | _#AUTO_ <sup>2</sup>          | 4                 |
+| P <sup>1</sup>  |      | _#AUTO_ <sup>3</sup>          | -                 |
 
 其中，_int_ 表示变量 [VAR](_var_) 在数据集中使用默认输出格式打印后的整数部分的最大长度，_dec_ 表示变量 [VAR](_var_) 在数据集中使用默认输出格式打印后的小数部分的最大长度，_w.d_ 表示统计量的输出格式。
 
@@ -231,12 +233,30 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 2. 标准差的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 2 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 2 位（若超过 4 位则只保留 4 位）；
 3. 最大值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 实际小数位数（若超过 4 位则只保留 4 位） + 2（用于表示小数点和负号），_d_ 部分为实际小数位数（若超过 4 位则只保留 4 位）；
 
-当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式，_`statistic-keyword`_ 的用法详见 [PATTERN](#pattern)。
+<sup>1</sup> 仅在宏 `%quantify_multi_test` 中可用；
+
+<sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+
+- _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+- _d_ = 4
+
+<sup>3</sup> 假设检验 P 值输出格式的默认值为 `qtmt_pvalue.`，`qtmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+
+```sas
+proc format;
+    picture qtmt_pvalue(round  max = 7)
+            low - < 0.0001 = "<0.0001"(noedit)
+            other = "9.9999";
+run;
+```
+
+当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式。
 
 **Example** :
 
 ```sas
 STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1)
+STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1, #TS = 8.4, #P = pv.)
 ```
 
 **Special Usage** :
