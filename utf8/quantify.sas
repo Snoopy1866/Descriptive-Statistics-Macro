@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===================================
 Macro Name: quantify
 Macro Label:定量指标分析
@@ -9,6 +9,7 @@ Version Date: 2023-03-16 1.3.1
               2024-01-05 1.3.4
               2024-01-18 1.3.5
               2024-01-23 1.3.6
+              2024-03-06 1.3.7
 ===================================
 */
 
@@ -596,6 +597,9 @@ Version Date: 2023-03-16 1.3.1
                                              %let precision = 0;
                                          %end;
                                          strip(put(round(&&&&&&stat_&i._&j.._var, 1e-&precision), &&&&&&stat_&i._&j.._format)) /*w.d 格式，先 round 然后 put*/
+                                     %end;
+                                     %else %if %bquote(&&&&&&stat_&i._&j.._format) = %bquote() %then %do;
+                                         strip(put(&&&&&&stat_&i._&j.._var, best.)) /*未指定格式，使用 best.*/
                                      %end;
                                      %else %do;
                                          strip(put(&&&&&&stat_&i._&j.._var, &&&&&&stat_&i._&j.._format)) /*其他格式，直接 put*/
