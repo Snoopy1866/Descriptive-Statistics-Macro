@@ -10,6 +10,7 @@ Version Date: 2023-03-16 1.3.1
               2024-01-18 1.3.5
               2024-01-23 1.3.6
               2024-03-06 1.3.7
+              2024-03-07 1.3.8
 ===================================
 */
 
@@ -477,9 +478,9 @@ Version Date: 2023-03-16 1.3.1
     %else %do;
         %let reg_label_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
         %if %sysfunc(prxmatch(&reg_label_id, %superq(label))) %then %do;
-            %let label_pos_1 = %bquote(%sysfunc(prxposn(&reg_label_id, 1, %superq(label))));
-            %let label_pos_2 = %bquote(%sysfunc(prxposn(&reg_label_id, 2, %superq(label))));
-            %let label_pos_3 = %bquote(%sysfunc(prxposn(&reg_label_id, 3, %superq(label))));
+            %let label_pos_1 = %nrbquote(%sysfunc(prxposn(&reg_label_id, 1, %superq(label))));
+            %let label_pos_2 = %nrbquote(%sysfunc(prxposn(&reg_label_id, 2, %superq(label))));
+            %let label_pos_3 = %nrbquote(%sysfunc(prxposn(&reg_label_id, 3, %superq(label))));
             %if %superq(label_pos_1) ^= %bquote() %then %do;
                 %let label_sql_expr = %superq(label_pos_1);
             %end;
