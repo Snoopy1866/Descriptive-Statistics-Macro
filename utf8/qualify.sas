@@ -13,6 +13,7 @@ Version Date: 2023-03-08 1.0.1
               2024-01-18 1.0.8
               2024-01-22 1.0.9
               2024-01-23 1.0.10
+              2024-03-15 1.0.11
 ===================================
 */
 
@@ -492,7 +493,7 @@ Version Date: 2023-03-08 1.0.1
         %let indent_sql_expr = %bquote();
     %end;
     %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
-        %let indent_sql_expr = %bquote();
+        %let indent_sql_expr = %bquote(    );
     %end;
     %else %do;
         %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
