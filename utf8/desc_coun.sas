@@ -4,6 +4,7 @@ Macro Name: desc_coun
 Macro Label:定性资料描述性分析
 Author: wtwang
 Version Date: 2023-02-09 V1.11
+              2024-03-18 V1.12
 ===================================
 */
 
@@ -777,13 +778,13 @@ PARAM_LIST_BUFFER    参数列表缓冲池
                 (case
                     %if &IS_LABEL_INDENT = TRUE %then %do; /*首层缩进*/
                         %do i = 1 %to &var_n;
-                            when strata = &i then cat(repeat("&INDENT", %eval(&i - 1)), cats(&&VAR_&i))
+                            when strata = &i then repeat("&INDENT", %eval(&i - 1)) || strip(&&VAR_&i)
                         %end;
                     %end;
                     %else %do; /*首层不缩进*/
-                        when strata = 1 then cats(&VAR_1)
+                        when strata = 1 then strip(&VAR_1)
                         %do i = 2 %to &var_n;
-                            when strata = &i then cat(repeat("&INDENT", %eval(&i - 2)), cats(&&VAR_&i))
+                            when strata = &i then repeat("&INDENT", %eval(&i - 2)) || strip(&&VAR_&i)
                         %end;
                     %end;
                 end)                           as ITEM  label = "指标",
