@@ -14,6 +14,7 @@ Version Date: 2023-03-08 1.0.1
               2024-01-22 1.0.9
               2024-01-23 1.0.10
               2024-03-15 1.0.11
+              2024-03-19 1.0.12
 ===================================
 */
 
@@ -455,93 +456,63 @@ Version Date: 2023-03-08 1.0.1
 
 
     /*LABEL*/
-    %if %bquote(&label) = %bquote() %then %do;
-        %let label_sql_expr = %bquote();
+    %if %superq(label) = %bquote() %then %do;
+        %let label_sql_expr = %bquote('');
     %end;
-    %else %if %bquote(%upcase(&label)) = #AUTO %then %do;
+    %else %if %qupcase(&label) = #AUTO %then %do;
         proc sql noprint;
             select
-                (case when label ^= "" then cats(label)
-                      else cats(name, "-n(%)") end)
+                (case when label ^= "" then cats("'", label, "'")
+                      else cats("'", name, "-n(%)", "'") end)
                 into: label_sql_expr from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&var_name";
         quit;
     %end;
     %else %do;
-        %let reg_label_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %let reg_label_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
         %if %sysfunc(prxmatch(&reg_label_id, %superq(label))) %then %do;
-            %let label_pos_1 = %bquote(%sysfunc(prxposn(&reg_label_id, 1, %superq(label))));
-            %let label_pos_2 = %bquote(%sysfunc(prxposn(&reg_label_id, 2, %superq(label))));
-            %let label_pos_3 = %bquote(%sysfunc(prxposn(&reg_label_id, 3, %superq(label))));
-            %if %superq(label_pos_1) ^= %bquote() %then %do;
-                %let label_sql_expr = %superq(label_pos_1);
-            %end;
-            %else %if %superq(label_pos_2) ^= %bquote() %then %do;
-                %let label_sql_expr = %superq(label_pos_2);
-            %end;
-            %else %if %superq(label_pos_3) ^= %bquote() %then %do;
-                %let label_sql_expr = %superq(label_pos_3);
-            %end;
-            %else %do;
-                %let label_sql_expr = %bquote();
-            %end;
+            %let label_sql_expr = %superq(label);
+        %end;
+        %else %do;
+            %put ERROR: 参数 LABEL 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
         %end;
     %end;
 
 
     /*INDENT*/
-    %if %bquote(&indent) = %bquote() %then %do;
-        %let indent_sql_expr = %bquote();
+    %if %superq(indent) = %bquote() %then %do;
+        %let indent_sql_expr = %bquote('');
     %end;
-    %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
-        %let indent_sql_expr = %bquote(    );
+    %else %if %qupcase(&indent) = #AUTO %then %do;
+        %let indent_sql_expr = %bquote('    ');
     %end;
     %else %do;
-        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
         %if %sysfunc(prxmatch(&reg_indent_id, %superq(indent))) %then %do;
-            %let indent_pos_1 = %bquote(%sysfunc(prxposn(&reg_indent_id, 1, %superq(indent))));
-            %let indent_pos_2 = %bquote(%sysfunc(prxposn(&reg_indent_id, 2, %superq(indent))));
-            %let indent_pos_3 = %bquote(%sysfunc(prxposn(&reg_indent_id, 3, %superq(indent))));
-            %if %superq(indent_pos_1) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_1);
-            %end;
-            %else %if %superq(indent_pos_2) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_2);
-            %end;
-            %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_3);
-            %end;
-            %else %do;
-                %let indent_sql_expr = %bquote();
-            %end;
+            %let indent_sql_expr = %superq(indent);
+        %end;
+        %else %do;
+            %put ERROR: 参数 INDENT 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
         %end;
     %end;
 
 
     /*SUFFIX*/
-    %if %bquote(&suffix) = %bquote() %then %do;
-        %let suffix_sql_expr = %bquote();
+    %if %superq(suffix) = %bquote() %then %do;
+        %let suffix_sql_expr = %bquote('');
     %end;
-    %else %if %bquote(%upcase(&suffix)) = #AUTO %then %do;
-        %let suffix_sql_expr = %bquote(    );
+    %else %if %qupcase(&suffix) = #AUTO %then %do;
+        %let suffix_sql_expr = %bquote('    ');
     %end;
     %else %do;
-        %let reg_suffix_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %let reg_suffix_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
         %if %sysfunc(prxmatch(&reg_suffix_id, %superq(suffix))) %then %do;
-            %let suffix_pos_1 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 1, %superq(suffix))));
-            %let suffix_pos_2 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 2, %superq(suffix))));
-            %let suffix_pos_3 = %bquote(%sysfunc(prxposn(&reg_suffix_id, 3, %superq(suffix))));
-            %if %superq(suffix_pos_1) ^= %bquote() %then %do;
-                %let suffix_sql_expr = %superq(suffix_pos_1);
-            %end;
-            %else %if %superq(suffix_pos_2) ^= %bquote() %then %do;
-                %let suffix_sql_expr = %superq(suffix_pos_2);
-            %end;
-            %else %if %superq(suffix_pos_3) ^= %bquote() %then %do;
-                %let suffix_sql_expr = %superq(suffix_pos_3);
-            %end;
-            %else %do;
-                %let suffix_sql_expr = %bquote();
-            %end;
+            %let suffix_sql_expr = %superq(suffix);
+        %end;
+        %else %do;
+            %put ERROR: 参数 SUFFIX 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
         %end;
     %end;
 
@@ -563,17 +534,17 @@ Version Date: 2023-03-08 1.0.1
     proc sql noprint;
         create table tmp_qualify_outdata as
             select
-                0                                as SEQ,
-                %sysfunc(quote(&label_sql_expr)) as ITEM,
-                ""                               as VALUE
+                0                                 as SEQ,
+                %unquote(%superq(label_sql_expr)) as ITEM,
+                ""                                as VALUE
             from tmp_qualify_indata(firstobs = 1 obs = 1)
             %do i = 1 %to &var_level_n;
                 outer union corr
                 select
                     &i                                                                     as SEQ,
-                    cat(%sysfunc(quote(&indent_sql_expr)),
+                    cat(%unquote(%superq(indent_sql_expr)),
                         %unquote(&&var_level_&i._note),
-                        %sysfunc(quote(&suffix_sql_expr)))                                 as ITEM,
+                        %unquote(%superq(suffix_sql_expr)))                                as ITEM,
                     sum(&var_name = &&var_level_&i)                                        as N,
                     strip(put(calculated N, &N_format))                                    as N_FMT,
                     sum(&var_name = &&var_level_&i)/count(*)                               as RATE,
