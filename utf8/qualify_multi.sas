@@ -6,6 +6,7 @@ Author: wtwang
 Version Date: 2023-12-26 0.1
               2024-01-19 0.2
               2024-01-22 0.3
+              2024-04-16 0.4
 ===================================
 */
 
@@ -202,8 +203,12 @@ Version Date: 2023-12-26 0.1
                             &group_var,
                             &groupby_var
                         from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
-                    select quote(strip(&group_var)) into : group_level_1- from tmp_qualify_m_groupby_sorted;
-                    select count(distinct &group_var) into : group_level_n from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var))                   into : group_level_1-          from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数)')       into : group_level_freq_1-     from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数格式化)') into : group_level_freq_fmt_1- from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频率)')       into : group_level_rate_1-     from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频率格式化)') into : group_level_rate_fmt_1- from tmp_qualify_m_groupby_sorted;
+                    select count(distinct &group_var)                 into : group_level_n           from tmp_qualify_m_groupby_sorted;
                 quit;
             %end;
             %else %do;
@@ -295,27 +300,28 @@ Version Date: 2023-12-26 0.1
     %end;
 
     /*4. 合并上述结果*/
-    data tmp_qualify_m_outdata;
-        merge %do i = 1 %to &group_level_n;
-                  temp_res_group_level_&i
-              %end;
-              tmp_qualify_m_res_sum
-              ;
-        label %do i = 1 %to &group_level_n;
-                  value_&i     = &&group_level_&i
-                  n_&i         = &&group_level_&i(频数)
-                  n_&i._fmt    = &&group_level_&i(频数格式化)
-                  rate_&i      = &&group_level_&i(频率)
-                  rate_&i._fmt = &&group_level_&i(频率格式化)
-              %end;
-              value_sum    = "合计"
-              n_sum        = "合计(频数)"
-              n_sum_fmt    = "合计(频数格式化)"
-              rate_sum     = "合计(频率)"
-              rate_sum_fmt = "合计(频率格式化)"
-
-              item         = "分类";
-    run;
+    proc sql noprint;
+        create table tmp_qualify_m_outdata as
+            select
+                sum.seq,
+                sum.item                label = "分类",
+                %do i = 1 %to &group_level_n;
+                    sub&i..value_&i     label = &&group_level_&i,
+                    sub&i..n_&i         label = &&group_level_freq_&i,
+                    sub&i..n_&i._fmt    label = &&group_level_freq_fmt_&i,
+                    sub&i..rate_&i      label = &&group_level_rate_&i,
+                    sub&i..rate_&i._fmt label = &&group_level_rate_fmt_&i,
+                %end;
+                sum.value_sum           label = "合计",
+                sum.n_sum               label = "合计(频数)",
+                sum.n_sum_fmt           label = "合计(频数格式化)",
+                sum.rate_sum            label = "合计(频率)",
+                sum.rate_sum_fmt        label = "合计(频率格式化)"
+            from tmp_qualify_m_res_sum as sum %do i = 1 %to &group_level_n;
+                                                  left join temp_res_group_level_&i as sub&i on sum.item = sub&i..item
+                                              %end;
+            order by sum.seq;
+    quit;
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
