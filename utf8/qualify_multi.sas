@@ -353,6 +353,20 @@ Version Date: 2023-12-26 0.1
                                                   left join temp_qualify_m_res_group_&i as sub&i on sum.item = sub&i..item
                                               %end;
             order by sum.seq;
+
+        %do i = 1 %to &group_level_n;
+            update tmp_qualify_m_outdata
+                set value_&i      = "%superq(VALUE_zero)",
+                    freq_&i       = %superq(FREQ_zero),
+                    freq_&i._fmt  = "%superq(FREQ_zero_fmt)",
+                    n_&i          = %superq(N_zero),
+                    n_&i._fmt     = "%superq(N_zero_fmt)",
+                    times_&i      = %superq(TIMES_zero),
+                    times_&i._fmt = "%superq(TIMES_zero_fmt)",
+                    rate_&i       = %superq(RATE_zero),
+                    rate_&i._fmt  = "%superq(RATE_zero_fmt)"
+            where seq > 0 and missing(freq_&i);
+        %end;
     quit;
 
     /*5. 输出数据集*/

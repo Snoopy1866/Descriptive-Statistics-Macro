@@ -64,6 +64,17 @@ Version Date: 2023-03-08 1.0.1
             TIMES_format
             N_format
             ;
+    /*全局零频数输出格式*/
+    %global FREQ_zero
+            FREQ_zero_fmt
+            N_zero
+            N_zero_fmt
+            TIMES_zero
+            TIMES_zero_fmt
+            RATE_zero
+            RATE_zero_fmt
+            VALUE_zero
+            ;
     %global qualify_exit_with_error;
     %let qualify_exit_with_error = FALSE;
 
@@ -580,6 +591,28 @@ Version Date: 2023-03-08 1.0.1
         transtrn(transtrn(&string, "#|", "|"), "##", "#")
     %mend;
 
+    /*频数为零的输出结果*/
+    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI %then %do;
+        %let FREQ_zero      = 0;
+        %let FREQ_zero_fmt  = %sysfunc(putn(&FREQ_zero, &FREQ_format -R));
+        %let N_zero         = 0;
+        %let N_zero_fmt     = %sysfunc(putn(&N_zero, &N_format -R));
+        %let TIMES_zero     = 0;
+        %let TIMES_zero_fmt = %sysfunc(putn(&TIMES_zero, &TIMES_format -R));
+        %let RATE_zero      = 0;
+        %let RATE_zero_fmt  = %sysfunc(putn(&RATE_zero, &RATE_format -R));
+        data _null_;
+            VALUE_zero = cat(%unquote(%do j = 1 %to &stat_n;
+                                          %temp_combpl_hash("&&string_&j") %bquote(,) strip("&&&&&&stat_&j.._zero_fmt") %bquote(,)
+                                      %end;
+                                      %temp_combpl_hash("&&string_&j")
+                                     )
+                            );
+            call symputx("VALUE_zero", VALUE_zero, "G");
+        run;
+    %end;
+
+    /*汇总*/
     proc sql noprint;
         create table tmp_qualify_outdata as
             select
