@@ -15,22 +15,24 @@ Version Date: 2023-03-08 1.0.1
               2024-01-23 1.0.10
               2024-03-15 1.0.11
               2024-03-19 1.0.12
+              2024-04-18 1.0.13
 ===================================
 */
 
 %macro qualify(INDATA,
                VAR,
-               PATTERN = %nrstr(#N(#RATE)),
-               BY = #AUTO,
-               MISSING = FALSE,
-               MISSING_NOTE = "缺失",
+               BY               = #AUTO,
+               UID              = #NULL,
+               PATTERN          = %nrstr(#FREQ(#RATE)),
+               MISSING          = FALSE,
+               MISSING_NOTE     = "缺失",
                MISSING_POSITION = LAST,
-               OUTDATA = #AUTO,
-               STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2),
-               LABEL = #AUTO,
-               INDENT = #AUTO,
-               SUFFIX = #AUTO,
-               DEL_TEMP_DATA = TRUE)
+               OUTDATA          = #AUTO,
+               STAT_FORMAT      = #AUTO,
+               LABEL            = #AUTO,
+               INDENT           = #AUTO,
+               SUFFIX           = #AUTO,
+               DEL_TEMP_DATA    = TRUE)
                /des = "定性指标分析" parmbuff;
 
 
@@ -45,6 +47,7 @@ Version Date: 2023-03-08 1.0.1
     %let indata               = %sysfunc(strip(%bquote(&indata)));
     %let var                  = %sysfunc(strip(%bquote(&var)));
     %let by                   = %upcase(%sysfunc(strip(%bquote(&by))));
+    %let uid                  = %upcase(%sysfunc(strip(%bquote(&uid))));
     %let missing              = %upcase(%sysfunc(strip(%bquote(&missing))));
     %let missing_position     = %upcase(%sysfunc(strip(%bquote(&missing_position))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
@@ -52,13 +55,15 @@ Version Date: 2023-03-08 1.0.1
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
-    %let stat_supported = %bquote(RATE|N);
-
-    /*统计量对应的输出格式*/
-    %let N_format = %bquote(best.);
-    %let RATE_format = %bquote(percentn9.2);
+    %let stat_supported = %bquote(FREQ|RATE|TIMES|N);
 
     /*声明全局变量*/
+    /*全局输出格式*/
+    %global FREQ_format
+            RATE_format
+            TIMES_format
+            N_format
+            ;
     %global qualify_exit_with_error;
     %let qualify_exit_with_error = FALSE;
 
@@ -287,12 +292,37 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
 
+    /*UID*/
+    %if %bquote(&uid) = %bquote() %then %do;
+        %put ERROR: 未指定唯一标识符变量！;
+        %goto exit_with_error;
+    %end;
+
+    %if %bquote(&uid) ^= #NULL %then %do;
+        %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %let reg_uid_id = %sysfunc(prxparse(&reg_uid));
+        %if %sysfunc(prxmatch(&reg_uid_id, %bquote(&uid))) = 0 %then %do;
+            %put ERROR: 参数 UID = %bquote(&uid) 格式不正确！;
+            %goto exit_with_error;
+        %end;
+        %else %do;
+            proc sql noprint;
+                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&uid";
+            quit;
+            %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
+                %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &uid;
+                %goto exit_with_error;
+            %end;
+        %end;
+    %end;
+
+
     /*MISSING*/
     %if %superq(missing) = %bquote() %then %do;
         %put ERROR: 参数 MISSING 为空！;
         %goto exit_with_error;
     %end;
-    
+
     %if %superq(missing) ^= TRUE and %superq(missing) ^= FALSE %then %do;
         %put ERROR: 参数 MISSING 只能是 TRUE 或 FALSE！;
         %goto exit_with_error;
@@ -420,7 +450,13 @@ Version Date: 2023-03-08 1.0.1
         %goto exit_with_error;
     %end;
 
-    %if %bquote(&stat_format) ^= #NULL %then %do;
+    %if %bquote(&stat_format) = #AUTO %then %do;
+        %let FREQ_format  = best.;
+        %let RATE_format  = percentn9.2;
+        %let TIMES_format = &FREQ_format;
+        %let N_format     = &FREQ_format;
+    %end;
+    %else %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
         %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
@@ -525,7 +561,20 @@ Version Date: 2023-03-08 1.0.1
     quit;
 
 
-    /*2. 计算频数频率*/
+    /*2. 去重UID*/
+    %if %superq(uid) = #NULL %then %do;
+        data tmp_qualify_indata_unique;
+            set tmp_qualify_indata;
+        run;
+    %end;
+    %else %do;
+        proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique nodupkey;
+            by &uid &var_name;
+        run;
+    %end;
+
+
+    /*3. 计算频数、频次、频率*/
     /*替换 "#|" 为 "|", "##" 为 "#"*/
     %macro temp_combpl_hash(string);
         transtrn(transtrn(&string, "#|", "|"), "##", "#")
@@ -545,10 +594,18 @@ Version Date: 2023-03-08 1.0.1
                     cat(%unquote(%superq(indent_sql_expr)),
                         %unquote(&&var_level_&i._note),
                         %unquote(%superq(suffix_sql_expr)))                                as ITEM,
-                    sum(&var_name = &&var_level_&i)                                        as N,
-                    strip(put(calculated N, &N_format))                                    as N_FMT,
-                    sum(&var_name = &&var_level_&i)/count(*)                               as RATE,
-                    strip(put(calculated RATE, &RATE_FORMAT))                              as RATE_FMT,
+                    /*频数*/
+                    sum(&var_name = &&var_level_&i)                                        as FREQ,
+                    strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
+                    /*频数-兼容旧版本*/
+                    calculated FREQ                                                        as N,
+                    calculated FREQ_FMT                                                    as N_FMT,
+                    /*频次*/
+                    (select sum(&var_name = &&var_level_&i) from tmp_qualify_indata)       as TIMES,
+                    strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
+                    /*频率*/
+                    calculated N/count(*)                                                  as RATE,
+                    strip(put(calculated RATE, &RATE_format))                              as RATE_FMT,
                     cat(%unquote(
                                  %do j = 1 %to &stat_n;
                                      %temp_combpl_hash("&&string_&j") %bquote(,) strip(calculated &&stat_&j.._FMT) %bquote(,)
@@ -556,13 +613,13 @@ Version Date: 2023-03-08 1.0.1
                                  %temp_combpl_hash("&&string_&j")
                                 )
                         )                                                                  as VALUE
-                from tmp_qualify_indata
+                from tmp_qualify_indata_unique
             %end;
             %bquote(;)
     quit;
 
 
-    /*3. 输出数据集*/
+    /*4. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item value
                                     %end;
@@ -578,6 +635,12 @@ Version Date: 2023-03-08 1.0.1
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
+                   %if %sysmexecdepth < 2 %then %do;
+                       tmp_qualify_indata_unique
+                   %end;
+                   %else %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique*/
+                       tmp_qualify_indata_unique
+                   %end;
                    tmp_qualify_by_fmt
                    tmp_qualify_distinct_var
                    tmp_qualify_outdata

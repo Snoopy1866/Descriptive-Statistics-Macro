@@ -13,10 +13,11 @@
 
 ### 可选参数
 
+- [BY](#by)
+- [UID](#uid)
 - [PATTERN](#pattern)
 - [OUTDATA](#outdata)
 - [STAT_FORMAT](#stat_format)
-- [STAT_NOTE](#stat_note)
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
@@ -63,7 +64,7 @@ GROUP = ARM
 
 **Syntax** : _variable_
 
-指定分组变量的排序。
+指定分组变量的排序变量及排序方向。
 
 **Caution** :
 
@@ -77,39 +78,15 @@ GROUPBY = ARMN
 
 ---
 
-### OUTDATA
+### BY
 
-**Syntax** : <_libname._>_dataset_(_dataset-options_)
+用法同 [BY](../qualify/readme.md#by)。
 
-指定统计结果输出的数据集，可包含数据集选项，用法同参数 [INDATA](#indata)。
+---
 
-输出数据集有 _m_ + 3 个变量，其中 _m_ 为参数 GROUP 指定的分组变量的水平数，具体如下：
+### UID
 
-| 变量名     | 含义                                                                   |
-| ---------- | ---------------------------------------------------------------------- |
-| SEQ        | 行号                                                                   |
-| ITEM       | 指标名称                                                               |
-| VALUE\__i_ | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的第 _i_ 个水平） |
-| VALUE_SUM  | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的所有水平合计）  |
-
-其中，变量 `ITEM`、`VALUE_`_`i`_、`VALUE_SUM` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
-
-⚠ 当 GROUP 的水平数量为 1 时，变量 VALUE_SUM 默认隐藏。
-
-**Default** : RES\_&_VAR_
-
-默认情况下，输出数据集的名称为 `RES_`_`var`_，其中 `var` 为参数 [VAR](#var) 指定的变量名。
-
-**Tips** :
-
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)`
-
-**Example** :
-
-```sas
-OUTDATA = T1
-OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
-```
+用法同 [UID](../qualify/readme.md#uid)。
 
 ---
 
@@ -119,9 +96,9 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 
 ---
 
-### BY
+### OUTDATA
 
-用法同 [BY](../qualify/readme.md#by)。
+用法同 [OUTDATA](../qualify_multi/readme.md#outdata)。
 
 ---
 
@@ -151,19 +128,13 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 
 ### PROCHTTP_PROXY
 
-**Syntax** : _host_:_port_
-
-指定代理主机和端口。
-
-本宏程序将自动检查前置依赖程序是否已经导入，若发现前置依赖程序未导入，则尝试从网络上下载最新版本程序文件，使用此参数可指定网络连接使用的代理主机和端口。
-
-**Default** : 127.0.0.1:7890
+用法同 [PROCHTTP_PROXY](../qualify_multi/readme.md#prochttp_proxy)。
 
 ---
 
 ### DEL_TEMP_DATA
 
-**Syntax** : TRUE|FALSE
+**Syntax** : TRUE | FALSE
 
 指定是否删除宏程序运行过程生成的中间数据集。
 

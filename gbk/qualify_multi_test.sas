@@ -7,6 +7,7 @@ Version Date: 2024-01-08 0.1
               2024-01-18 0.2
               2024-01-22 0.3
               2024-01-23 0.4
+              2024-04-18 0.5
 ===================================
 */
 
@@ -14,15 +15,16 @@ Version Date: 2024-01-08 0.1
                           VAR,
                           GROUP,
                           GROUPBY,
-                          OUTDATA = RES_&VAR,
-                          PATTERN = %nrstr(#N(#RATE)),
-                          BY = #AUTO,
-                          STAT_FORMAT = (#N = BEST. #RATE = PERCENT9.2),
-                          LABEL = #AUTO,
-                          INDENT = #AUTO,
-                          SUFFIX = #AUTO,
+                          BY             = #AUTO,
+                          UID            = #NULL,
+                          PATTERN        = %nrstr(#FREQ(#RATE)),
+                          OUTDATA        = RES_&VAR,
+                          STAT_FORMAT    = #AUTO,
+                          LABEL          = #AUTO,
+                          INDENT         = #AUTO,
+                          SUFFIX         = #AUTO,
                           PROCHTTP_PROXY = 127.0.0.1:7890,
-                          DEL_TEMP_DATA = TRUE)
+                          DEL_TEMP_DATA  = TRUE)
                           /des = "多组别定性指标汇总统计" parmbuff;
 
     /*打开帮助文档*/
@@ -35,6 +37,7 @@ Version Date: 2024-01-08 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*声明全局变量*/
     %global qlmt_exit_with_error;
@@ -217,27 +220,20 @@ Version Date: 2024-01-08 0.1
 
 
     /*INDENT*/
-    %if %bquote(&indent) = %bquote() %then %do;
-        %let indent_sql_expr = %bquote();
+    %if %superq(indent) = %bquote() %then %do;
+        %let indent_sql_expr = %bquote('');
     %end;
-    %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
-        %let indent_sql_expr = %bquote(    );
+    %else %if %qupcase(&indent) = #AUTO %then %do;
+        %let indent_sql_expr = %bquote('    ');
     %end;
     %else %do;
-        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
         %if %sysfunc(prxmatch(&reg_indent_id, %superq(indent))) %then %do;
-            %let indent_pos_1 = %bquote(%sysfunc(prxposn(&reg_indent_id, 1, %superq(indent))));
-            %let indent_pos_2 = %bquote(%sysfunc(prxposn(&reg_indent_id, 2, %superq(indent))));
-            %let indent_pos_3 = %bquote(%sysfunc(prxposn(&reg_indent_id, 3, %superq(indent))));
-            %if %superq(indent_pos_1) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_1);
-            %end;
-            %else %if %superq(indent_pos_2) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_2);
-            %end;
-            %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_3);
-            %end;
+            %let indent_sql_expr = %superq(indent);
+        %end;
+        %else %do;
+            %put ERROR: 参数 INDENT 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
         %end;
     %end;
 
@@ -255,9 +251,10 @@ Version Date: 2024-01-08 0.1
                    VAR         = %superq(VAR),
                    GROUP       = %superq(GROUP),
                    GROUPBY     = %superq(GROUPBY),
-                   OUTDATA     = tmp_qmt_desc,
-                   PATTERN     = %superq(PATTERN),
                    BY          = %superq(BY),
+                   UID         = %superq(UID),
+                   PATTERN     = %superq(PATTERN),
+                   OUTDATA     = tmp_qmt_desc(keep = _all_),
                    MISSING     = FALSE,
                    STAT_FORMAT = %superq(STAT_FORMAT),
                    LABEL       = %superq(LABEL),
@@ -280,10 +277,14 @@ Version Date: 2024-01-08 0.1
     %end;
 
     /*卡方和Fisher精确检验*/
-    proc freq data = tmp_qmt_indata noprint;
+    proc freq data = tmp_qmt_indata_unique noprint;
         tables &var_name*%superq(GROUPBY) /chisq(warn = (output nolog)) fisher;
         output out = tmp_qmt_chisq chisq;
     run;
+
+    /*定义宏变量，存储说明文字*/
+    %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
+    %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
 
     proc sql noprint;
         select * from DICTIONARY.COLUMNS where libname = "WORK" and memname = "TMP_QMT_CHISQ";
@@ -291,11 +292,11 @@ Version Date: 2024-01-08 0.1
             create table tmp_qmt_stat
                 (item char(%eval(%length(%bquote(&indent_sql_expr)) + 12)), value_1 char(10), value_2 char(10));
             insert into tmp_qmt_stat
-                set item    = "&indent_sql_expr.统计量",
+                set item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
             insert into tmp_qmt_stat
-                set item    = "&indent_sql_expr.P值",
+                set item    = &note_pvalue,
                     value_1 = "-";
         %end;
         %else %do;
@@ -303,13 +304,13 @@ Version Date: 2024-01-08 0.1
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
                     select
-                        "&indent_sql_expr.统计量" as item,
+                        &note_stat       as item,
                         "Fisher精确检验" as value_1,
-                        "-" as value_2
+                        "-"              as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
-                        "&indent_sql_expr.P值" as item,
+                        &note_pvalue                    as item,
                         strip(put(XP2_FISH, &p_format)) as value_1
                     from tmp_qmt_chisq;
             %end;
@@ -320,13 +321,13 @@ Version Date: 2024-01-08 0.1
                 %end;
                 create table tmp_qmt_stat as
                     select
-                        "&indent_sql_expr.统计量" as item,
-                        "卡方检验" as value_1,
+                        &note_stat                     as item,
+                        "卡方检验"                     as value_1,
                         strip(put(_PCHI_, &ts_format)) as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
-                        "&indent_sql_expr.P值" as item,
+                        &note_pvalue                  as item,
                         strip(put(P_PCHI, &p_format)) as value_1
                     from tmp_qmt_chisq;
             %end;
@@ -339,7 +340,6 @@ Version Date: 2024-01-08 0.1
             select * from tmp_qmt_desc outer union corr
             select * from tmp_qmt_stat;
     quit;
-
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
@@ -356,10 +356,13 @@ Version Date: 2024-01-08 0.1
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
+                   tmp_qmt_indata_unique
                    tmp_qmt_desc
                    tmp_qmt_stat
                    tmp_qmt_outdata
-                   Tmp_qmt_chisq
+                   tmp_qmt_chisq
+
+                   tmp_qualify_indata_unique /*%qualify_multi 拆分 group 各水平调用 %qualify 残留的数据集*/
                    ;
         quit;
     %end;

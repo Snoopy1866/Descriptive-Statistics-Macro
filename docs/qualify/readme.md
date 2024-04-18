@@ -11,8 +11,9 @@
 
 ### 可选参数
 
-- [PATTERN](#pattern)
 - [BY](#by)
+- [UID](#uid)
+- [PATTERN](#pattern)
 - [MISSING](#missing)
 - [MISSING_NOTE](#missing_note)
 - [MISSING_POSITION](#missing_position)
@@ -79,32 +80,6 @@ VAR = SEX("" = "Missing" "男" = "Male" "女" = "Female")
 
 ---
 
-### PATTERN
-
-**Syntax** : <_string(s)_>#_statistic-keyword-1_<_string(s)_><#_statistic-keyword-2_<_string(s)_>><...>
-
-指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。
-
-其中，_`statistic-keyword`_ 可以指定以下统计量：
-
-| 统计量 | 含义         |
-| ------ | ------------ |
-| RATE   | 构成比（率） |
-| N      | 频数         |
-
-_`string(s)`_ 可以是任意字符（串），若字符串含有字符 `#`，则使用 `##` 进行转义。
-
-**Default** : `%nrstr(#N(#RATE))`
-
-**Example** :
-
-```sas
-PATTERN = #N
-PATTERN = #N[#RATE]##
-```
-
----
-
 ### BY
 
 **Syntax** :
@@ -146,9 +121,53 @@ BY = SEXN.(descending)
 
 ---
 
+### UID
+
+**Syntax** : _variable_
+
+指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量，对分析数据集统计频数和频次，`UID` 的值通常是能够标识观测所属试验对象的变量，例如：`USUBJID`。
+
+**Default** : #NULL
+
+默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
+
+**Example** :
+
+```sas
+UID = USUBJID
+```
+
+---
+
+### PATTERN
+
+**Syntax** : <_string(s)_>#_statistic-keyword-1_<_string(s)_><#_statistic-keyword-2_<_string(s)_>><...>
+
+指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。
+
+其中，_`statistic-keyword`_ 可以指定以下统计量：
+
+| 统计量 | 含义         |
+| ------ | ------------ |
+| RATE   | 构成比（率） |
+| N      | 频数         |
+
+_`string(s)`_ 可以是任意字符（串），若字符串含有字符 `#`，则使用 `##` 进行转义。
+
+**Default** : `%nrstr(#N(#RATE))`
+
+**Example** :
+
+```sas
+PATTERN = #N
+PATTERN = #N[#RATE]##
+```
+
+---
+
 ### MISSING
 
-**Syntax** : TRUE|FALSE
+**Syntax** : TRUE | FALSE
 
 指定是否统计缺失分类。
 
@@ -186,7 +205,7 @@ MISSINF_NOTE = %str(缺失)
 
 ### MISSING_POSITION
 
-**Syntax** : FIRST|LAST
+**Syntax** : FIRST | LAST
 
 指定缺失分类在输出数据集中显示的位置。FIRST 表示显示在所有分类前面，LAST 表示显示在所有分类后面。
 
@@ -210,15 +229,21 @@ MISSING_POSITION = FIRST
 
 输出数据集有 7 个变量，具体如下：
 
-| 变量名   | 含义                                          |
-| -------- | --------------------------------------------- |
-| SEQ      | 行号                                          |
-| ITEM     | 分类名称（展示名称）                          |
-| VALUE    | 统计量在 [PATTERN](#pattern) 指定的模式下的值 |
-| N        | 频数                                          |
-| N_FMT    | 频数格式化值                                  |
-| RATE     | 频率                                          |
-| RATE_FMT | 频率格式化值                                  |
+| 变量名                                   | 含义                                          |
+| ---------------------------------------- | --------------------------------------------- |
+| SEQ                                      | 行号                                          |
+| ITEM                                     | 分类名称（展示名称）                          |
+| VALUE                                    | 统计量在 [PATTERN](#pattern) 指定的模式下的值 |
+| FREQ                                     | 频数                                          |
+| FREQ_FMT                                 | 频数格式化值                                  |
+| <font color=red>N<sup>1</sup></font>     | 频数                                          |
+| <font color=red>N_FMT<sup>1</sup></font> | 频数格式化值                                  |
+| TIMES                                    | 频次                                          |
+| TIMES_FMT                                | 频次格式化值                                  |
+| RATE                                     | 频率                                          |
+| RATE_FMT                                 | 频率格式化值                                  |
+
+<sup>1</sup> 建议改用 `FREQ`, `FREQ_FMT`，保留 `N`, `N_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
 其中，变量 `ITEM` 和 `VALUE` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
@@ -228,13 +253,13 @@ MISSING_POSITION = FIRST
 
 **Tips** :
 
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
+如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)`
 
 **Example** :
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
+OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)
 ```
 
 ---
@@ -247,16 +272,20 @@ OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
 
 其中，_`statistic-keyword`_ 可以指定以下统计量：
 
-| 统计量          | 含义          | 默认值               |
-| --------------- | ------------- | -------------------- |
-| RATE            | 构成比（率）  | BEST.                |
-| N               | 频数          | PERCENTN9.2          |
-| TS <sup>1</sup> | 检验统计量    | _#AUTO_ <sup>2</sup> |
-| P <sup>1</sup>  | 假设检验 P 值 | _#AUTO_ <sup>3</sup> |
+| 统计量                               | 含义          | 默认值               |
+| ------------------------------------ | ------------- | -------------------- |
+| FREQ                                 | 频数          | BEST.                |
+| <font color=red>N<sup>1</sup></font> | 频数          | BEST.                |
+| TIMES                                | 频次          | BEST.                |
+| RATE                                 | 构成比（率）  | PERCENTN9.2          |
+| TS <sup>2</sup>                      | 检验统计量    | _#AUTO_ <sup>2</sup> |
+| P <sup>3</sup>                       | 假设检验 P 值 | _#AUTO_ <sup>3</sup> |
 
-<sup>1</sup> 仅在宏 `%qualify_multi_test` 中可用；
+<sup>1</sup> 建议改用 `FREQ`，保留 `N` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
-<sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+<sup>2</sup> 仅在宏 `%qualify_multi_test` 中可用；
+
+<sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
 
 - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
 - _d_ = 4
@@ -376,7 +405,7 @@ SUFFIX = "，n(%)"
 
 ### DEL_TEMP_DATA
 
-**Syntax** : TRUE|FALSE
+**Syntax** : TRUE | FALSE
 
 指定是否删除宏程序运行过程生成的中间数据集。
 
@@ -516,3 +545,11 @@ SUFFIX = "，n(%)"
 ```
 
 ![](./assets/example-suffix.png)
+
+### 指定唯一标识符变量
+
+```sas
+%qualify(indata = adam.addv(where = (FASFL = "Y")), var = dvtype, uid = usubjid, outdata = t1(keep = item value freq times));
+```
+
+![](./assets/example-uid.png)

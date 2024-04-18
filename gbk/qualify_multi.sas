@@ -7,22 +7,24 @@ Version Date: 2023-12-26 0.1
               2024-01-19 0.2
               2024-01-22 0.3
               2024-04-16 0.4
+              2024-04-18 0.5
 ===================================
 */
 
 %macro qualify_multi(INDATA,
                      VAR,
                      GROUP,
-                     GROUPBY = #AUTO,
-                     OUTDATA = RES_&VAR,
-                     PATTERN = %nrstr(#N(#RATE)),
-                     BY = #AUTO,
-                     STAT_FORMAT = (#N = BEST., #RATE = PERCENTN9.2),
-                     LABEL = #AUTO,
-                     INDENT = #AUTO,
-                     SUFFIX = #AUTO,
+                     GROUPBY        = #AUTO,
+                     BY             = #AUTO,
+                     UID            = #NULL,
+                     PATTERN        = %nrstr(#FREQ(#RATE)),
+                     OUTDATA        = RES_&VAR,
+                     STAT_FORMAT    = #AUTO,
+                     LABEL          = #AUTO,
+                     INDENT         = #AUTO,
+                     SUFFIX         = #AUTO,
                      PROCHTTP_PROXY = 127.0.0.1:7890,
-                     DEL_TEMP_DATA = TRUE)
+                     DEL_TEMP_DATA  = TRUE)
                      /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -35,6 +37,7 @@ Version Date: 2023-12-26 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*声明全局变量*/
     %global qualify_multi_exit_with_error;
@@ -203,12 +206,16 @@ Version Date: 2023-12-26 0.1
                             &group_var,
                             &groupby_var
                         from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
-                    select quote(strip(&group_var))                   into : group_level_1-          from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数)')       into : group_level_freq_1-     from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数格式化)') into : group_level_freq_fmt_1- from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频率)')       into : group_level_rate_1-     from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频率格式化)') into : group_level_rate_fmt_1- from tmp_qualify_m_groupby_sorted;
-                    select count(distinct &group_var)                 into : group_level_n           from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
+                    select quote(strip(&group_var) || '(频率格式化)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
+                    select count(distinct &group_var)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
                 quit;
             %end;
             %else %do;
@@ -257,42 +264,59 @@ Version Date: 2023-12-26 0.1
 
     /*2. 整体统计*/
     %put NOTE: ===================================合计===================================;
-    %qualify(INDATA = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
-                                                                       &&group_level_&i %bquote(,)
-                                                                   %end;))),
-             VAR = %superq(VAR),
-             OUTDATA = tmp_qualify_m_res_sum(rename = (value = value_sum
-                                                       n = n_sum
-                                                       n_fmt = n_sum_fmt
-                                                       rate = rate_sum
-                                                       rate_fmt = rate_sum_fmt)),
-             PATTERN = %superq(PATTERN),
-             BY = %superq(BY),
+    %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
+                                                                            &&group_level_&i %bquote(,)
+                                                                        %end;))),
+             VAR         = %superq(VAR),
+             BY          = %superq(BY),
+             UID         = %superq(UID),
+             PATTERN     = %superq(PATTERN),
+             OUTDATA     = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
+                                                           FREQ      = FREQ_SUM
+                                                           FREQ_FMT  = FREQ_SUM_FMT
+                                                           N         = N_SUM
+                                                           N_FMT     = N_SUM_FMT
+                                                           TIMES     = TIMES_SUM
+                                                           TIMES_FMT = TIMES_SUM_FMT
+                                                           RATE      = RATE_SUM
+                                                           RATE_FMT  = RATE_SUM_FMT)),
              STAT_FORMAT = %superq(STAT_FORMAT),
-             LABEL = %superq(LABEL),
-             INDENT = %superq(INDENT),
-             SUFFIX = %superq(SUFFIX));
+             LABEL       = %superq(LABEL),
+             INDENT      = %superq(INDENT),
+             SUFFIX      = %superq(SUFFIX));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
     %end;
 
+    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI_TEST %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique*/
+        proc datasets library = work noprint nowarn;
+            delete tmp_qmt_indata_unique;
+            change tmp_qualify_indata_unique = tmp_qmt_indata_unique;
+        quit;
+    %end;
+
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
-        %qualify(INDATA = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
-                 VAR = %superq(VAR),
-                 OUTDATA = temp_res_group_level_&i(rename = (value = value_&i
-                                                             n = n_&i
-                                                             n_fmt = n_&i._fmt
-                                                             rate = rate_&i
-                                                             rate_fmt = rate_&i._fmt)),
-                 PATTERN = %superq(PATTERN),
-                 BY = %superq(BY),
+        %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
+                 VAR         = %superq(VAR),
+                 BY          = %superq(BY),
+                 UID         = %superq(UID),
+                 PATTERN     = %superq(PATTERN),
+                 OUTDATA     = temp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
+                                                                     FREQ      = FREQ_&i
+                                                                     FREQ_FMT  = FREQ_&i._FMT
+                                                                     N         = N_&i
+                                                                     N_FMT     = N_&i._FMT
+                                                                     TIMES     = TIMES_&i
+                                                                     TIMES_FMT = TIMES_&i._FMT
+                                                                     RATE      = RATE_&i
+                                                                     RATE_FMT  = RATE_&i._FMT)),
                  STAT_FORMAT = %superq(STAT_FORMAT),
-                 LABEL = %superq(LABEL),
-                 INDENT = %superq(INDENT),
-                 SUFFIX = %superq(SUFFIX));
+                 LABEL       = %superq(LABEL),
+                 INDENT      = %superq(INDENT),
+                 SUFFIX      = %superq(SUFFIX));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
@@ -304,21 +328,29 @@ Version Date: 2023-12-26 0.1
         create table tmp_qualify_m_outdata as
             select
                 sum.seq,
-                sum.item                label = "分类",
+                sum.item                 label = "分类",
                 %do i = 1 %to &group_level_n;
-                    sub&i..value_&i     label = &&group_level_&i,
-                    sub&i..n_&i         label = &&group_level_freq_&i,
-                    sub&i..n_&i._fmt    label = &&group_level_freq_fmt_&i,
-                    sub&i..rate_&i      label = &&group_level_rate_&i,
-                    sub&i..rate_&i._fmt label = &&group_level_rate_fmt_&i,
+                    sub&i..value_&i      label = &&group_level_&i,
+                    sub&i..freq_&i       label = &&group_level_freq_&i,
+                    sub&i..freq_&i._fmt  label = &&group_level_freq_fmt_&i,
+                    sub&i..n_&i          label = &&group_level_n_&i,
+                    sub&i..n_&i._fmt     label = &&group_level_n_fmt_&i,
+                    sub&i..times_&i      label = &&group_level_times_&i,
+                    sub&i..times_&i._fmt label = &&group_level_times_fmt_&i,
+                    sub&i..rate_&i       label = &&group_level_rate_&i,
+                    sub&i..rate_&i._fmt  label = &&group_level_rate_fmt_&i,
                 %end;
-                sum.value_sum           label = "合计",
-                sum.n_sum               label = "合计(频数)",
-                sum.n_sum_fmt           label = "合计(频数格式化)",
-                sum.rate_sum            label = "合计(频率)",
-                sum.rate_sum_fmt        label = "合计(频率格式化)"
+                sum.value_sum            label = "合计",
+                sum.freq_sum             label = "合计(频数)",
+                sum.freq_sum_fmt         label = "合计(频数)",
+                sum.n_sum                label = "合计(频数)(兼容)",
+                sum.n_sum_fmt            label = "合计(频数格式化)(兼容)",
+                sum.times_sum            label = "合计(频次)",
+                sum.times_sum_fmt        label = "合计(频次格式化)",
+                sum.rate_sum             label = "合计(频率)",
+                sum.rate_sum_fmt         label = "合计(频率格式化)"
             from tmp_qualify_m_res_sum as sum %do i = 1 %to &group_level_n;
-                                                  left join temp_res_group_level_&i as sub&i on sum.item = sub&i..item
+                                                  left join temp_qualify_m_res_group_&i as sub&i on sum.item = sub&i..item
                                               %end;
             order by sum.seq;
     quit;
@@ -347,7 +379,7 @@ Version Date: 2023-12-26 0.1
                    tmp_qualify_m_groupby_sorted
                    tmp_qualify_m_res_sum
                    %do i = 1 %to &group_level_n;
-                       temp_res_group_level_&i
+                       temp_qualify_m_res_group_&i
                    %end;
                    ;
         quit;

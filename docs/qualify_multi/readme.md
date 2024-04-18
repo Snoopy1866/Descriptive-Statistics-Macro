@@ -13,8 +13,9 @@
 ### 可选参数
 
 - [GROUPBY](#groupby)
-- [PATTERN](#pattern)
 - [BY](#by)
+- [UID](#uid)
+- [PATTERN](#pattern)
 - [OUTDATA](#outdata)
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
@@ -66,7 +67,7 @@ GROUP = ARM("试验组", "对照组")
 
 **Syntax** : _variable_<(ASC\<ENDING\>|DESC\<ENDING\>)>
 
-指定分组变量的排序
+指定分组变量的排序变量及排序方向。
 
 **Default** : #AUTO
 
@@ -85,28 +86,56 @@ GROUPBY = ARMN
 
 ---
 
+### BY
+
+用法同 [BY](../qualify/readme.md#by)。
+
+---
+
+### UID
+
+用法同 [UID](../qualify/readme.md#uid)。
+
+---
+
+### PATTERN
+
+用法同 [PATTERN](../qualify/readme.md#pattern)。
+
+---
+
 ### OUTDATA
 
 **Syntax** : <_libname._>_dataset_(_dataset-options_)
 
 指定统计结果输出的数据集，可包含数据集选项，用法同参数 [INDATA](#indata)。
 
-输出数据集有 5(_m_ + 1) + 2 个变量，其中 _m_ 为参数 GROUP 指定的分组变量的水平数，具体如下：
+输出数据集有 9(_m_ + 1) + 2 个变量，其中 _m_ 为参数 GROUP 指定的分组变量的水平数，具体如下：
 
-| 变量名         | 含义                                                                   |
-| -------------- | ---------------------------------------------------------------------- |
-| SEQ            | 行号                                                                   |
-| ITEM           | 指标名称                                                               |
-| VALUE\__i_     | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的第 _i_ 个水平） |
-| N\__i_         | 频数（GROUP 的第 _i_ 个水平）                                          |
-| N\__i_\_FMT    | 频数格式化值（GROUP 的第 _i_ 个水平）                                  |
-| RATE\__i_      | 频率（GROUP 的第 _i_ 个水平）                                          |
-| RATE\__i_\_FMT | 频率格式化值（GROUP 的第 _i_ 个水平）                                  |
-| VALUE_SUM      | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的所有水平合计）  |
-| N_SUM          | 频数（GROUP 的所有水平合计）                                           |
-| N_SUM_FMT      | 频数格式化值（GROUP 的所有水平合计）                                   |
-| RATE_SUM       | 频率（GROUP 的所有水平合计）                                           |
-| RATE_SUM_FMT   | 频率格式化值（GROUP 的所有水平合计）                                   |
+| 变量名                                         | 含义                                                                   |
+| ---------------------------------------------- | ---------------------------------------------------------------------- |
+| SEQ                                            | 行号                                                                   |
+| ITEM                                           | 指标名称                                                               |
+| VALUE\__i_                                     | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的第 _i_ 个水平） |
+| FREQ\__i_                                      | 频数（GROUP 的第 _i_ 个水平）                                          |
+| FREQ\__i_\_FMT                                 | 频数格式化值（GROUP 的第 _i_ 个水平）                                  |
+| <font color=red>N\__i_<sup>1</sup></font>      | 频数（GROUP 的第 _i_ 个水平）                                          |
+| <font color=red>N\__i_\_FMT<sup>1</sup></font> | 频数格式化值（GROUP 的第 _i_ 个水平）                                  |
+| TIMES\__i_                                     | 频次（GROUP 的第 _i_ 个水平）                                          |
+| TIMES\__i_\_FMT                                | 频次格式化值（GROUP 的第 _i_ 个水平）                                  |
+| RATE\__i_                                      | 频率（GROUP 的第 _i_ 个水平）                                          |
+| RATE\__i_\_FMT                                 | 频率格式化值（GROUP 的第 _i_ 个水平）                                  |
+| VALUE_SUM                                      | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的所有水平合计）  |
+| FREQ_SUM                                       | 频数（GROUP 的所有水平合计）                                           |
+| FREQ_SUM_FMT                                   | 频数格式化值（GROUP 的所有水平合计）                                   |
+| <font color=red>N_SUM<sup>1</sup></font>       | 频数（GROUP 的所有水平合计）                                           |
+| <font color=red>N_SUM_FMT<sup>1</sup></font>   | 频数格式化值（GROUP 的所有水平合计）                                   |
+| TIMES_SUM                                      | 频次（GROUP 的所有水平合计）                                           |
+| TIMES_SUM_FMT                                  | 频次格式化值（GROUP 的所有水平合计）                                   |
+| RATE_SUM                                       | 频率（GROUP 的所有水平合计）                                           |
+| RATE_SUM_FMT                                   | 频率格式化值（GROUP 的所有水平合计）                                   |
+
+<sup>1</sup> 建议改用 `FREQ_`_`i`_, `FREQ_`_`i`_`_FMT`, `FREQ_SUM`, `FREQ_SUM_FMT`，保留 `N_`_`i`_, `N_`_`i`_`_FMT`, `N_SUM`, `N_SUM_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
 其中，变量 `ITEM`、`VALUE_`_`i`_、`VALUE_SUM` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
@@ -118,26 +147,14 @@ GROUPBY = ARMN
 
 **Tips** :
 
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)`
+如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)`
 
 **Example** :
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
+OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)
 ```
-
----
-
-### PATTERN
-
-用法同 [PATTERN](../qualify/readme.md#pattern)。
-
----
-
-### BY
-
-用法同 [BY](../qualify/readme.md#by)。
 
 ---
 
@@ -165,9 +182,21 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
 
 ---
 
+### PROCHTTP_PROXY
+
+**Syntax** : _host_:_port_
+
+指定代理主机和端口。
+
+本宏程序将自动检查前置依赖程序是否已经导入，若发现前置依赖程序未导入，则尝试从网络上下载最新版本程序文件，使用此参数可指定网络连接使用的代理主机和端口。
+
+**Default** : 127.0.0.1:7890
+
+---
+
 ### DEL_TEMP_DATA
 
-**Syntax** : TRUE|FALSE
+**Syntax** : TRUE | FALSE
 
 指定是否删除宏程序运行过程生成的中间数据集。
 
