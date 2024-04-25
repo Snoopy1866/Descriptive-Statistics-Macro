@@ -16,6 +16,7 @@ Version Date: 2023-03-08 1.0.1
               2024-03-15 1.0.11
               2024-03-19 1.0.12
               2024-04-18 1.0.13
+              2024-04-25 1.0.14
 ===================================
 */
 
@@ -125,7 +126,7 @@ Version Date: 2023-03-08 1.0.1
         %goto exit_with_error;
     %end;
 
-    %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:[\s,]*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*(?:=\s*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))?)+\s*)?\))?$/);
+    %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:[\s,]*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*=\s*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))+\s*)?\))?$/);
     %let reg_var_id = %sysfunc(prxparse(&reg_var));
     %if %sysfunc(prxmatch(&reg_var_id, %bquote(&var))) = 0 %then %do;
         %put ERROR: 参数 VAR = %bquote(&var) 格式不正确！;
@@ -143,164 +144,187 @@ Version Date: 2023-03-08 1.0.1
             %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &var_name;
             %goto exit_with_error;
         %end;
+
         /*检查变量类型*/
         %if %bquote(&type) = num %then %do;
             %put ERROR: 参数 VAR 不支持数值型变量！;
             %goto exit_with_error;
         %end;
-        
-        %if %bquote(&var_level) = %bquote() %then %do;
-            %let IS_LEVEL_SPECIFIED = FALSE; /*未指定各水平名称*/
-        %end;
-        %else %do;
-            %let IS_LEVEL_SPECIFIED = TRUE; /*已指定各水平名称*/
-            /*拆分变量水平*/
-            %let reg_var_level_expr_unit = %bquote(/\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*(?:=\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))?/);
+
+        /*对各水平名称进行重命名*/
+        %let VAR_LEVEL_NEED_RENAME = FALSE;
+        %if %bquote(&var_level) ^= %bquote() %then %do; 
+            /*拆分需要进行重命名的水平名称*/
+            %let reg_var_level_expr_unit = %bquote(/\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*=\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)/);
             %let reg_var_level_expr_unit_id = %sysfunc(prxparse(&reg_var_level_expr_unit));
             %let start = 1;
             %let stop = %length(&var_level);
             %let position = 1;
             %let length = 1;
             %let i = 1;
+            %let var_level_name_new_len = 0;
             %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %do %until(&position = 0); /*连续匹配正则表达式*/
-                %let var_level_&i._str = %substr(%bquote(&var_level), &position, &length); /*第i个水平名称和别名*/
-                %if %sysfunc(prxmatch(&reg_var_level_expr_unit_id, %bquote(&&var_level_&i._str))) %then %do;
-                    %let var_level_&i = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._str))); /*拆分第i个水平名称*/
-                    %let var_level_&i._note = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._str))); /*拆分第i个水平别名*/
-                    %if %bquote(&&var_level_&i._note) = %bquote() %then %do;
-                        %let var_level_&i._note = %bquote(&&var_level_&i);
-                    %end;
+                %let var_level_&i._name_pair = %substr(%bquote(&var_level), &position, &length); /*第i个水平的旧名称和新名称*/
+                %if %sysfunc(prxmatch(&reg_var_level_expr_unit_id, %bquote(&&var_level_&i._name_pair))) %then %do;
+                    %let var_level_&i._name_old = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._name_pair))); /*拆分第i个水平的旧名称*/
+                    %let var_level_&i._name_new = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._name_pair))); /*拆分第i个水平的新名称*/
+                    %let var_level_name_new_len = %sysfunc(max(&var_level_name_new_len, %sysfunc(length(&&var_level_&i._name_new)))); /*新名称的最大长度*/
                 %end;
                 %else %do;
-                    %put ERROR: 在对参数 VAR 解析第 &i 个分类名称时发生了意料之外的错误！;
+                    %put ERROR: 在对参数 VAR 解析第 &i 个分类的新旧名称时发生了意料之外的错误！;
                     %goto exit_with_error;
                 %end;
                 %let i = %eval(&i + 1);
                 %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %end;
-            %let var_level_n = %eval(&i - 1); /*计算匹配到的水平数量*/
+            
+            proc sql noprint;
+                select max(&var_level_name_new_len, max(length(&var_name))) into : var_level_name_new_len from &libname_in..&memname_in(&dataset_options_in);
+            quit;
+
+            %let var_level_rename_n = %eval(&i - 1); /*计算需要进行重命名的水平名称的数量*/
+            %let VAR_LEVEL_NEED_RENAME = TRUE;
         %end;
     %end;
+
+    /*对水平名称进行重命名操作*/
+    data tmp_qualify_indata;
+        set &libname_in..&memname_in(&dataset_options_in);
+        %if &VAR_LEVEL_NEED_RENAME = TRUE %then %do;
+            length &var_name._note $ &var_level_name_new_len;
+            select (&var_name);
+                %do i = 1 %to &var_level_rename_n;
+                    when (&&var_level_&i._name_old) &var_name._note = &&var_level_&i._name_new;
+                %end;
+                otherwise &var_name._note = &var_name;
+            end;
+        %end;
+        %else %do;
+            &var_name._note = &var_name;
+        %end;
+    run;
 
 
     /*BY*/
-    %if %bquote(&IS_LEVEL_SPECIFIED) = TRUE %then %do; /*已指定顺序的情况下，参数 by 不起作用*/
-        %if %bquote(&by) ^= %bquote() and %bquote(&by) ^= #AUTO %then %do;
-            %put WARNING: 已通过参数 VAR 指定各分类的顺序，参数 BY 已被忽略！;
+    %if %bquote(&by) = %bquote() %then %do;
+        %put ERROR: 参数 BY 为空！;
+        %goto exit_with_error;
+    %end;
+    %else %if %bquote(&by) = #AUTO %then %do;
+        %put NOTE: 未指定各分类的排序方式，将按照各分类的频数从大到小进行排序！;
+        %let by = #FREQ(DESCENDING);
+    %end;
+
+    /*解析参数 by, 检查合法性*/
+    %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
+    %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
+    %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
+        %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*排序基于的统计量*/
+        %let by_var       = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*排序基于的变量*/
+        %let by_fmt       = %sysfunc(prxposn(&reg_by_id, 3, %bquote(&by))); /*排序基于的输出格式*/
+        %let by_direction = %sysfunc(prxposn(&reg_by_id, 4, %bquote(&by))); /*排序方向*/
+
+        %if %bquote(&by_var) ^= %bquote() %then %do;
+            /*检查排序变量存在性*/
+            proc sql noprint;
+                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&by_var";
+            quit;
+            %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
+                %put ERROR: 在 &libname_in..&memname_in 中没有找到排序变量 &by_var;
+                %goto exit_with_error;
+            %end;
+        %end;
+
+        %if %bquote(&by_fmt) ^= %bquote() %then %do;
+            /*检查排序格式存在性*/
+            proc sql noprint;
+                select libname, memname, source into : by_fmt_libname, : by_fmt_memname, : by_fmt_source from DICTIONARY.FORMATS where fmtname = "&by_fmt";
+            quit;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不存在！;
+                %goto exit_with_error;
+            %end;
+            %else %do;
+                %if &by_fmt_source ^= C %then %do;
+                    %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不是 CATALOG-BASED！;
+                    %goto exit_with_error;
+                %end;
+            %end;
+        %end;
+
+        /*检查排序方向*/
+        %if %bquote(&by_direction) = %bquote() %then %do;
+            %put NOTE: 未指定排序方向，默认升序排列！;
+            %let by_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&by_direction) = ASC %then %do;
+            %let by_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&by_direction) = DESC %then %do;
+            %let by_direction = DESCENDING;
         %end;
     %end;
-    %else %do; /*未指定顺序的情况，参数 by 用于指定顺序*/
-        %if %bquote(&by) = %bquote() %then %do;
-            %put ERROR: 参数 BY 为空！;
-            %goto exit_with_error;
-        %end;
-        %else %if %bquote(&by) = #AUTO %then %do;
-            %put NOTE: 未指定各分类的排序方式，将按照各分类的频数从大到小进行排序！;
-            %let by = #FREQ(DESCENDING);
-        %end;
+    %else %do;
+        %put ERROR: 参数 BY = %bquote(&by) 格式不正确！;
+        %goto exit_with_error;
+    %end;
 
-        /*解析参数 by, 检查合法性*/
-        %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
-        %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
-        %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
-            %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*排序基于的统计量*/
-            %let by_var       = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*排序基于的变量*/
-            %let by_fmt       = %sysfunc(prxposn(&reg_by_id, 3, %bquote(&by))); /*排序基于的输出格式*/
-            %let by_direction = %sysfunc(prxposn(&reg_by_id, 4, %bquote(&by))); /*排序方向*/
-
-            %if %bquote(&by_var) ^= %bquote() %then %do;
-                /*检查排序变量存在性*/
-                proc sql noprint;
-                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&by_var";
-                quit;
-                %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
-                    %put ERROR: 在 &libname_in..&memname_in 中没有找到排序变量 &by_var;
-                    %goto exit_with_error;
-                %end;
-            %end;
-
-            %if %bquote(&by_fmt) ^= %bquote() %then %do;
-                /*检查排序格式存在性*/
-                proc sql noprint;
-                    select libname, memname, source into : by_fmt_libname, : by_fmt_memname, : by_fmt_source from DICTIONARY.FORMATS where fmtname = "&by_fmt";
-                quit;
-                %if &SQLOBS = 0 %then %do;
-                    %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不存在！;
-                    %goto exit_with_error;
-                %end;
-                %else %do;
-                    %if &by_fmt_source ^= C %then %do;
-                        %put ERROR: 参数 BY 指定的排序格式 &by_fmt.. 不是 CATALOG-BASED！;
-                        %goto exit_with_error;
-                    %end;
-                %end;
-            %end;
-
-            /*检查排序方向*/
-            %if %bquote(&by_direction) = %bquote() %then %do;
-                %put NOTE: 未指定排序方向，默认升序排列！;
-                %let by_direction = ASCENDING;
-            %end;
-            %else %if %bquote(&by_direction) = ASC %then %do;
-                %let by_direction = ASCENDING;
-            %end;
-            %else %if %bquote(&by_direction) = DESC %then %do;
-                %let by_direction = DESCENDING;
-            %end;
-        %end;
-        %else %do;
-            %put ERROR: 参数 BY = %bquote(&by) 格式不正确！;
-            %goto exit_with_error;
-        %end;
-
-        /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
-        %if %bquote(&by_stat) ^= %bquote() %then %do;
-            proc sql noprint;
-                create table tmp_qualify_distinct_var as
-                    select
-                        distinct
-                        &var_name        as var_level,
-                        count(&var_name) as var_level_by_criteria
-                    from &libname_in..&memname_in(&dataset_options_in)
-                    group by var_level
-                    order by var_level_by_criteria &by_direction, var_level ascending;
-            quit;
-        %end;
-        %else %if %bquote(&by_var) ^= %bquote() %then %do;
-            proc sql noprint;
-                create table tmp_qualify_distinct_var as
-                    select
-                        distinct
-                        &var_name as var_level,
-                        &by_var   as var_level_by_criteria
-                    from &libname_in..&memname_in(&dataset_options_in)
-                    order by var_level_by_criteria &by_direction, var_level ascending;
-            quit;
-        %end;
-        %else %if %bquote(&by_fmt) ^= %bquote() %then %do;
-            proc format library = &by_fmt_libname..&by_fmt_memname cntlout = tmp_qualify_by_fmt;
-                select &by_fmt;
-            run;
-            proc sql noprint;
-                create table tmp_qualify_distinct_var as
-                    select
-                        label                   as var_level,
-                        input(strip(start), 8.) as var_level_by_criteria
-                    from tmp_qualify_by_fmt
-                    order by var_level_by_criteria &by_direction, var_level ascending;
-            quit;
-        %end;
-
+    /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
+    %if %bquote(&by_stat) ^= %bquote() %then %do;
         proc sql noprint;
-            select quote(strip(var_level)) into : var_level_1- from tmp_qualify_distinct_var;
-            select count(var_level)        into : var_level_n  from tmp_qualify_distinct_var;
+            create table tmp_qualify_distinct_var as
+                select
+                    distinct
+                    &var_name            as var_level,
+                    &var_name._note      as var_level_note,
+                    count(&var_name)     as var_level_by_criteria
+                from tmp_qualify_indata
+                group by var_level
+                order by var_level_by_criteria &by_direction, var_level ascending;
+        quit;
+    %end;
+    %else %if %bquote(&by_var) ^= %bquote() %then %do;
+        proc sql noprint;
+            create table tmp_qualify_distinct_var as
+                select
+                    distinct
+                    &var_name            as var_level,
+                    &var_name._note      as var_level_note,
+                    &by_var              as var_level_by_criteria
+                from tmp_qualify_indata
+                order by var_level_by_criteria &by_direction, var_level ascending;
+        quit;
+    %end;
+    %else %if %bquote(&by_fmt) ^= %bquote() %then %do;
+        proc format library = &by_fmt_libname..&by_fmt_memname cntlout = tmp_qualify_by_fmt;
+            select &by_fmt;
+        run;
+        proc sql noprint;
+            create table tmp_qualify_distinct_var as
+                select
+                    distinct
+                    a.&var_name          as var_level,
+                    a.&var_name._note    as var_level_note,
+                    ifn(not missing(b.start), input(strip(b.start), 8.), constant('BIG'))
+                                         as var_level_by_criteria,
+                    ifc(missing(b.start), 'Y', '')
+                                         as var_level_fmt_not_defined
+                from tmp_qualify_indata as a left join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                order by var_level_by_criteria &by_direction, var_level ascending;
 
-            %do i = 1 %to &var_level_n;
-                %let var_level_&i._note = %bquote(&&var_level_&i);
+            select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var;
+            %if &SQLOBS > 0 %then %do;
+                %put WARNING: 指定用于排序的输出格式中，存在 &by_fmt_not_defined_n 个分类名称未定义，输出结果可能是非预期的！;
             %end;
         quit;
     %end;
+
+    proc sql noprint;
+        select quote(strip(var_level))      into : var_level_1- from tmp_qualify_distinct_var;
+        select quote(strip(var_level_note)) into : var_level_note_1- from tmp_qualify_distinct_var;
+        select count(var_level)             into : var_level_n  from tmp_qualify_distinct_var;
+    quit;
 
 
     /*UID*/
@@ -565,14 +589,7 @@ Version Date: 2023-03-08 1.0.1
 
 
     /*----------------------------------------------主程序----------------------------------------------*/
-    /*1. 复制分析数据*/
-    proc sql noprint;
-        create table tmp_qualify_indata as
-            select * from &libname_in..&memname_in(&dataset_options_in);
-    quit;
-
-
-    /*2. 去重UID*/
+    /*1. 去重UID*/
     %if %superq(uid) = #NULL %then %do;
         data tmp_qualify_indata_unique;
             set tmp_qualify_indata;
@@ -585,7 +602,7 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
 
-    /*3. 计算频数、频次、频率*/
+    /*2. 计算频数、频次、频率*/
     /*替换 "#|" 为 "|", "##" 为 "#"*/
     %macro temp_combpl_hash(string);
         transtrn(transtrn(&string, "#|", "|"), "##", "#")
@@ -625,7 +642,7 @@ Version Date: 2023-03-08 1.0.1
                 select
                     &i                                                                     as SEQ,
                     cat(%unquote(%superq(indent_sql_expr)),
-                        %unquote(&&var_level_&i._note),
+                        %unquote(&&var_level_note_&i),
                         %unquote(%superq(suffix_sql_expr)))                                as ITEM,
                     /*频数*/
                     sum(&var_name = &&var_level_&i)                                        as FREQ,
@@ -652,7 +669,7 @@ Version Date: 2023-03-08 1.0.1
     quit;
 
 
-    /*4. 输出数据集*/
+    /*3. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item value
                                     %end;

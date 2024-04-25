@@ -56,26 +56,25 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 **Syntax** :
 
 - _variable_
-- _variable_("_category-1_"<, "_category-2_", ...>)
-- _variable_("_category-1_"<= "_note-1_"><, "_category-2_"<="_note-2_">, ...>)
+- _variable_("_category-1_" = "_note-1_" <, "_category-2_" ="_note-2_", ...>)
 
-指定定性分析的变量，_`category`_ 表示需要统计的分类名称，_`note`_ 表示该分类在输出数据集中的展示名称（可以与分类名称不同）。
+指定定性分析的变量，_`category`_ 表示需要统计的分类名称，_`note`_ 表示该分类在输出数据集中显示的名称。
 
 **Caution** :
 
 1. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `VAR` 不允许指定数值型变量；
 
-**Tips** :
-
-1. 参数 `VAR` 可以指定空字符串作为一个分类，在这种情况下，宏程序将计算缺失分类的频数，例如：`VAR = SEX("" = "缺失" "男" "女")`；
-
 **Example** :
 
 ```sas
 VAR = SEX
-VAR = SEX("男" "女")
-VAR = SEX("" = "Missing" "男" = "Male" "女" = "Female")
+```
+
+**Tips** : 可以使用参数 `VAR` 提前对分类名称进行重命名，重命名后的分类名称将作为输出数据集中各分类显示的名称，实际输出的统计量计算结果仍然是使用原始分类名称进行统计的。例如：
+
+```sas
+VAR = SEX("男" = "Male" "女" = "Female")
 ```
 
 ---
@@ -108,8 +107,7 @@ run;
 
 **Caution** :
 
-1. 若参数 `VAR` 指定了分析变量的分类名称，则按照各分类在参数 `VAR` 中指定的顺序显示在输出数据集中，此时参数 `BY` 无效；
-2. 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
+1. 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
 **Example** :
 
@@ -435,13 +433,7 @@ SUFFIX = "，n(%)"
 ![](./assets/example-var.png)
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig("正常", "异常无临床意义", "异常有临床意义"));
-```
-
-![](./assets/example-var-category.png)
-
-```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig("" = "缺失", "正常", "异常无临床意义" = "NCS", "异常有临床意义" = "CS"));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig("异常无临床意义" = "NCS", "异常有临床意义" = "CS"));
 ```
 
 ![](./assets/example-var-category-note.png)
