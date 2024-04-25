@@ -136,7 +136,7 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `|`，�
 
 ```sas
 PATTERN = #N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX
-PATTERN = #N(#NMISS)|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SKEWNESS|(#LCLM, #UCLM)
+PATTERN = #N(#NMISS)|#MEAN(##.#STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SKEWNESS|(#LCLM, #UCLM)
 ```
 
 ---
@@ -169,7 +169,7 @@ PATTERN = #N(#NMISS)|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SK
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = (SEQ ITEM VALUE))
+OUTDATA = T1(KEEP = SEQ ITEM VALUE)
 ```
 
 ---
@@ -427,7 +427,7 @@ INDENT = "\li420 "
 
 ```sas
 %quantify(indata = adsl, var = age,
-          pattern = %nrstr(#N(#NMISS)#Q1|#MEAN(###STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max));
+          pattern = %nrstr(#N(#NMISS)#Q1|#MEAN(##.#STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max));
 ```
 
 ![](./assets/example-2.png)

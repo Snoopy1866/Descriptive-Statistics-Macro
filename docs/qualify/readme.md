@@ -58,7 +58,13 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 - _variable_
 - _variable_("_category-1_" = "_note-1_" <, "_category-2_" ="_note-2_", ...>)
 
-指定定性分析的变量，_`category`_ 表示需要统计的分类名称，_`note`_ 表示该分类在输出数据集中显示的名称。
+指定定性分析的变量。
+
+_`category`_ 表示重命名前的分类名称，_`note`_ 表示重命名后的分类名称。重命名后的分类名称仅作为输出数据集中该分类显示的名称，实际输出的统计量结果仍然是按照重命名前的分类名称进行计算的。例如：
+
+```sas
+VAR = SEX("男" = "Male" "女" = "Female")
+```
 
 **Caution** :
 
@@ -69,12 +75,6 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 ```sas
 VAR = SEX
-```
-
-**Tips** : 可以使用参数 `VAR` 提前对分类名称进行重命名，重命名后的分类名称将作为输出数据集中各分类显示的名称，实际输出的统计量计算结果仍然是使用原始分类名称进行统计的。例如：
-
-```sas
-VAR = SEX("男" = "Male" "女" = "Female")
 ```
 
 ---
