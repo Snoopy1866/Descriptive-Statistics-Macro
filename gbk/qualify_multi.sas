@@ -8,6 +8,7 @@ Version Date: 2023-12-26 0.1
               2024-01-22 0.3
               2024-04-16 0.4
               2024-04-18 0.5
+              2024-04-25 0.6
 ===================================
 */
 
@@ -180,8 +181,7 @@ Version Date: 2023-12-26 0.1
         %end;
         %else %if %superq(groupby) = #AUTO %then %do;
             proc sql noprint;
-                select distinct quote(strip(&group_var)) into : group_level_1- from %superq(indata) where not missing(&group_var);
-                select count(distinct &group_var) into : group_level_n from %superq(indata);
+                create table tmp_qualify_m_groupby_sorted as select * from %superq(indata) where not missing(&group_var);
             quit;
         %end;
         %else %do;
@@ -206,16 +206,6 @@ Version Date: 2023-12-26 0.1
                             &group_var,
                             &groupby_var
                         from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
-                    select quote(strip(&group_var))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
-                    select quote(strip(&group_var) || '(频率格式化)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
-                    select count(distinct &group_var)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
                 quit;
             %end;
             %else %do;
@@ -223,6 +213,20 @@ Version Date: 2023-12-26 0.1
                 %goto exit_with_error;
             %end;
         %end;
+
+        /*创建宏变量，用于输出数据集的变量标签*/
+        proc sql noprint;
+            select quote(strip(&group_var))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
+            select quote(strip(&group_var) || '(频率格式化)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
+            select count(distinct &group_var)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
+        quit;
     %end;
 
 
