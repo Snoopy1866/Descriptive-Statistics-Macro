@@ -17,6 +17,7 @@ Version Date: 2023-03-08 1.0.1
               2024-03-19 1.0.12
               2024-04-18 1.0.13
               2024-04-25 1.0.14
+              2024-04-26 1.0.15
 ===================================
 */
 
@@ -485,13 +486,12 @@ Version Date: 2023-03-08 1.0.1
         %goto exit_with_error;
     %end;
 
-    %if %bquote(&stat_format) = #AUTO %then %do;
-        %let FREQ_format  = best.;
-        %let RATE_format  = percentn9.2;
-        %let TIMES_format = &FREQ_format;
-        %let N_format     = &FREQ_format;
-    %end;
-    %else %do;
+    %let FREQ_format  = best.;
+    %let RATE_format  = percentn9.2;
+    %let TIMES_format = &FREQ_format;
+    %let N_format     = &FREQ_format;
+
+    %if %bquote(&stat_format) ^= #AUTO %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
         %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);

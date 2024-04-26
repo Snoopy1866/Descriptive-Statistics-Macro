@@ -12,6 +12,7 @@ Version Date: 2023-03-16 1.3.1
               2024-03-06 1.3.7
               2024-03-07 1.3.8
               2024-03-19 1.3.9
+              2024-04-26 1.3.10
 ===================================
 */
 
@@ -345,7 +346,10 @@ Version Date: 2023-03-16 1.3.1
         %goto exit_with_error;
     %end;
 
-    %if %bquote(&stat_format) = #AUTO %then %do;
+    %if %bquote(&stat_format) = #PREV %then %do;
+        %put NOTE: 使用上一次调用时的统计量输出格式！;
+    %end;
+    %else %do;
         data tmp_quantify_valuefmt;
             set &indata;
             &var._fmt = strip(vvalue(&var));
@@ -399,41 +403,39 @@ Version Date: 2023-03-16 1.3.1
         %let Q1_format       = &MEDIAN_format;
         %let Q3_format       = &MEDIAN_format;
         %let N_format        = &NMISS_format;
-    %end;
-    %else %if %bquote(&stat_format) = #PREV %then %do;
-        %put NOTE: 使用上一次调用时的统计量输出格式！;
-    %end;
-    %else %do;
-        %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
-        %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
-        %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
-        %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 
-        %if %sysfunc(prxmatch(&reg_stat_format_id, %bquote(&stat_format))) %then %do;
-            %let IS_VALID_STAT_FORMAT = TRUE;
-            %do i = 1 %to &stat_format_n;
-                %let stat_whose_format_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 2), %bquote(&stat_format))));
-                %let stat_new_format = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 1), %bquote(&stat_format)));
-                %let stat_new_format_base = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3), %bquote(&stat_format)));
-                %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format); /*更新统计量的输出格式*/
+        %if %bquote(&stat_format) ^= #AUTO %then %do;
+            %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
+            %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
+            %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
+            %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
 
-                %if %bquote(&stat_new_format_base) ^= %bquote() %then %do;
-                    proc sql noprint;
-                        select * from DICTIONARY.FORMATS where fmtname = "&stat_new_format_base" and fmttype = "F";
-                    quit;
-                    %if &SQLOBS = 0 %then %do;
-                        %put ERROR: 为统计量 &stat_whose_format_2be_update 指定的输出格式 &stat_new_format_base 不存在！;
-                        %let IS_VALID_STAT_FORMAT = FALSE;
+            %if %sysfunc(prxmatch(&reg_stat_format_id, %bquote(&stat_format))) %then %do;
+                %let IS_VALID_STAT_FORMAT = TRUE;
+                %do i = 1 %to &stat_format_n;
+                    %let stat_whose_format_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 2), %bquote(&stat_format))));
+                    %let stat_new_format = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 1), %bquote(&stat_format)));
+                    %let stat_new_format_base = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3), %bquote(&stat_format)));
+                    %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format); /*更新统计量的输出格式*/
+
+                    %if %bquote(&stat_new_format_base) ^= %bquote() %then %do;
+                        proc sql noprint;
+                            select * from DICTIONARY.FORMATS where fmtname = "&stat_new_format_base" and fmttype = "F";
+                        quit;
+                        %if &SQLOBS = 0 %then %do;
+                            %put ERROR: 为统计量 &stat_whose_format_2be_update 指定的输出格式 &stat_new_format_base 不存在！;
+                            %let IS_VALID_STAT_FORMAT = FALSE;
+                        %end;
                     %end;
                 %end;
+                %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
+                    %goto exit_with_error;
+                %end;
             %end;
-            %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
+            %else %do;
+                %put ERROR: 参数 STAT_FORMAT = %bquote(&stat_format) 格式不正确！;
                 %goto exit_with_error;
             %end;
-        %end;
-        %else %do;
-            %put ERROR: 参数 STAT_FORMAT = %bquote(&stat_format) 格式不正确！;
-            %goto exit_with_error;
         %end;
     %end;
 
@@ -580,9 +582,6 @@ Version Date: 2023-03-16 1.3.1
                                              %let precision = 0;
                                          %end;
                                          strip(put(round(&&&&&&stat_&i._&j.._var, 1e-&precision), &&&&&&stat_&i._&j.._format)) /*w.d 格式，先 round 然后 put*/
-                                     %end;
-                                     %else %if %bquote(&&&&&&stat_&i._&j.._format) = %bquote() %then %do;
-                                         strip(put(&&&&&&stat_&i._&j.._var, best.)) /*未指定格式，使用 best.*/
                                      %end;
                                      %else %do;
                                          strip(put(&&&&&&stat_&i._&j.._var, &&&&&&stat_&i._&j.._format)) /*其他格式，直接 put*/
