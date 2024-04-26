@@ -41,13 +41,15 @@ _dataset_: 数据集名称
 
 _dataset-options_: 数据集选项，兼容 SAS 系统支持的所有数据集选项
 
-**Example** :
+**Usage** :
 
 ```sas
 INDATA = ADSL
 INDATA = SHKY.ADSL
 INDATA = SHKY.ADSL(where = (FAS = "Y"))
 ```
+
+[**Example**](#一般用法)
 
 ---
 
@@ -71,11 +73,13 @@ VAR = SEX("男" = "Male" "女" = "Female")
 1. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `VAR` 不允许指定数值型变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 VAR = SEX
 ```
+
+[**Example**](#一般用法)
 
 ---
 
@@ -109,13 +113,15 @@ run;
 
 1. 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
-**Example** :
+**Usage** :
 
 ```sas
 BY = #freq
 BY = SEXN(asc)
 BY = SEXN.(descending)
 ```
+
+[**Example**](#指定分类排序方式)
 
 ---
 
@@ -129,11 +135,13 @@ BY = SEXN.(descending)
 
 默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
 
-**Example** :
+**Usage** :
 
 ```sas
 UID = USUBJID
 ```
+
+[**Example**](#指定唯一标识符变量)
 
 ---
 
@@ -154,12 +162,14 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `#`，�
 
 **Default** : `%nrstr(#N(#RATE))`
 
-**Example** :
+**Usage** :
 
 ```sas
 PATTERN = #N
 PATTERN = #N[#RATE]##
 ```
+
+[**Example**](#指定统计量的输出模式)
 
 ---
 
@@ -173,11 +183,13 @@ PATTERN = #N[#RATE]##
 
 默认情况下，宏程序不统计缺失分类的频数和频率。
 
-**Example** :
+**Usage** :
 
 ```sas
 MISSING = TRUE
 ```
+
+[**Example**](#指定是否统计缺失分类)
 
 ---
 
@@ -191,13 +203,15 @@ MISSING = TRUE
 
 **Default** : "缺失"
 
-**Example** :
+**Usage** :
 
 ```sas
 MISSING_NOTE = "缺失"
 MISSING_NOTE = '缺失'
 MISSINF_NOTE = %str(缺失)
 ```
+
+[**Example**](#指定缺失分类的说明文字)
 
 ---
 
@@ -211,11 +225,13 @@ MISSINF_NOTE = %str(缺失)
 
 **Default** : LAST
 
-**Example** :
+**Usage** :
 
 ```sas
 MISSING_POSITION = FIRST
 ```
+
+[**Example**](#指定缺失分类的显示位置)
 
 ---
 
@@ -253,12 +269,14 @@ MISSING_POSITION = FIRST
 
 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)`
 
-**Example** :
+**Usage** :
 
 ```sas
 OUTDATA = T1
 OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)
 ```
+
+[**Example**](#指定需要保留的变量)
 
 ---
 
@@ -298,12 +316,14 @@ proc format;
 run;
 ```
 
-**Example** :
+**Usage** :
 
 ```sas
 STAT_FORMAT = (#N = z4., #RATE = percentn9.2)
 STAT_FORMAT = (#RATE = qual., #TS = 8.4, #P = pv.)
 ```
+
+[**Example**](#指定统计量的输出格式)
 
 ---
 
@@ -329,11 +349,13 @@ LABEL = ''''
 
 默认情况下，宏程序将自动获取变量 [VAR](#var) 的标签，若标签为空，则使用变量 [VAR](#var) 的变量名作为标签。
 
-**Example** :
+**Usage** :
 
 ```sas
 LABEL = "性别-n(%)"
 ```
+
+[**Example**](#指定分析变量标签)
 
 ---
 
@@ -363,11 +385,13 @@ INDENT = ''''
 
 1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`；
 
-**Example** :
+**Usage** :
 
 ```sas
 INDENT = "\li420 "
 ```
+
+[**Example**](#指定缩进字符串)
 
 ---
 
@@ -393,11 +417,13 @@ SUFFIX = ''''
 
 默认情况下，各分类名称不添加后缀。
 
-**Example** :
+**Usage** :
 
 ```sas
 SUFFIX = "，n(%)"
 ```
+
+[**Example**](#指定分类名称后缀)
 
 ---
 
@@ -438,7 +464,7 @@ SUFFIX = "，n(%)"
 
 ![](./assets/example-var-category-note.png)
 
-### 指定统计量的模式
+### 指定统计量的输出模式
 
 ```sas
 %qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, pattern = %str(#n[#rate]##));

@@ -54,12 +54,14 @@
 1. 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `GROUP` 不允许指定数值型变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 GROUP = ARM
 GROUP = ARM("试验组", "对照组")
 ```
+
+[**Example**](#指定分组变量的水平名称)
 
 ---
 
@@ -78,11 +80,13 @@ GROUP = ARM("试验组", "对照组")
 1. 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `GROUP` 若指定了分组变量的各水平名称，则各水平分组的统计结果将按照参数 `GROUP` 中各水平名称指定的顺序显示在输出数据集中，此时参数 `GROUPBY` 无效。
 
-**Example** :
+**Usage** :
 
 ```sas
 GROUPBY = ARMN
 ```
+
+[**Example**](#指定分组变量的排序变量)
 
 ---
 
@@ -149,7 +153,7 @@ GROUPBY = ARMN
 
 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)`
 
-**Example** :
+**Usage** :
 
 ```sas
 OUTDATA = T1

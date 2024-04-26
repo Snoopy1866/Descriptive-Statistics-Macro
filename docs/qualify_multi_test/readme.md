@@ -52,11 +52,13 @@
 1. 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `GROUP` 不允许指定数值型变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 GROUP = ARM
 ```
+
+[**Example**](#一般用法)
 
 ---
 
@@ -70,11 +72,13 @@ GROUP = ARM
 
 1. 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 GROUPBY = ARMN
 ```
+
+[**Example**](#一般用法)
 
 ---
 

@@ -2,6 +2,8 @@
 
 单组多层级定性指标的分析，输出频数、构成比（率）指标。
 
+**⚠ 注意：自 v1.5.0 开始，本程序已被弃用，请使用 [qualify_strata](../qualify_strata/readme.md) 代替。**
+
 ## 语法
 
 ### 必选参数
@@ -11,27 +13,27 @@
 
 ### 可选参数
 
-- [FORMAT]()
-- [BY]()
-- [MISSING]()
-- [DENOMINATOR]()
-- [INDENT]()
-- [LABEL]()
-- [IS_LABEL_INDENT]()
-- [IS_LABEL_DISPLAY]()
-- [OUTDATA]()
+- [FORMAT](#format)
+- [BY](#by)
+- [MISSING](#missing)
+- [DENOMINATOR](#denominator)
+- [INDENT](#indent)
+- [LABEL](#label)
+- [IS_LABEL_INDENT](#is_label_indent)
+- [IS_LABEL_DISPLAY](#is_label_display)
+- [OUTDATA](#outdata)
 
 ### 调试参数
 
-- [DEL_TEMP_DATA]()
+- [DEL_TEMP_DATA](#del_temp_data)
 
 ### 扩展参数
 
-- [DEL_DUP_BY_VAR]()
-- [SKIP_PARAM_CHECK]()
-- [SKIP_MAIN_PROG]()
-- [PARAM_VALID_FLAG_VAR]()
-- [PARAM_LIST_BUFFER]()
+- [DEL_DUP_BY_VAR](#del_dup_by_var)
+- [SKIP_PARAM_CHECK](#skip_param_check)
+- [SKIP_MAIN_PROG](#skip_main_prog)
+- [PARAM_VALID_FLAG_VAR](#param_valid_flag_check)
+- [PARAM_LIST_BUFFER](#param_list_buffer)
 
 ## 参数说明
 
@@ -47,7 +49,7 @@ _dataset_: 数据集名称
 
 _dataset-options_: 数据集选项，兼容 SAS 系统支持的所有数据集选项
 
-**Example** :
+**Usage** :
 
 ```sas
 INDATA = ADSL
@@ -80,6 +82,10 @@ VAR = sex
 VAR = sex agegr tucat
 ```
 
+[**Example: 指定单个分析变量**](#指定单个分析变量)
+
+[**Example: 指定多个分析变量**](#指定多个分析变量)
+
 ---
 
 ### FORMAT
@@ -98,12 +104,14 @@ VAR = sex agegr tucat
 2. 当参数 `FORMAT` 指定的输出格式数量 _`m`_ 多于参数 `VAR` 指定的变量个数 _`n`_ 时，将忽略参数 `FORMAT` 中的最后 _`m-n`_ 个多余的输出格式。例如：指定参数 `VAR = sex agegr tucat, FORMAT = percent9.2 5.3 5.3 yymmdd10.` 时，宏程序将自动转换参数 `FORMAT = PERCENT9.2 5.3 5.3`；
 3. 参数 `FORMAT` 不允许指定不存在的输出格式。
 
-**Example** :
+**Usage** :
 
 ```sas
 FORMAT = percent9.2
 FORMAT = percent9.2 5.3 6.4 7.5
 ```
+
+[**Example: 指定输出格式**](#指定输出格式)
 
 ---
 
@@ -135,7 +143,7 @@ FORMAT = percent9.2 5.3 6.4 7.5
 6. 参数 `BY` 不允许对参数 `VAR` 的第 `i` 个变量指定参数 `VAR` 的第 `j` 个变量作为排序变量，例如 `VAR = sex agegr tucat, BY = agegr sex tucat` 是不被允许的；
 7. 参数 `BY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 BY = #FREQ_MAX
@@ -146,6 +154,8 @@ BY = sexn(ascending)
 BY = sexn(desc) agegrn(ascending) tucatn
 BY = sexn(desc) agegrn(ascending) tucatn #freq_max #freq_min
 ```
+
+[**Example: 指定排序方式**](#指定排序方式)
 
 ---
 
@@ -168,12 +178,14 @@ BY = sexn(desc) agegrn(ascending) tucatn #freq_max #freq_min
 2. 当参数 `MISSING` 指定为 `FALSE` 时，参数 `VAR` 中的所有变量均忽略缺失值，仅对各自变量的非缺失值进行分类统计，不计算缺失值的频数与频率；
 3. 当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 少于参数 `VAR` 指定的变量个数 `n` 时，对于参数 `VAR` 中未匹配 `TRUE`（或 `FALSE`）的变量 _`variable-m+1, variable-m+2, ..., variable-n`_，将重复参数 `MISSING` 的最后一个 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR = sex agegr tucat, MISSING= TRUE FALSE` 时，宏程序将自动转换参数 `MISSING = TRUE FALSE FALSE`； 4.当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 多于参数 `VAR` 指定的变量个数 `n` 时，将忽略参数 `MISSING` 中最后 `m-n` 个多于的 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR= sex agegr tucat, MISSING = TRUE FALSE TRUE FALSE`，宏程序将自动转换参数 `MISSING = TRUE FALSE TRUE`；
 
-**Example** :
+**Usage** :
 
 ```sas
 MISSING = TRUE
 MISSING = TRUE FALSE FALSE
 ```
+
+[**Example: 指定缺失值处理方式**](#指定缺失值处理方式)
 
 ---
 
@@ -232,6 +244,8 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 1. 若使用行内格式化语法表示缩进，可指定参数 `INDENT = @w@w@w@w`（假设指定 ods escapechar = "@"）。
 
+[**Example: 指定缩进字符串**](#指定缩进字符串)
+
 ---
 
 ### LABEL
@@ -243,6 +257,8 @@ _`denominator-specification`_ 的具体取值及含义如下：
 **Default** : %AUTO
 
 默认情况下，宏程序将会查找参数 `VAR` 指定的第一个变量在参数 `INDATA` 指定的数据集中的标签，并与字符串 `-n(%)` 连接，作为统计结果中首行显示的标签字符串，若参数 `VAR` 指定的第一个变量的标签为空，则将 _`variable-1`_`-n(%)` 作为统计结果中首行显示的标签字符串。
+
+[**Example: 指定分析变量标签**](#指定分析变量标签)
 
 ---
 

@@ -36,13 +36,15 @@ _dataset_: 数据集名称
 
 _dataset-options_: 数据集选项，兼容 SAS 系统支持的所有数据集选项
 
-**Example** :
+**Usage** :
 
 ```sas
 INDATA = ADSL
 INDATA = SHKY.ADSL
 INDATA = SHKY.ADSL(where = (FAS = "Y"))
 ```
+
+[**Example**](#一般用法)
 
 ---
 
@@ -57,11 +59,13 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 1. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 2. 参数 `VAR` 不允许指定字符型变量；
 
-**Example** :
+**Usage** :
 
 ```sas
 VAR = AGE
 ```
+
+[**Example**](#一般用法)
 
 ---
 
@@ -132,12 +136,14 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `|`，�
 4. 若 #_statistic-keyword_ 之前的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = ..#MEAN`；
 5. 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
 
-**Example** :
+**Usage** :
 
 ```sas
 PATTERN = #N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX
 PATTERN = #N(#NMISS)|#MEAN(##.#STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #SKEWNESS|(#LCLM, #UCLM)
 ```
+
+[**Example**](#指定统计量的输出模式)
 
 ---
 
@@ -165,12 +171,14 @@ PATTERN = #N(#NMISS)|#MEAN(##.#STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #S
 
 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
 
-**Example** :
+**Usage** :
 
 ```sas
 OUTDATA = T1
 OUTDATA = T1(KEEP = SEQ ITEM VALUE)
 ```
+
+[**Example**](#指定需要保留的变量)
 
 ---
 
@@ -252,7 +260,7 @@ run;
 
 当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式。
 
-**Example** :
+**Usage** :
 
 ```sas
 STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1)
@@ -261,13 +269,17 @@ STAT_FORMAT = (#MEAN = 4.1, #STD = 5.2, #MEDIAN = 4.1, #Q1 = 4.1, #Q3 = 4.1, #TS
 
 **Special Usage** :
 
-_STAT_FORMAT = #PREV_
+```sas
+STAT_FORMAT = #PREV
+```
 
 重复调用 `%quantify()` 时，如果第一次调用后即可确定后续调用时需要的统计量输出格式，可在第二次及之后调用 `%quantify()` 时，指定 `STAT_FORMAT = #PREV`。
 
 **Caution** :
 
 1. 首次调用 `quantify()` 时，不可指定 `STAT_FORMAT = #PREV`。
+
+[**Example**](#指定统计量的输出格式)
 
 ---
 
@@ -322,11 +334,13 @@ _STAT_FORMAT = #PREV_
 
 ---
 
-**Example** :
+**Usage** :
 
 ```sas
 STAT_NOTE = (#N = "靶区数", #MEAN = "平均值")
 ```
+
+[**Example**](#指定统计量的说明文字)
 
 ### LABEL
 
@@ -350,11 +364,13 @@ LABEL = ''''
 
 默认情况下，宏程序将自动获取变量 `VAR` 的标签，若标签为空，则使用变量 `VAR` 的变量名作为标签。
 
-**Example** :
+**Usage** :
 
 ```sas
 LABEL = "年龄（岁）"
 ```
+
+[**Example**](#指定分析变量的标签)
 
 ---
 
@@ -384,11 +400,13 @@ INDENT = ''''
 
 1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`
 
-**Example** :
+**Usage** :
 
 ```sas
 INDENT = "\li420 "
 ```
+
+[**Example**](#指定缩进字符串)
 
 ---
 
@@ -423,7 +441,7 @@ INDENT = "\li420 "
 
 ![](./assets/example-1.png)
 
-### 指定统计量的模式
+### 指定统计量的输出模式
 
 ```sas
 %quantify(indata = adsl, var = age,
