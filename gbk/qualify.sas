@@ -481,11 +481,6 @@ Version Date: 2023-03-08 1.0.1
 
 
     /*STAT_FORMAT*/
-    %if %bquote(&stat_format) = %bquote() %then %do;
-        %put ERROR: 参数 STAT_FORMAT 为空！;
-        %goto exit_with_error;
-    %end;
-
     %let FREQ_format  = best.;
     %let RATE_format  = percentn9.2;
     %let TIMES_format = &FREQ_format;
@@ -493,6 +488,11 @@ Version Date: 2023-03-08 1.0.1
 
     %if %bquote(&stat_format) ^= #AUTO %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
+        %if &stat_format_n <= 0 %then %do;
+            %put ERROR: 参数 STAT_FORMAT 为空！;
+            %goto exit_with_error;
+        %end;
+
         %let reg_stat_format_expr_unit = %bquote(\s*#(&stat_supported|TS|P)\s*=\s*((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)[\s,]*);
         %let reg_stat_format_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_format_expr_unit, %eval(&stat_format_n - 1)))\)?$/i);
         %let reg_stat_format_id = %sysfunc(prxparse(&reg_stat_format_expr));
@@ -503,7 +503,6 @@ Version Date: 2023-03-08 1.0.1
                 %let stat_whose_format_2be_update = %upcase(%sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 2), %bquote(&stat_format))));
                 %let stat_new_format = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3 - 1), %bquote(&stat_format)));
                 %let stat_new_format_base = %sysfunc(prxposn(&reg_stat_format_id, %eval(&i * 3), %bquote(&stat_format)));
-                %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format); /*更新统计量的输出格式*/
 
                 %if %bquote(&stat_new_format_base) ^= %bquote() %then %do;
                     proc sql noprint;
@@ -513,6 +512,17 @@ Version Date: 2023-03-08 1.0.1
                         %put ERROR: 为统计量 &stat_whose_format_2be_update 指定的输出格式 &stat_new_format_base 不存在！;
                         %let IS_VALID_STAT_FORMAT = FALSE;
                     %end;
+                %end;
+
+                /*更新统计量的输出格式*/
+                %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format);
+
+                /*对于存在别名的统计量，需同步修改输出格式*/
+                %if &stat_whose_format_2be_update = N %then %do;
+                    %let FREQ_format = %bquote(&stat_new_format);
+                %end;
+                %else %if &stat_whose_format_2be_update = FREQ %then %do;
+                    %let N_format = %bquote(&stat_new_format);
                 %end;
             %end;
             %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
