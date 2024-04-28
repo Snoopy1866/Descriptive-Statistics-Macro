@@ -18,6 +18,7 @@ Version Date: 2023-03-08 1.0.1
               2024-04-18 1.0.13
               2024-04-25 1.0.14
               2024-04-26 1.0.15
+              2024-04-28 1.0.16
 ===================================
 */
 
@@ -305,17 +306,17 @@ Version Date: 2023-03-08 1.0.1
             create table tmp_qualify_distinct_var as
                 select
                     distinct
-                    a.&var_name          as var_level,
-                    a.&var_name._note    as var_level_note,
-                    ifn(not missing(b.start), input(strip(b.start), 8.), constant('BIG'))
-                                         as var_level_by_criteria,
-                    ifc(missing(b.start), 'Y', '')
-                                         as var_level_fmt_not_defined
-                from tmp_qualify_indata as a left join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                    coalescec(a.&var_name, b.label)       as var_level,
+                    coalescec(a.&var_name._note, b.label) as var_level_note,
+                    ifn(not missing(b.label), input(strip(b.start), 8.), constant('BIG'))
+                                                          as var_level_by_criteria,
+                    ifc(missing(b.label), 'Y', '')
+                                                          as var_level_fmt_not_defined
+                from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var;
-            %if &SQLOBS > 0 %then %do;
+            %if &by_fmt_not_defined_n > 0 %then %do;
                 %put WARNING: 指定用于排序的输出格式中，存在 &by_fmt_not_defined_n 个分类名称未定义，输出结果可能是非预期的！;
             %end;
         quit;
