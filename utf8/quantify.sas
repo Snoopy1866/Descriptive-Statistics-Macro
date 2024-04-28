@@ -13,6 +13,7 @@ Version Date: 2023-03-16 1.3.1
               2024-03-07 1.3.8
               2024-03-19 1.3.9
               2024-04-26 1.3.10
+              2024-04-28 1.3.11
 ===================================
 */
 
@@ -89,23 +90,23 @@ Version Date: 2023-03-16 1.3.1
 
 
     /*统计量对应的PROC MEANS过程输出的数据集中的变量名*/
-    %let KURTOSIS_var = %bquote(&var._Kurt);
-    %let SKEWNESS_var = %bquote(&var._Skew);
-    %let MEDIAN_var   = %bquote(&var._Median);
-    %let QRANGE_var   = %bquote(&var._QEange);
-    %let STDDEV_var   = %bquote(&var._StdDev);
-    %let STDERR_var   = %bquote(&var._StdErr);
-    %let NMISS_var    = %bquote(&var._NMiss);
-    %let RANGE_var    = %bquote(&var._Range);
-    %let KURT_var     = %bquote(&var._Kurt);
+    %let KURTOSIS_var = %bquote(&var._KURTOSIS);
+    %let SKEWNESS_var = %bquote(&var._SKEWNESS);
+    %let MEDIAN_var   = %bquote(&var._MEDIAN);
+    %let QRANGE_var   = %bquote(&var._QRANGE);
+    %let STDDEV_var   = %bquote(&var._STDDEV);
+    %let STDERR_var   = %bquote(&var._STDERR);
+    %let NMISS_var    = %bquote(&var._NMISS);
+    %let RANGE_var    = %bquote(&var._RANGE);
+    %let KURT_var     = %bquote(&var._KURT);
     %let LCLM_var     = %bquote(&var._LCLM);
-    %let MEAN_var     = %bquote(&var._Mean);
-    %let MODE_var     = %bquote(&var._Mode);
-    %let SKEW_var     = %bquote(&var._Skew);
+    %let MEAN_var     = %bquote(&var._MEAN);
+    %let MODE_var     = %bquote(&var._MODE);
+    %let SKEW_var     = %bquote(&var._SKEW);
     %let UCLM_var     = %bquote(&var._UCLM);
     %let CSS_var      = %bquote(&var._CSS);
-    %let MAX_var      = %bquote(&var._Max);
-    %let MIN_var      = %bquote(&var._Min);
+    %let MAX_var      = %bquote(&var._MAX);
+    %let MIN_var      = %bquote(&var._MIN);
     %let P10_var      = %bquote(&var._P10);
     %let P20_var      = %bquote(&var._P20);
     %let P25_var      = %bquote(&var._P25);
@@ -119,10 +120,10 @@ Version Date: 2023-03-16 1.3.1
     %let P90_var      = %bquote(&var._P90);
     %let P95_var      = %bquote(&var._P95);
     %let P99_var      = %bquote(&var._P99);
-    %let STD_var      = %bquote(&var._StdDev);
-    %let SUM_var      = %bquote(&var._Sum);
+    %let STD_var      = %bquote(&var._STD);
+    %let SUM_var      = %bquote(&var._SUM);
     %let USS_var      = %bquote(&var._USS);
-    %let VAR_var      = %bquote(&var._Var);
+    %let VAR_var      = %bquote(&var._VAR);
     %let CV_var       = %bquote(&var._CV);
     %let P1_var       = %bquote(&var._P1);
     %let P5_var       = %bquote(&var._P5);
@@ -312,6 +313,34 @@ Version Date: 2023-03-16 1.3.1
     %if &IS_VALID_PATTERN_PART = FALSE %then %do;
         %goto exit_with_error;
     %end;
+
+    /*对提取到的统计量去重*/
+    data tmp_quantify_pattern_stat;
+        length stat $10;
+        %do i = 1 %to &part_n;
+            %do j = 1 %to &&stat_&i;
+                stat = "&&stat_&i._&j"; output;
+            %end;
+        %end;
+    run;
+
+    data tmp_quantify_pattern_stat;
+        set tmp_quantify_pattern_stat;
+
+        length stat_processed $10;
+        select (stat);
+            when ("STDDEV")   stat_processed = "STD";
+            when ("KURTOSIS") stat_processed = "KURT";
+            when ("SKEWNESS") stat_processed = "SKEW";
+            otherwise stat_processed = stat;
+        end;
+    run;
+
+    proc sql noprint;
+        select distinct stat_processed      into : stat_list_nodup separated by " " from tmp_quantify_pattern_stat; /*统计量去重的列表*/
+        select cats(stat, "= &var._", stat) into : stat_list_names separated by " " from tmp_quantify_pattern_stat; /*统计量输出的变量名*/
+    quit;
+
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
@@ -543,20 +572,9 @@ Version Date: 2023-03-16 1.3.1
     %end;
 
     %if &IS_NO_STAT_SPECIFIED = FALSE %then %do; /*指定了任意一个统计量，可以调用 PROC MEANS 过程*/
-        proc means data = &indata %do i = 1 %to &part_n;
-                                      %do j = 1 %to &&stat_&i;
-                                          %bquote( )%bquote(&&stat_&i._&j)
-                                      %end;
-                                  %end;
-                                  noprint
-                                  ;
+        proc means data = &indata &stat_list_nodup noprint;
             var &var;
-            output out = tmp_quantify_stat %do i = 1 %to &part_n;
-                                       %do j = 1 %to &&stat_&i;
-                                           %bquote(&&stat_&i._&j)%bquote(=)%bquote( )
-                                       %end;
-                                   %end;
-                                   /autoname autolabel;
+            output out = tmp_quantify_stat &stat_list_names /autoname autolabel;
         run;
     %end;
     %else %do; /*未指定任何统计量，仍然输出 tmp_quantify_stat 数据集，以兼容后续程序步骤*/
@@ -639,7 +657,8 @@ Version Date: 2023-03-16 1.3.1
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
-            delete tmp_quantify_stat
+            delete tmp_quantify_pattern_stat
+                   tmp_quantify_stat
                    tmp_quantify_outdata
                    tmp_quantify_valuefmt
                    ;
