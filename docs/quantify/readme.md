@@ -90,7 +90,7 @@ _`statistic-keyword`_ 可以指定以下统计量：
 | NMISS    |      | 缺失               |
 | MEAN     |      | 均值               |
 | VAR      |      | 方差               |
-| STDDVE   | STD  | 标准差             |
+| STDDEV   | STD  | 标准差             |
 | STDERR   |      | 标准误             |
 | RANGE    |      | 极差               |
 | MEDIAN   |      | 中位数             |
