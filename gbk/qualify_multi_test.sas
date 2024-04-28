@@ -8,6 +8,7 @@ Version Date: 2024-01-08 0.1
               2024-01-22 0.3
               2024-01-23 0.4
               2024-04-18 0.5
+              2024-04-28 0.6
 ===================================
 */
 
@@ -40,7 +41,8 @@ Version Date: 2024-01-08 0.1
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*声明全局变量*/
-    %global qlmt_exit_with_error;
+    %global qlmt_exit_with_error
+            group_level_n;
 
     /*声明局部变量*/
     %local i j
@@ -343,6 +345,12 @@ Version Date: 2024-01-08 0.1
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
+                                        keep = item %do i = 1 %to &group_level_n;
+                                                        value_&i
+                                                    %end;
+                                                    %if &group_level_n > 1 %then %do;
+                                                        value_sum
+                                                    %end;
                                     %end;
                                     %else %do;
                                         &dataset_options_out
