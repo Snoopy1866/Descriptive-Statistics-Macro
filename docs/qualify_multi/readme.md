@@ -67,7 +67,7 @@ GROUP = ARM("试验组", "对照组")
 
 ### GROUPBY
 
-**Syntax** : _variable_<(ASC\<ENDING\>|DESC\<ENDING\>)>
+**Syntax** : _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
 
 指定分组变量的排序变量及排序方向。
 

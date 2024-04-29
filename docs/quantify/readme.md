@@ -412,7 +412,7 @@ INDENT = "\li420 "
 
 ### DEL_TEMP_DATA
 
-**Syntax** : TRUE|FALSE
+**Syntax** : TRUE | FALSE
 
 指定是否删除宏程序运行过程生成的中间数据集。
 

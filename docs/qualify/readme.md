@@ -65,7 +65,7 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 _`category`_ 表示重命名前的分类名称，_`note`_ 表示重命名后的分类名称。重命名后的分类名称仅作为输出数据集中该分类显示的名称，实际输出的统计量结果仍然是按照重命名前的分类名称进行计算的。例如：
 
 ```sas
-VAR = SEX("男" = "Male" "女" = "Female")
+VAR = SEX("男" = "Male", "女" = "Female")
 ```
 
 **Caution** :
@@ -87,9 +87,9 @@ VAR = SEX
 
 **Syntax** :
 
-- #FREQ<(ASC\<ENDING\>|DESC\<ENDING\>)>
-- _variable_<(ASC\<ENDING\>|DESC\<ENDING\>)>
-- _format_<(ASC\<ENDING\>|DESC\<ENDING\>)>
+- #FREQ<(ASC\<ENDING\> | DESC\<ENDING\>)>
+- _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
+- _format_<(ASC\<ENDING\> | DESC\<ENDING\>)>
 
 指定各分类在输出数据集中的排列顺序依据。
 
