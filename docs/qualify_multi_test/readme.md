@@ -47,10 +47,10 @@
 
 指定分组变量。
 
-**Caution** :
-
-1. 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `GROUP` 不允许指定数值型变量；
+> [!CAUTION]
+>
+> - 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `GROUP` 不允许指定数值型变量；
 
 **Usage** :
 
@@ -64,13 +64,13 @@ GROUP = ARM
 
 ### GROUPBY
 
-**Syntax** : _variable_
+**Syntax** : _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
 
 指定分组变量的排序变量及排序方向。
 
-**Caution** :
-
-1. 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> [!CAUTION]
+>
+> - 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 
 **Usage** :
 
@@ -146,9 +146,10 @@ GROUPBY = ARMN
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
-⚠ 此参数用于开发者调试，一般无需关注。
-
-⚠ 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `DEL_TEMP_DATA = FALSE`。
+> [!NOTE]
+>
+> - 此参数用于开发者调试，一般无需关注。
+> - 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `DEL_TEMP_DATA = FALSE`。
 
 ---
 

@@ -54,10 +54,10 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 指定定量分析的变量。
 
-**Caution** :
-
-1. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `VAR` 不允许指定字符型变量；
+> [!CAUTION]
+>
+> - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `VAR` 不允许指定字符型变量；
 
 **Usage** :
 
@@ -128,13 +128,13 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `|`，�
 
 **Default** : `%nrstr(#N(#NMISS)|#MEAN(#STD)|#MEDIAN(#Q1, #Q3)|#MIN, #MAX)`
 
-**Caution** :
-
-1. 若紧跟在 _statistic-keyword_ 之后的 _string(s)_ 的部分字符与 _statistic-keyword_ 可以组合成另一个 _statistic-keyword_，为了避免混淆，应当在 _statistic-keyword_ 后添加一个 `.`，然后再添加 _string(s)_。例如：`PATTERN = #N(#N.MISS)|#MEAN(#STD)`，其中 `#N.MISS` 代表将计算例数与字符串 `MISS` 进行连接；
-2. 若 _statistic-keyword_ 之后的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = #N(#N..MISS)|#MEAN(#STD)`；
-3. 若 #_statistic-keyword_ 之前的第一个字符是 `#`，则需要使用 `#.` 才能正确表示。例如：`PATTERN = ##.#MEAN`；
-4. 若 #_statistic-keyword_ 之前的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = ..#MEAN`；
-5. 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
+> [!IMPORTANT]
+>
+> - 若紧跟在 _statistic-keyword_ 之后的 _string(s)_ 的部分字符与 _statistic-keyword_ 可以组合成另一个 _statistic-keyword_，为了避免混淆，应当在 _statistic-keyword_ 后添加一个 `.`，然后再添加 _string(s)_。例如：`PATTERN = #N(#N.MISS)|#MEAN(#STD)`，其中 `#N.MISS` 代表将计算例数与字符串 `MISS` 进行连接；
+> - 若 _statistic-keyword_ 之后的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = #N(#N..MISS)|#MEAN(#STD)`；
+> - 若 #_statistic-keyword_ 之前的第一个字符是 `#`，则需要使用 `#.` 才能正确表示。例如：`PATTERN = ##.#MEAN`；
+> - 若 #_statistic-keyword_ 之前的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = ..#MEAN`；
+> - 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
 
 **Usage** :
 
@@ -167,9 +167,9 @@ PATTERN = #N(#NMISS)|#MEAN(##.#STD)|#MEDIAN(#Q1, #Q3)|#MIN#|#|#max|#KURTOSIS, #S
 
 默认情况下，输出数据集的名称为 `RES_`_`var`_，其中 `var` 为参数 [VAR](#var) 指定的变量名。
 
-**Tips** :
-
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
+> [!TIP]
+>
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE)`
 
 **Usage** :
 
@@ -241,22 +241,24 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE)
 2. 标准差的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 比实际小数位数多 2 位（若超过 4 位则只保留 4 位）+ 2（用于表示小数点和负号），_d_ 部分为比实际小数位数多 2 位（若超过 4 位则只保留 4 位）；
 3. 最大值的输出格式 _w.d_ 中，_w_ 部分为实际整数位数 + 实际小数位数（若超过 4 位则只保留 4 位） + 2（用于表示小数点和负号），_d_ 部分为实际小数位数（若超过 4 位则只保留 4 位）；
 
-<sup>1</sup> 仅在宏 `%quantify_multi_test` 中可用；
-
-<sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
-
-- _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
-- _d_ = 4
-
-<sup>3</sup> 假设检验 P 值输出格式的默认值为 `qtmt_pvalue.`，`qtmt_pvalue.` 由以下 PROC FORMAT 过程定义：
-
-```sas
-proc format;
-    picture qtmt_pvalue(round  max = 7)
-            low - < 0.0001 = "<0.0001"(noedit)
-            other = "9.9999";
-run;
-```
+> [!IMPORTANT]
+>
+> - <sup>1</sup> 仅在宏 `%quantify_multi_test` 中可用；
+>
+> - <sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+>
+>   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+>   - _d_ = 4
+>
+> - <sup>3</sup> 假设检验 P 值输出格式的默认值为 `qtmt_pvalue.`，`qtmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+>
+>   ```sas
+>   proc format;
+>       picture qtmt_pvalue(round  max = 7)
+>               low - < 0.0001 = "<0.0001"(noedit)
+>               other = "9.9999";
+>   run;
+>   ```
 
 当上述统计量输出格式无法满足实际需求时，可通过参数 `STAT_FORMAT` 重新指定某个统计量的输出格式。
 
@@ -275,9 +277,9 @@ STAT_FORMAT = #PREV
 
 重复调用 `%quantify()` 时，如果第一次调用后即可确定后续调用时需要的统计量输出格式，可在第二次及之后调用 `%quantify()` 时，指定 `STAT_FORMAT = #PREV`。
 
-**Caution** :
-
-1. 首次调用 `quantify()` 时，不可指定 `STAT_FORMAT = #PREV`。
+> [!CAUTION]
+>
+> - 首次调用 `quantify()` 时，不可指定 `STAT_FORMAT = #PREV`。
 
 [**Example**](#指定统计量的输出格式)
 
@@ -396,9 +398,9 @@ INDENT = ''''
 
 默认情况下，各分类前使用 4 个英文空格作为缩进字符。
 
-**Tips** :
-
-1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`
+> [!TIP]
+>
+> - 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`
 
 **Usage** :
 
@@ -420,7 +422,9 @@ INDENT = "\li420 "
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
-⚠ 此参数用于开发者调试，一般无需关注。
+> [!NOTE]
+>
+> - 此参数用于开发者调试，一般无需关注。
 
 ---
 

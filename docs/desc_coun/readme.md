@@ -69,11 +69,11 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 当指定多个变量时，将根据指定变量的先后顺序，形成层级结构，对各层级进行统计，计算频数和频率。
 
-**Caution** :
-
-1. 参数 `VAR` 不允许指定重复的变量；
-2. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-3. 由于 SAS 系统的限制，最多允许指定 255 个分析变量。
+> [!CAUTION]
+>
+> - 参数 `VAR` 不允许指定重复的变量；
+> - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 由于 SAS 系统的限制，最多允许指定 255 个分析变量。
 
 **Example** :
 
@@ -98,11 +98,11 @@ VAR = sex agegr tucat
 
 默认情况下，宏程序将根据参数 `VAR` 指定的变量个数 _`n`_，指定参数 `FORMAT` 为 _`n`_ 个 `PERCENTN9.2`。
 
-**Caution** :
-
-1. 当参数 `FORMAT` 指定的输出格式数量 _`m`_ 少于参数 `VAR` 指定的变量个数 _`n`_ 时，将重复参数 `FORMAT` 的最后一个输出格式，以便与变量个数相匹配。例如：指定参数 `VAR = sex agegr tucat, FORMAT = percent9.2 5.3` 时，宏程序将自动转换参数 `FORMAT = PERCENT9.2 5.3 5.3`；
-2. 当参数 `FORMAT` 指定的输出格式数量 _`m`_ 多于参数 `VAR` 指定的变量个数 _`n`_ 时，将忽略参数 `FORMAT` 中的最后 _`m-n`_ 个多余的输出格式。例如：指定参数 `VAR = sex agegr tucat, FORMAT = percent9.2 5.3 5.3 yymmdd10.` 时，宏程序将自动转换参数 `FORMAT = PERCENT9.2 5.3 5.3`；
-3. 参数 `FORMAT` 不允许指定不存在的输出格式。
+> [!CAUTION]
+>
+> - 当参数 `FORMAT` 指定的输出格式数量 _`m`_ 少于参数 `VAR` 指定的变量个数 _`n`_ 时，将重复参数 `FORMAT` 的最后一个输出格式，以便与变量个数相匹配。例如：指定参数 `VAR = sex agegr tucat, FORMAT = percent9.2 5.3` 时，宏程序将自动转换参数 `FORMAT = PERCENT9.2 5.3 5.3`；
+> - 当参数 `FORMAT` 指定的输出格式数量 _`m`_ 多于参数 `VAR` 指定的变量个数 _`n`_ 时，将忽略参数 `FORMAT` 中的最后 _`m-n`_ 个多余的输出格式。例如：指定参数 `VAR = sex agegr tucat, FORMAT = percent9.2 5.3 5.3 yymmdd10.` 时，宏程序将自动转换参数 `FORMAT = PERCENT9.2 5.3 5.3`；
+> - 参数 `FORMAT` 不允许指定不存在的输出格式。
 
 **Usage** :
 
@@ -133,15 +133,15 @@ FORMAT = percent9.2 5.3 6.4 7.5
 
 默认情况下，宏程序将根据参数 `VAR` 指定的变量自身的值对结果进行排序。
 
-**Caution** :
-
-1. 若参数 `BY` 指定的排序依据数据 _`m`_ 为 1，且该排序依据为 `#FREQ_MAX` 时，参数 `VAR` 中的所有变量的排序依据均被指定为 `#FREQ_MAX`，即参数 `VAR` 中的所有变量的统计结果均按照频数从大到小排列；
-2. 当参数 `BY` 指定的排序依据数量 _`m`_ 为 1，且该排序依据为 `#FREQ_MIN` 时，参数 `VAR` 中的所有变量的排序依据均被指定为 `#FREQ_MIN`，即参数 `VAR` 中的所有变量的统计结果均按照频数从小到大排列；
-3. 当参数 `BY` 指定的排序依据数量 _`m(m>1)`_ 少于参数 `VAR` 指定的变量个数 `n` 时，对于参数 `VAR` 中未指定排序依据的变量 _`variable-m+1, variable-m+2, ..., variable-n`_，将基于 _`variable-m+1, variable-m+2, ..., varibale-n`_ 自身的值进行排序。例如：指定参数 `VAR = sex agegr tucat，BY= sexn agegrn` 时，宏程序将自动转换参数 `BY = SEXN AGEGRN TUCATN`；
-4. 当参数 `BY` 指定的排序依据数量 _`m`_ 多于参数 `VAR` 指定的变量个数 `n` 时，将忽略参数 `BY` 中最后 `m-n` 个多余的排序依据。例如：指定参数 `VAR = sex agegr tucat，BY= sexn agegrn tucatn racen`，宏程序将自动转换参数 `BY = SEXN AGEGRN TUCATN`；
-5. 参数 `BY` 不允许指定重复的排序变量，例如 `BY = sexn sexn sexn` 是不被允许的；
-6. 参数 `BY` 不允许对参数 `VAR` 的第 `i` 个变量指定参数 `VAR` 的第 `j` 个变量作为排序变量，例如 `VAR = sex agegr tucat, BY = agegr sex tucat` 是不被允许的；
-7. 参数 `BY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> [!CAUTION]
+>
+> - 若参数 `BY` 指定的排序依据数据 _`m`_ 为 1，且该排序依据为 `#FREQ_MAX` 时，参数 `VAR` 中的所有变量的排序依据均被指定为 `#FREQ_MAX`，即参数 `VAR` 中的所有变量的统计结果均按照频数从大到小排列；
+> - 当参数 `BY` 指定的排序依据数量 _`m`_ 为 1，且该排序依据为 `#FREQ_MIN` 时，参数 `VAR` 中的所有变量的排序依据均被指定为 `#FREQ_MIN`，即参数 `VAR` 中的所有变量的统计结果均按照频数从小到大排列；
+> - 当参数 `BY` 指定的排序依据数量 _`m(m>1)`_ 少于参数 `VAR` 指定的变量个数 `n` 时，对于参数 `VAR` 中未指定排序依据的变量 _`variable-m+1, variable-m+2, ..., variable-n`_，将基于 _`variable-m+1, variable-m+2, ..., varibale-n`_ 自身的值进行排序。例如：指定参数 `VAR = sex agegr tucat，BY= sexn agegrn` 时，宏程序将自动转换参数 `BY = SEXN AGEGRN TUCATN`；
+> - 当参数 `BY` 指定的排序依据数量 _`m`_ 多于参数 `VAR` 指定的变量个数 `n` 时，将忽略参数 `BY` 中最后 `m-n` 个多余的排序依据。例如：指定参数 `VAR = sex agegr tucat，BY= sexn agegrn tucatn racen`，宏程序将自动转换参数 `BY = SEXN AGEGRN TUCATN`；
+> - 参数 `BY` 不允许指定重复的排序变量，例如 `BY = sexn sexn sexn` 是不被允许的；
+> - 参数 `BY` 不允许对参数 `VAR` 的第 `i` 个变量指定参数 `VAR` 的第 `j` 个变量作为排序变量，例如 `VAR = sex agegr tucat, BY = agegr sex tucat` 是不被允许的；
+> - 参数 `BY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 
 **Usage** :
 
@@ -172,11 +172,12 @@ BY = sexn(desc) agegrn(ascending) tucatn #freq_max #freq_min
 
 **Default** : FALSE
 
-**Caution** :
-
-1. 当参数 `MISSING` 指定为 `TRUE` 时，参数 `VAR` 中的所有变量均将缺失值视为一个分类进行统计，计算缺失值的频数和频率；
-2. 当参数 `MISSING` 指定为 `FALSE` 时，参数 `VAR` 中的所有变量均忽略缺失值，仅对各自变量的非缺失值进行分类统计，不计算缺失值的频数与频率；
-3. 当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 少于参数 `VAR` 指定的变量个数 `n` 时，对于参数 `VAR` 中未匹配 `TRUE`（或 `FALSE`）的变量 _`variable-m+1, variable-m+2, ..., variable-n`_，将重复参数 `MISSING` 的最后一个 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR = sex agegr tucat, MISSING= TRUE FALSE` 时，宏程序将自动转换参数 `MISSING = TRUE FALSE FALSE`； 4.当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 多于参数 `VAR` 指定的变量个数 `n` 时，将忽略参数 `MISSING` 中最后 `m-n` 个多于的 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR= sex agegr tucat, MISSING = TRUE FALSE TRUE FALSE`，宏程序将自动转换参数 `MISSING = TRUE FALSE TRUE`；
+> [!CAUTION]
+>
+> - 当参数 `MISSING` 指定为 `TRUE` 时，参数 `VAR` 中的所有变量均将缺失值视为一个分类进行统计，计算缺失值的频数和频率；
+> - 当参数 `MISSING` 指定为 `FALSE` 时，参数 `VAR` 中的所有变量均忽略缺失值，仅对各自变量的非缺失值进行分类统计，不计算缺失值的频数与频率；
+> - 当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 少于参数 `VAR` 指定的变量个数 `n` 时，对于参数 `VAR` 中未匹配 `TRUE`（或 `FALSE`）的变量 _`variable-m+1, variable-m+2, ..., variable-n`_，将重复参数 `MISSING` 的最后一个 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR = sex agegr tucat, MISSING= TRUE FALSE` 时，宏程序将自动转换参数 `MISSING = TRUE FALSE FALSE`；
+> - 当参数 `MISSING` 指定的 `TRUE`（或 `FALSE`）的数量 _`m`_ 多于参数 `VAR` 指定的变量个数 `n` 时，将忽略参数 `MISSING` 中最后 `m-n` 个多于的 `TRUE`（或 `FALSE`）。例如：指定参数 `VAR= sex agegr tucat, MISSING = TRUE FALSE TRUE FALSE`，宏程序将自动转换参数 `MISSING = TRUE FALSE TRUE`；
 
 **Usage** :
 
@@ -210,15 +211,15 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 默认情况下，宏程序将为参数 `VAR` 指定的所有分析变量指定基于合计频数计算频率。
 
-**Caution** :
-
-1. 当参数 `DENOMINATOR` 指定为 `#ALL` 时，参数 `VAR` 中的所有变量将基于合计频数计算频率，**注意**：参数 `MISSING` 的值将会影响参数 `DENOMINATOR` 指定为 `#ALL` 时的表现，当参数 `MISSING` 指定部分变量忽略缺失值时，这些缺失值对应的观测也将不计入合计频数中；
-2. 当参数 `DENOMINATOR` 指定为 `#LAST` 时，参数 `VAR` 中的除第一个变量之外的其他所有变量将基于自身所处的上一层级的水平的频数计算频率；
-3. 当参数 `DENOMINATOR` 指定的 `#ALL`、`#LAST`、_`num`_、_`variable`_ 的数量 _`m`_ 少于参数 `VAR` 指定的变量个数 _`n-1`_ 时，对于参数 `VAR` 中未匹配的变量 _`variable-m+2, variable-m+3, ..., variable-n`_，将指定 `#ALL` 作为它们计算频率的依据。例如：指定参数 `VAR = sex agegr tucat, DENOMINATOR = sex` 时，宏程序将自动转换参数 `DENOMINATOR = SEX #ALL`；
-4. 当参数 `DENOMINATOR` 指定的 `#ALL`、`#LAST` 、_`num`_、_`variable`_ 的数量 _`m`_ 多于参数 `VAR` 指定的变量个数 _`n-1`_ 时，将忽略参数 `DENOMINATOR` 的最后 `m-n+1` 个多余的 `#ALL`、`#LAST`、_`variable`_。例如：指定参数 `VAR = sex agegr tucat, DENOMINATOR = sex #LAST #ALL`，宏程序将自动转换参数 `DENOMINATOR = sex #LAST`；
-5. 参数 `DENOMINATOR` 不允许指定参数 `VAR` 的变量之外的其他变量；
-6. 参数 `DENOMINATOR` 不允许对参数 `VAR` 的第 _`i`_ 个变量指定自身作为计算频率的变量；
-7. 参数 `DENOMINATOR` 不允许对参数 `VAR` 的第 _`i`_ 个变量指定参数 `VAR` 的第 _`j(j>i)`_ 个变量作为计算频率的变量。
+> [!CAUTION]
+>
+> - 当参数 `DENOMINATOR` 指定为 `#ALL` 时，参数 `VAR` 中的所有变量将基于合计频数计算频率，**注意**：参数 `MISSING` 的值将会影响参数 `DENOMINATOR` 指定为 `#ALL` 时的表现，当参数 `MISSING` 指定部分变量忽略缺失值时，这些缺失值对应的观测也将不计入合计频数中；
+> - 当参数 `DENOMINATOR` 指定为 `#LAST` 时，参数 `VAR` 中的除第一个变量之外的其他所有变量将基于自身所处的上一层级的水平的频数计算频率；
+> - 当参数 `DENOMINATOR` 指定的 `#ALL`、`#LAST`、_`num`_、_`variable`_ 的数量 _`m`_ 少于参数 `VAR` 指定的变量个数 _`n-1`_ 时，对于参数 `VAR` 中未匹配的变量 _`variable-m+2, variable-m+3, ..., variable-n`_，将指定 `#ALL` 作为它们计算频率的依据。例如：指定参数 `VAR = sex agegr tucat, DENOMINATOR = sex` 时，宏程序将自动转换参数 `DENOMINATOR = SEX #ALL`；
+> - 当参数 `DENOMINATOR` 指定的 `#ALL`、`#LAST` 、_`num`_、_`variable`_ 的数量 _`m`_ 多于参数 `VAR` 指定的变量个数 _`n-1`_ 时，将忽略参数 `DENOMINATOR` 的最后 `m-n+1` 个多余的 `#ALL`、`#LAST`、_`variable`_。例如：指定参数 `VAR = sex agegr tucat, DENOMINATOR = sex #LAST #ALL`，宏程序将自动转换参数 `DENOMINATOR = sex #LAST`；
+> - 参数 `DENOMINATOR` 不允许指定参数 `VAR` 的变量之外的其他变量；
+> - 参数 `DENOMINATOR` 不允许对参数 `VAR` 的第 _`i`_ 个变量指定自身作为计算频率的变量；
+> - 参数 `DENOMINATOR` 不允许对参数 `VAR` 的第 _`i`_ 个变量指定参数 `VAR` 的第 _`j(j>i)`_ 个变量作为计算频率的变量。
 
 **Tips** :
 
@@ -240,9 +241,9 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 默认情况下，输出结果中当前层级的水平名称将在其上层相应水平名称的基础上缩进四格空格。
 
-**Tips** :
-
-1. 若使用行内格式化语法表示缩进，可指定参数 `INDENT = @w@w@w@w`（假设指定 ods escapechar = "@"）。
+> [!TIP]
+>
+> - 若使用行内格式化语法表示缩进，可指定参数 `INDENT = @w@w@w@w`（假设指定 ods escapechar = "@"）。
 
 [**Example: 指定缩进字符串**](#指定缩进字符串)
 
@@ -315,10 +316,10 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 其中，变量 `ITEM` 和 `VALUE` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
-**Tips** :
-
-1. 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = ITEM VALUE FREQ)`；
-2. 可指定 `OUTDATA = #NULL` 不输出结果，这在基于本宏程序构建其他宏程序时可能会有用。
+> [!TIP]
+>
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = ITEM VALUE FREQ)`；
+> - 可指定 `OUTDATA = #NULL` 不输出结果，这在基于本宏程序构建其他宏程序时可能会有用。
 
 ---
 
@@ -348,10 +349,10 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 当参数 `DEL_DUP_BY_VAR` 指定为一个变量时，该变量与参数 `VAR` 指定的分析变量进行组合，对参数 `INDATA` 指定的数据集进行去重操作。例如：指定 `DEL_DUP_BY_VAR = usubjid, VAR = sex agegr tucat`，宏程序依次按照变量组合 `usubjid sex`, `usubjid sex agegr`, `usubjid sex agegr tucat` 分别对参数 `INDATA` 指定的数据集进行去重操作。
 
-**Caution** :
-
-1. 参数 `DEL_DUP_BY_VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `DEL_DUP_BY_VAR` 不允许指定参数 `VAR` 的任意一个变量。
+> [!CAUTION]
+>
+> - 参数 `DEL_DUP_BY_VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `DEL_DUP_BY_VAR` 不允许指定参数 `VAR` 的任意一个变量。
 
 ---
 
@@ -426,31 +427,31 @@ _`denominator-specification`_ 的具体取值及含义如下：
 | memname_out          | 参数 `OUTDATA` 的成员名称                                                        |
 | dataset_options_out  | 参数 `OUTDATA` 的数据集选项                                                      |
 
-**Tips** :
+> [!TIP]
+>
+> - 基于本宏程序构建其他宏程序时，可先指定参数 `SKIP_PARAM_CHECK = FALSE` 和 `SKIP_MAIN_PROG = TRUE` 对传入的参数进行检查，同时使用指定 `PARAM_LIST_BUFFER = `_`macro_variable`_ 捕获处理之后的参数列表。然后再次调用本宏程序时，可指定参数 `SKIP_PARAM_CHECK = TRUE` 和 `SKIP_MAIN_PROG = FALSE`，同时指定参数 `PARAM_LIST_BUFER = `_`macro_variable`_，宏程序将在跳过参数检查之后，释放上一次捕获的参数列表；
+> - 如需释放参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 储存的参数列表，可使用以下语句：
+>
+>   ```sas
+>   %unquote(&macro_variable)
+>   ```
+>
+> - 如需修改参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 储存的参数列表，可使用以下语句：
+>
+>   ```sas
+>   %unquote(%nrstr(%%let)) macro_variable =
+>   &macro_variable
+>   %nrstr(%%let) libname_in = WORK%str(;)
+>   %nrstr(%%let) memname_in = TEMP_AE%str(;)
+>   %nrstr(%%let) dataset_options_in = %bquote()%str(;)
+>   ;
+>   ```
+>
+>   上述语句中，用宏变量 _`macro_variable`_ 储存了宏程序处理之后的参数列表，修改了其中的 `libname_in`, `memname_in`, `dataset_options_in` 参数，并重新赋值给宏变量 _`macro_variable`_。
 
-1. 基于本宏程序构建其他宏程序时，可先指定参数 `SKIP_PARAM_CHECK = FALSE` 和 `SKIP_MAIN_PROG = TRUE` 对传入的参数进行检查，同时使用指定 `PARAM_LIST_BUFFER = `_`macro_variable`_ 捕获处理之后的参数列表。然后再次调用本宏程序时，可指定参数 `SKIP_PARAM_CHECK = TRUE` 和 `SKIP_MAIN_PROG = FALSE`，同时指定参数 `PARAM_LIST_BUFER = `_`macro_variable`_，宏程序将在跳过参数检查之后，释放上一次捕获的参数列表；
-2. 如需释放参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 储存的参数列表，可使用以下语句：
-
-```sas
-%unquote(&macro_variable)
-```
-
-3. 如需修改参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 储存的参数列表，可使用以下语句：
-
-```sas
-%unquote(%nrstr(%%let)) macro_variable =
-&macro_variable
-%nrstr(%%let) libname_in = WORK%str(;)
-%nrstr(%%let) memname_in = TEMP_AE%str(;)
-%nrstr(%%let) dataset_options_in = %bquote()%str(;)
-;
-```
-
-上述语句中，用宏变量 _`macro_variable`_ 储存了宏程序处理之后的参数列表，修改了其中的 `libname_in`, `memname_in`, `dataset_options_in` 参数，并重新赋值给宏变量 _`macro_variable`_。
-
-**Caution** :
-
-1. 由于 SAS 系统限制，单个宏变量的最大长度为 65534，所以参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 能储存的参数是非常有限的，在构建宏程序时，建议仅存储有限的参数，并尽可能少地修改其中的参数值。
+> [!CAUTION]
+>
+> - 由于 SAS 系统限制，单个宏变量的最大长度为 65534，所以参数 `PARAM_LIST_BUFFER` 指定的宏变量 _`macro_variable`_ 能储存的参数是非常有限的，在构建宏程序时，建议仅存储有限的参数，并尽可能少地修改其中的参数值。
 
 ## 细节
 

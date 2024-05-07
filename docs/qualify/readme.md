@@ -68,10 +68,10 @@ _`category`_ 表示重命名前的分类名称，_`note`_ 表示重命名后的�
 VAR = SEX("男" = "Male", "女" = "Female")
 ```
 
-**Caution** :
-
-1. 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `VAR` 不允许指定数值型变量；
+> [!Caution]
+>
+> - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `VAR` 不允许指定数值型变量；
 
 **Usage** :
 
@@ -109,9 +109,9 @@ run;
 
 宏程序将根据格式化之前的数值对各分类进行排序。
 
-**Caution** :
-
-1. 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
+> [!Caution]
+>
+> - 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
 **Usage** :
 
@@ -257,7 +257,9 @@ MISSING_POSITION = FIRST
 | RATE                                     | 频率                                          |
 | RATE_FMT                                 | 频率格式化值                                  |
 
-<sup>1</sup> 建议改用 `FREQ`, `FREQ_FMT`，保留 `N`, `N_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
+> [!IMPORTANT]
+>
+> <sup>1</sup> 建议改用 `FREQ`, `FREQ_FMT`，保留 `N`, `N_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
 其中，变量 `ITEM` 和 `VALUE` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
@@ -265,9 +267,9 @@ MISSING_POSITION = FIRST
 
 默认情况下，输出数据集被命名为 `RES_`_`var`_，其中 _`var`_ 为参数 [VAR](#var) 指定的变量的名称。
 
-**Tips** :
-
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)`
+> [!TIP]
+>
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)`
 
 **Usage** :
 
@@ -297,24 +299,26 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)
 | TS <sup>2</sup>                      | 检验统计量    | _#AUTO_ <sup>2</sup> |
 | P <sup>3</sup>                       | 假设检验 P 值 | _#AUTO_ <sup>3</sup> |
 
-<sup>1</sup> 建议改用 `FREQ`，保留 `N` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
-
-<sup>2</sup> 仅在宏 `%qualify_multi_test` 中可用；
-
-<sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
-
-- _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
-- _d_ = 4
-
-<sup>3</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
-
-```sas
-proc format;
-    picture qlmt_pvalue(round  max = 7)
-            low - < 0.0001 = "<0.0001"(noedit)
-            other = "9.9999";
-run;
-```
+> [!IMPORTANT]
+>
+> - <sup>1</sup> 建议改用 `FREQ`，保留 `N` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
+>
+> - <sup>2</sup> 仅在宏 `%qualify_multi_test` 中可用；
+>
+> - <sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+>
+>   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+>   - _d_ = 4
+>
+> - <sup>3</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+>
+>   ```sas
+>   proc format;
+>       picture qlmt_pvalue(round  max = 7)
+>               low - < 0.0001 = "<0.0001"(noedit)
+>               other = "9.9999";
+>   run;
+>   ```
 
 **Usage** :
 
@@ -381,9 +385,9 @@ INDENT = ''''
 
 默认情况下，各分类前使用 4 个英文空格作为缩进字符。
 
-**Tips** :
-
-1. 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`；
+> [!TIP]
+>
+> - 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`；
 
 **Usage** :
 
@@ -437,7 +441,9 @@ SUFFIX = "，n(%)"
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
-⚠ 此参数用于开发者调试，一般无需关注。
+> [!NOTE]
+>
+> 此参数用于开发者调试，一般无需关注。
 
 ---
 

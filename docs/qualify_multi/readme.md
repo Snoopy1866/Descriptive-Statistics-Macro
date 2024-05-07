@@ -49,10 +49,10 @@
 
 指定分组变量，_`category`_ 表示需要统计的分组水平名称。
 
-**Caution** :
-
-1. 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `GROUP` 不允许指定数值型变量；
+> [!CAUTION]
+>
+> - 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `GROUP` 不允许指定数值型变量；
 
 **Usage** :
 
@@ -75,10 +75,10 @@ GROUP = ARM("试验组", "对照组")
 
 默认情况下，各个分组的输出结果根据分组水平名称在当前语言环境下的默认排列顺序排序（例如：gbk 环境下，按照水平名称的汉语拼音顺序）
 
-**Caution** :
-
-1. 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-2. 参数 `GROUP` 若指定了分组变量的各水平名称，则各水平分组的统计结果将按照参数 `GROUP` 中各水平名称指定的顺序显示在输出数据集中，此时参数 `GROUPBY` 无效。
+> [!Caution]
+>
+> - 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
+> - 参数 `GROUP` 若指定了分组变量的各水平名称，则各水平分组的统计结果将按照参数 `GROUP` 中各水平名称指定的顺序显示在输出数据集中，此时参数 `GROUPBY` 无效。
 
 **Usage** :
 
@@ -139,19 +139,23 @@ GROUPBY = ARMN
 | RATE_SUM                                       | 频率（GROUP 的所有水平合计）                                           |
 | RATE_SUM_FMT                                   | 频率格式化值（GROUP 的所有水平合计）                                   |
 
-<sup>1</sup> 建议改用 `FREQ_`_`i`_, `FREQ_`_`i`_`_FMT`, `FREQ_SUM`, `FREQ_SUM_FMT`，保留 `N_`_`i`_, `N_`_`i`_`_FMT`, `N_SUM`, `N_SUM_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
+> [!IMPORTANT]
+>
+> - <sup>1</sup> 建议改用 `FREQ_`_`i`_, `FREQ_`_`i`_`_FMT`, `FREQ_SUM`, `FREQ_SUM_FMT`，保留 `N_`_`i`_, `N_`_`i`_`_FMT`, `N_SUM`, `N_SUM_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
 其中，变量 `ITEM`、`VALUE_`_`i`_、`VALUE_SUM` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
 
-⚠ 当 GROUP 的水平数量为 1 时，变量 `VALUE_SUM` 默认隐藏。
+> [!NOTE]
+>
+> - 当 GROUP 的水平数量为 1 时，变量 `VALUE_SUM` 默认隐藏。
 
 **Default** : RES\_&_VAR_
 
 默认情况下，输出数据集的名称为 `RES_`_`var`_，其中 `var` 为参数 [VAR](#var) 指定的变量名。
 
-**Tips** :
-
-如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)`
+> [!TIP]
+>
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)`
 
 **Usage** :
 
@@ -208,9 +212,10 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
-⚠ 此参数用于开发者调试，一般无需关注。
-
-⚠ 本宏程序内部调用的依赖宏程序 `%qualify` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify`，请单独调用 `%qualify` 并指定 `DEL_TEMP_DATA = FALSE`。
+> [!NOTE]
+>
+> - 此参数用于开发者调试，一般无需关注。
+> - 本宏程序内部调用的依赖宏程序 `%qualify` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify`，请单独调用 `%qualify` 并指定 `DEL_TEMP_DATA = FALSE`。
 
 ---
 
