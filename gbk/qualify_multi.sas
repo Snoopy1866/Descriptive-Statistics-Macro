@@ -308,7 +308,7 @@ Version Date: 2023-12-26 0.1
                  BY          = %superq(BY),
                  UID         = %superq(UID),
                  PATTERN     = %superq(PATTERN),
-                 OUTDATA     = temp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
+                 OUTDATA     = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
                                                                      FREQ      = FREQ_&i
                                                                      FREQ_FMT  = FREQ_&i._FMT
                                                                      N         = N_&i
@@ -354,7 +354,7 @@ Version Date: 2023-12-26 0.1
                 sum.rate_sum             label = "合计(频率)",
                 sum.rate_sum_fmt         label = "合计(频率格式化)"
             from tmp_qualify_m_res_sum as sum %do i = 1 %to &group_level_n;
-                                                  left join temp_qualify_m_res_group_&i as sub&i on sum.item = sub&i..item
+                                                  left join tmp_qualify_m_res_group_&i as sub&i on sum.item = sub&i..item
                                               %end;
             order by sum.seq;
 
@@ -397,7 +397,7 @@ Version Date: 2023-12-26 0.1
                    tmp_qualify_m_groupby_sorted
                    tmp_qualify_m_res_sum
                    %do i = 1 %to &group_level_n;
-                       temp_qualify_m_res_group_&i
+                       tmp_qualify_m_res_group_&i
                    %end;
                    ;
         quit;
