@@ -35,7 +35,8 @@ Version Date: 2024-01-05 0.1
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
 
     /*声明全局变量*/
-    %global qtmt_exit_with_error;
+    %global qtmt_exit_with_error
+            groupby_var;
     %let qtmt_exit_with_error = FALSE;
 
     /*声明局部变量*/
@@ -215,7 +216,7 @@ Version Date: 2024-01-05 0.1
     /*正态性检验*/
     proc univariate data = tmp_qmt_indata normaltest noprint;
         var %superq(VAR);
-        class %superq(GROUPBY);
+        class &groupby_var;
         output out = tmp_qmt_nrmtest normaltest = normaltest probn = probn;
     run;
 
@@ -228,7 +229,7 @@ Version Date: 2024-01-05 0.1
         %put NOTE: 至少一个组别不符合正态性，使用 Wilcoxon 检验！;
         proc npar1way data = tmp_qmt_indata wilcoxon noprint;
             var %superq(VAR);
-            class %superq(GROUPBY);
+            class &groupby_var;
             output out = tmp_qmt_wcxtest wilcoxon;
         run;
         proc sql noprint;
@@ -250,7 +251,7 @@ Version Date: 2024-01-05 0.1
         ods output TTests = tmp_qmt_ttests Equality = tmp_qmt_equality;
         proc ttest data = tmp_qmt_indata plots = none;
             var %superq(VAR);
-            class %superq(GROUPBY);
+            class &groupby_var;
         run;
         ods html;
 
@@ -309,10 +310,10 @@ Version Date: 2024-01-05 0.1
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
                    tmp_qmt_outdata
-                   Tmp_qmt_nrmtest
-                   Tmp_qmt_equality
-                   Tmp_qmt_ttests
-                   Tmp_qmt_wcxtest
+                   tmp_qmt_nrmtest
+                   tmp_qmt_equality
+                   tmp_qmt_ttests
+                   tmp_qmt_wcxtest
                    ;
         quit;
     %end;

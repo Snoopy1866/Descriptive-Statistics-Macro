@@ -42,7 +42,8 @@ Version Date: 2024-01-08 0.1
 
     /*声明全局变量*/
     %global qlmt_exit_with_error
-            group_level_n;
+            group_level_n
+            group_var;
 
     /*声明局部变量*/
     %local i j
@@ -280,7 +281,7 @@ Version Date: 2024-01-08 0.1
 
     /*卡方和Fisher精确检验*/
     proc freq data = tmp_qmt_indata_unique noprint;
-        tables &var_name*%superq(GROUPBY) /chisq(warn = (output nolog)) fisher;
+        tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
         output out = tmp_qmt_chisq chisq;
     run;
 
