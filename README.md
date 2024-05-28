@@ -16,3 +16,4 @@
 - [quantify_multi](./docs/quantify_multi/readme.md)
 - [quantify_multi_test](./docs/quantify_multi_test/readme.md)
 - [desc_coun](./docs/desc_coun/readme.md)
+- [cross_table](./docs/cross_table/readme.md)
