@@ -13,15 +13,15 @@ Version Date: 2023-12-21 0.1
 %macro quantify_multi(INDATA,
                       VAR,
                       GROUP,
-                      GROUPBY = #AUTO,
-                      OUTDATA = RES_&VAR,
-                      PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX), 
-                      STAT_FORMAT = #AUTO,
-                      STAT_NOTE = #AUTO,
-                      LABEL = #AUTO,
-                      INDENT = #AUTO,
+                      GROUPBY        = #AUTO,
+                      OUTDATA        = RES_&VAR,
+                      PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX), 
+                      STAT_FORMAT    = #AUTO,
+                      STAT_NOTE      = #AUTO,
+                      LABEL          = #AUTO,
+                      INDENT         = #AUTO,
                       PROCHTTP_PROXY = 127.0.0.1:7890,
-                      DEL_TEMP_DATA = TRUE)
+                      DEL_TEMP_DATA  = TRUE)
                       /des = "多组别定量指标分析" parmbuff;
 
     /*打开帮助文档*/

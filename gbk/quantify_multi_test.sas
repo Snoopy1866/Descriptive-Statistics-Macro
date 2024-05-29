@@ -14,14 +14,14 @@ Version Date: 2024-01-05 0.1
                            VAR,
                            GROUP,
                            GROUPBY,
-                           OUTDATA = RES_&VAR,
-                           PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                           STAT_FORMAT = #AUTO,
-                           STAT_NOTE = #AUTO,
-                           LABEL = #AUTO,
-                           INDENT = #AUTO,
+                           OUTDATA        = RES_&VAR,
+                           PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+                           STAT_FORMAT    = #AUTO,
+                           STAT_NOTE      = #AUTO,
+                           LABEL          = #AUTO,
+                           INDENT         = #AUTO,
                            PROCHTTP_PROXY = 127.0.0.1:7890,
-                           DEL_TEMP_DATA = TRUE)
+                           DEL_TEMP_DATA  = TRUE)
                            /des = "多组别定量指标汇总统计" parmbuff;
 
     /*打开帮助文档*/

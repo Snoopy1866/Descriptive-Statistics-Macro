@@ -19,12 +19,12 @@ Version Date: 2023-03-16 1.3.1
 
 %macro quantify(INDATA,
                 VAR,
-                PATTERN = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA = RES_&VAR,
-                STAT_FORMAT = #AUTO,
-                STAT_NOTE = #AUTO,
-                LABEL = #AUTO,
-                INDENT = #AUTO,
+                PATTERN       = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+                OUTDATA       = RES_&VAR,
+                STAT_FORMAT   = #AUTO,
+                STAT_NOTE     = #AUTO,
+                LABEL         = #AUTO,
+                INDENT        = #AUTO,
                 DEL_TEMP_DATA = TRUE)
                 /des = "定量指标分析" parmbuff;
 
