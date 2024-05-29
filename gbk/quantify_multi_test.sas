@@ -6,6 +6,7 @@ Author: wtwang
 Version Date: 2024-01-05 0.1
               2024-01-18 0.2
               2024-01-23 0.3
+              2024-05-29 0.4
 ===================================
 */
 
@@ -152,27 +153,20 @@ Version Date: 2024-01-05 0.1
 
 
     /*INDENT*/
-    %if %bquote(&indent) = %bquote() %then %do;
-        %let indent_sql_expr = %bquote();
+    %if %superq(indent) = %bquote() %then %do;
+        %let indent_sql_expr = %bquote('');
     %end;
-    %else %if %bquote(%upcase(&indent)) = #AUTO %then %do;
-        %let indent_sql_expr = %bquote(    );
+    %else %if %qupcase(&indent) = #AUTO %then %do;
+        %let indent_sql_expr = %bquote('    ');
     %end;
     %else %do;
-        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+        %let reg_indent_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
         %if %sysfunc(prxmatch(&reg_indent_id, %superq(indent))) %then %do;
-            %let indent_pos_1 = %bquote(%sysfunc(prxposn(&reg_indent_id, 1, %superq(indent))));
-            %let indent_pos_2 = %bquote(%sysfunc(prxposn(&reg_indent_id, 2, %superq(indent))));
-            %let indent_pos_3 = %bquote(%sysfunc(prxposn(&reg_indent_id, 3, %superq(indent))));
-            %if %superq(indent_pos_1) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_1);
-            %end;
-            %else %if %superq(indent_pos_2) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_2);
-            %end;
-            %else %if %superq(indent_pos_3) ^= %bquote() %then %do;
-                %let indent_sql_expr = %superq(indent_pos_3);
-            %end;
+            %let indent_sql_expr = %superq(indent);
+        %end;
+        %else %do;
+            %put ERROR: 参数 INDENT 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
         %end;
     %end;
 
@@ -224,6 +218,10 @@ Version Date: 2024-01-05 0.1
         select sum(probn < 0.05) into : nrmtest_reject from tmp_qmt_nrmtest;
     quit;
 
+    /*定义宏变量，存储说明文字*/
+    %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
+    %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
+
     /*至少一个组别不符合正态性，使用 Wilcoxon 检验*/
     %if &nrmtest_reject > 0 %then %do;
         %put NOTE: 至少一个组别不符合正态性，使用 Wilcoxon 检验！;
@@ -238,11 +236,11 @@ Version Date: 2024-01-05 0.1
                 %let ts_format = &ts_fmt_width..4;
             %end;
             insert into tmp_qmt_outdata
-                set item = "&indent_sql_expr.统计量",
+                set item = &note_stat,
                     value_1 = "Wilcoxon秩和检验",
                     value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &ts_format));
             insert into tmp_qmt_outdata
-                set item = "&indent_sql_expr.P值",
+                set item = &note_pvalue,
                     value_1 = strip(put((select P2_WIL from tmp_qmt_wcxtest), &p_format));
         quit;
     %end;
@@ -269,11 +267,11 @@ Version Date: 2024-01-05 0.1
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
-                    set item = "&indent_sql_expr.统计量",
+                    set item = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &ts_format));
                 insert into tmp_qmt_outdata
-                    set item = "&indent_sql_expr.P值",
+                    set item = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "不等于"), &p_format));
             quit;
         %end;
@@ -284,11 +282,11 @@ Version Date: 2024-01-05 0.1
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
-                    set item = "&indent_sql_expr.统计量",
+                    set item = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &ts_format));
                 insert into tmp_qmt_outdata
-                    set item = "&indent_sql_expr.P值",
+                    set item = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "等于"), &p_format));
             quit;
         %end;
