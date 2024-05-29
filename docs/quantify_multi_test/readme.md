@@ -84,39 +84,7 @@ GROUPBY = ARMN
 
 ### OUTDATA
 
-**Syntax** : <_libname._>_dataset_(_dataset-options_)
-
-指定统计结果输出的数据集，可包含数据集选项，用法同参数 [INDATA](#indata)。
-
-输出数据集有 _m_ + 3 个变量，其中 _m_ 为参数 GROUP 指定的分组变量的水平数，具体如下：
-
-| 变量名     | 含义                                                                   |
-| ---------- | ---------------------------------------------------------------------- |
-| SEQ        | 行号                                                                   |
-| ITEM       | 指标名称                                                               |
-| VALUE\__i_ | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的第 _i_ 个水平） |
-| VALUE_SUM  | 统计量在 [PATTERN](#pattern) 指定的模式下的值（GROUP 的所有水平合计）  |
-
-其中，变量 `ITEM`、`VALUE_`_`i`_、`VALUE_SUM` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
-
-> [!NOTE]
->
-> - 当 GROUP 的水平数量为 1 时，变量 VALUE_SUM 默认隐藏。
-
-**Default** : RES\_&_VAR_
-
-默认情况下，输出数据集的名称为 `RES_`_`var`_，其中 `var` 为参数 [VAR](#var) 指定的变量名。
-
-> [!TIP]
->
-> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)`
-
-**Usage** :
-
-```sas
-OUTDATA = T1
-OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM)
-```
+用法同 [OUTDATA](../quantify_multi/readme.md#outdata)
 
 ---
 

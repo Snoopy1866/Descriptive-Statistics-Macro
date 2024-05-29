@@ -284,6 +284,10 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 
 [**Example**](#指定需要保留的变量)
 
+**See Also** :
+
+- [qualify_multi](../qualify_multi/readme.md#outdata)
+
 ---
 
 ### STAT_FORMAT
