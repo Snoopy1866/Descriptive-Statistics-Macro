@@ -54,7 +54,7 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 指定定量分析的变量。
 
-> [!CAUTION]
+> [!WARNING]
 >
 > - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 > - 参数 `VAR` 不允许指定字符型变量；

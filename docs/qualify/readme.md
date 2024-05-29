@@ -68,7 +68,7 @@ _`category`_ 表示重命名前的分类名称，_`note`_ 表示重命名后的�
 VAR = SEX("男" = "Male", "女" = "Female")
 ```
 
-> [!Caution]
+> [!WARNING]
 >
 > - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
 > - 参数 `VAR` 不允许指定数值型变量；
@@ -109,7 +109,7 @@ run;
 
 宏程序将根据格式化之前的数值对各分类进行排序。
 
-> [!Caution]
+> [!IMPORTANT]
 >
 > - 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
@@ -134,6 +134,10 @@ BY = SEXN.(descending)
 **Default** : #NULL
 
 默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
+
+> [!IMPORTANT]
+>
+> - 由于默认不输出频次统计结果，因此还需要在参数 [OUTDATA](#outdata) 中通过数据集选项指定显示频次统计结果，例如：`OUTDATA = T1(KEEP = ITEM VALUE TIMES)`。
 
 **Usage** :
 
@@ -269,13 +273,13 @@ MISSING_POSITION = FIRST
 
 > [!TIP]
 >
-> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)`
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)`
 
 **Usage** :
 
 ```sas
 OUTDATA = T1
-OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIME)
+OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 ```
 
 [**Example**](#指定需要保留的变量)
