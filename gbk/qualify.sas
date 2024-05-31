@@ -19,6 +19,7 @@ Version Date: 2023-03-08 1.0.1
               2024-04-25 1.0.14
               2024-04-26 1.0.15
               2024-04-28 1.0.16
+              2024-05-31 1.0.17
 ===================================
 */
 
@@ -121,6 +122,10 @@ Version Date: 2023-03-08 1.0.1
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
 
+    data tmp_qualify_indata;
+        set &libname_in..&memname_in(&dataset_options_in);
+    run;
+
 
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
@@ -153,10 +158,9 @@ Version Date: 2023-03-08 1.0.1
             %goto exit_with_error;
         %end;
 
-        /*对各水平名称进行重命名*/
-        %let VAR_LEVEL_NEED_RENAME = FALSE;
+        /*拆分需要进行重命名的水平名称*/
+        %let var_level_rename_n = 0;
         %if %bquote(&var_level) ^= %bquote() %then %do; 
-            /*拆分需要进行重命名的水平名称*/
             %let reg_var_level_expr_unit = %bquote(/\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*=\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)/);
             %let reg_var_level_expr_unit_id = %sysfunc(prxparse(&reg_var_level_expr_unit));
             %let start = 1;
@@ -164,14 +168,12 @@ Version Date: 2023-03-08 1.0.1
             %let position = 1;
             %let length = 1;
             %let i = 1;
-            %let var_level_name_new_len = 0;
             %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %do %until(&position = 0); /*连续匹配正则表达式*/
                 %let var_level_&i._name_pair = %substr(%bquote(&var_level), &position, &length); /*第i个水平的旧名称和新名称*/
                 %if %sysfunc(prxmatch(&reg_var_level_expr_unit_id, %bquote(&&var_level_&i._name_pair))) %then %do;
                     %let var_level_&i._name_old = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._name_pair))); /*拆分第i个水平的旧名称*/
                     %let var_level_&i._name_new = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._name_pair))); /*拆分第i个水平的新名称*/
-                    %let var_level_name_new_len = %sysfunc(max(&var_level_name_new_len, %sysfunc(length(&&var_level_&i._name_new)))); /*新名称的最大长度*/
                 %end;
                 %else %do;
                     %put ERROR: 在对参数 VAR 解析第 &i 个分类的新旧名称时发生了意料之外的错误！;
@@ -180,32 +182,9 @@ Version Date: 2023-03-08 1.0.1
                 %let i = %eval(&i + 1);
                 %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %end;
-            
-            proc sql noprint;
-                select max(&var_level_name_new_len, max(length(&var_name))) into : var_level_name_new_len from &libname_in..&memname_in(&dataset_options_in);
-            quit;
-
             %let var_level_rename_n = %eval(&i - 1); /*计算需要进行重命名的水平名称的数量*/
-            %let VAR_LEVEL_NEED_RENAME = TRUE;
         %end;
     %end;
-
-    /*对水平名称进行重命名操作*/
-    data tmp_qualify_indata;
-        set &libname_in..&memname_in(&dataset_options_in);
-        %if &VAR_LEVEL_NEED_RENAME = TRUE %then %do;
-            length &var_name._note $ &var_level_name_new_len;
-            select (&var_name);
-                %do i = 1 %to &var_level_rename_n;
-                    when (&&var_level_&i._name_old) &var_name._note = &&var_level_&i._name_new;
-                %end;
-                otherwise &var_name._note = &var_name;
-            end;
-        %end;
-        %else %do;
-            &var_name._note = &var_name;
-        %end;
-    run;
 
 
     /*BY*/
@@ -279,7 +258,17 @@ Version Date: 2023-03-08 1.0.1
                 select
                     distinct
                     &var_name            as var_level,
-                    &var_name._note      as var_level_note,
+                    %if &var_level_rename_n > 0 %then %do;
+                        (case &var_name
+                            %do i = 1 %to &var_level_rename_n;
+                                when &&var_level_&i._name_old then &&var_level_&i._name_new
+                            %end;
+                                else &var_name
+                        end)
+                    %end;
+                    %else %do;
+                        &var_name
+                    %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
                 from tmp_qualify_indata
                 group by var_level
@@ -292,7 +281,17 @@ Version Date: 2023-03-08 1.0.1
                 select
                     distinct
                     &var_name            as var_level,
-                    &var_name._note      as var_level_note,
+                    %if &var_level_rename_n > 0 %then %do;
+                        (case &var_name
+                            %do i = 1 %to &var_level_rename_n;
+                                when &&var_level_&i._name_old then &&var_level_&i._name_new
+                            %end;
+                                else &var_name
+                        end)
+                    %end;
+                    %else %do;
+                        &var_name
+                    %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
                 from tmp_qualify_indata
                 order by var_level_by_criteria &by_direction, var_level ascending;
@@ -307,7 +306,17 @@ Version Date: 2023-03-08 1.0.1
                 select
                     distinct
                     coalescec(a.&var_name, b.label)       as var_level,
-                    coalescec(a.&var_name._note, b.label) as var_level_note,
+                    %if &var_level_rename_n > 0 %then %do;
+                        (case calculated var_level
+                            %do i = 1 %to &var_level_rename_n;
+                                when &&var_level_&i._name_old then &&var_level_&i._name_new
+                            %end;
+                                else calculated var_level
+                        end)
+                    %end;
+                    %else %do;
+                        calculated var_level
+                    %end;                                 as var_level_note,
                     ifn(not missing(b.label), input(strip(b.start), 8.), constant('BIG'))
                                                           as var_level_by_criteria,
                     ifc(missing(b.label), 'Y', '')
