@@ -20,6 +20,7 @@ Version Date: 2023-03-08 1.0.1
               2024-04-26 1.0.15
               2024-04-28 1.0.16
               2024-05-31 1.0.17
+              2024-06-03 1.0.18
 ===================================
 */
 
@@ -324,7 +325,7 @@ Version Date: 2023-03-08 1.0.1
                 from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
-            select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var;
+            select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
             %if &by_fmt_not_defined_n > 0 %then %do;
                 %put WARNING: 指定用于排序的输出格式中，存在 &by_fmt_not_defined_n 个分类名称未定义，输出结果可能是非预期的！;
             %end;
@@ -332,9 +333,9 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
     proc sql noprint;
-        select quote(strip(var_level))      into : var_level_1- from tmp_qualify_distinct_var;
+        select quote(strip(var_level))      into : var_level_1-      from tmp_qualify_distinct_var;
         select quote(strip(var_level_note)) into : var_level_note_1- from tmp_qualify_distinct_var;
-        select count(var_level)             into : var_level_n  from tmp_qualify_distinct_var;
+        select count(var_level)             into : var_level_n       from tmp_qualify_distinct_var;
     quit;
 
 
@@ -382,20 +383,13 @@ Version Date: 2023-03-08 1.0.1
             %goto exit_with_error;
         %end;
         %else %do;
-            %let reg_missing_note_id = %sysfunc(prxparse(%bquote(/^(?:\x22([^\x22]*)\x22|\x27([^\x27]*)\x27|(.*))$/)));
+            %let reg_missing_note_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
             %if %sysfunc(prxmatch(&reg_missing_note_id, %superq(missing_note))) %then %do;
-                %let missing_note_pos_1 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 1, %superq(missing_note))));
-                %let missing_note_pos_2 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 2, %superq(missing_note))));
-                %let missing_note_pos_3 = %bquote(%sysfunc(prxposn(&reg_missing_note_id, 3, %superq(missing_note))));
-                %if %superq(missing_note_pos_1) ^= %bquote() %then %do;
-                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_1)));
-                %end;
-                %else %if %superq(missing_note_pos_2) ^= %bquote() %then %do;
-                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_2)));
-                %end;
-                %else %if %superq(missing_note_pos_3) ^= %bquote() %then %do;
-                    %let missing_note_quoted = %sysfunc(quote(%superq(missing_note_pos_3)));
-                %end;
+                %let missing_note_sql_expr = %superq(missing_note);
+            %end;
+            %else %do;
+                %put ERROR: 参数 MISSING_NOTE 格式不正确，指定的字符串必须使用匹配的引号包围！;
+                %goto exit;
             %end;
         %end;
     %end;
@@ -411,15 +405,15 @@ Version Date: 2023-03-08 1.0.1
             %let var_level_n = %eval(&var_level_n + 1);
             %do i = &var_level_n %to 2 %by -1;
                 %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
-                %let var_level_&i._note = &&var_level_&i;
+                %let var_level_note_&i = &&var_level_&i;
             %end;
             %let var_level_1 = "";
-            %let var_level_1_note = %superq(missing_note_quoted);
+            %let var_level_note_1 = %superq(missing_note_sql_expr);
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
             %let var_level_n = %eval(&var_level_n + 1);
             %let var_level_&var_level_n = "";
-            %let var_level_&var_level_n._note = %superq(missing_note_quoted);
+            %let var_level_note_&var_level_n = %superq(missing_note_sql_expr);
         %end;
         %else %do;
             %put ERROR: 参数 MISSING_POSITION 只能是 FIRST 或 LAST！;

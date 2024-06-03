@@ -16,6 +16,9 @@
 - [BY](#by)
 - [UID](#uid)
 - [PATTERN](#pattern)
+- [MISSING](#missing)
+- [MISSING_NOTE](#missing_note)
+- [MISSING_POSITION](#missing_position)
 - [OUTDATA](#outdata)
 - [STAT_FORMAT](#stat_format)
 - [LABEL](#label)
@@ -108,6 +111,24 @@ GROUPBY = ARMN
 ### PATTERN
 
 用法同 [PATTERN](../qualify/readme.md#pattern)。
+
+---
+
+### MISSING
+
+用法同 [MISSING](../qualify/readme.md#missing)。
+
+---
+
+### MISSING_NOTE
+
+用法同 [MISSING_NOTE](../qualify/readme.md#missing_note)。
+
+---
+
+### MISSING_POSITION
+
+用法同 [MISSING_POSITION](../qualify/readme.md#missing_position)。
 
 ---
 

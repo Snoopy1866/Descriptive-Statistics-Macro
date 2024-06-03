@@ -201,18 +201,26 @@ MISSING = TRUE
 
 **Syntax** : _string_
 
-指定缺失分类的的说明文字，可以使用或不使用引号包围。
+指定缺失分类的的说明文字，该字符串必须使用匹配的单（双）引号包围。
 
-当指定 `MISSING = FALSE` 时，该参数将被忽略。
+如果指定的 `MISSING_NOTE` 中含有不匹配的引号，例如，需要指定 `MISSING_NOTE` 为一个单引号，可以选择以下传参方式：
+
+```sas
+MISSING_NOTE = "'"
+```
+
+但不能使用以下传参方式：
+
+```sas
+MISSING_NOTE = ''''
+```
 
 **Default** : "缺失"
 
 **Usage** :
 
 ```sas
-MISSING_NOTE = "缺失"
-MISSING_NOTE = '缺失'
-MISSINF_NOTE = %str(缺失)
+MISSING_NOTE = "缺失-n(%)"
 ```
 
 [**Example**](#指定缺失分类的说明文字)
