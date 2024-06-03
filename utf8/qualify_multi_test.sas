@@ -9,6 +9,7 @@ Version Date: 2024-01-08 0.1
               2024-01-23 0.4
               2024-04-18 0.5
               2024-04-28 0.6
+              2024-06-03 0.7
 ===================================
 */
 
@@ -16,16 +17,19 @@ Version Date: 2024-01-08 0.1
                           VAR,
                           GROUP,
                           GROUPBY,
-                          BY             = #AUTO,
-                          UID            = #NULL,
-                          PATTERN        = %nrstr(#FREQ(#RATE)),
-                          OUTDATA        = RES_&VAR,
-                          STAT_FORMAT    = #AUTO,
-                          LABEL          = #AUTO,
-                          INDENT         = #AUTO,
-                          SUFFIX         = #AUTO,
-                          PROCHTTP_PROXY = 127.0.0.1:7890,
-                          DEL_TEMP_DATA  = TRUE)
+                          BY               = #AUTO,
+                          UID              = #NULL,
+                          PATTERN          = %nrstr(#FREQ(#RATE)),
+                          MISSING          = FALSE,
+                          MISSING_NOTE     = "缺失",
+                          MISSING_POSITION = LAST,
+                          OUTDATA          = RES_&VAR,
+                          STAT_FORMAT      = #AUTO,
+                          LABEL            = #AUTO,
+                          INDENT           = #AUTO,
+                          SUFFIX           = #AUTO,
+                          PROCHTTP_PROXY   = 127.0.0.1:7890,
+                          DEL_TEMP_DATA    = TRUE)
                           /des = "多组别定性指标汇总统计" parmbuff;
 
     /*打开帮助文档*/
@@ -250,19 +254,21 @@ Version Date: 2024-01-08 0.1
     /*2. 统计描述*/
     %let p_format  = #AUTO;
     %let ts_format = #AUTO;
-    %qualify_multi(INDATA      = tmp_qmt_indata,
-                   VAR         = %superq(VAR),
-                   GROUP       = %superq(GROUP),
-                   GROUPBY     = %superq(GROUPBY),
-                   BY          = %superq(BY),
-                   UID         = %superq(UID),
-                   PATTERN     = %superq(PATTERN),
-                   OUTDATA     = tmp_qmt_desc(keep = _all_),
-                   MISSING     = FALSE,
-                   STAT_FORMAT = %superq(STAT_FORMAT),
-                   LABEL       = %superq(LABEL),
-                   INDENT      = %superq(INDENT),
-                   SUFFIX      = %superq(SUFFIX));
+    %qualify_multi(INDATA           = tmp_qmt_indata,
+                   VAR              = %superq(VAR),
+                   GROUP            = %superq(GROUP),
+                   GROUPBY          = %superq(GROUPBY),
+                   BY               = %superq(BY),
+                   UID              = %superq(UID),
+                   PATTERN          = %superq(PATTERN),
+                   MISSING          = %superq(MISSING),
+                   MISSING_NOTE     = %superq(MISSING_NOTE),
+                   MISSING_POSITION = %superq(MISSING_POSITION),
+                   OUTDATA          = tmp_qmt_desc(keep = _all_),
+                   STAT_FORMAT      = %superq(STAT_FORMAT),
+                   LABEL            = %superq(LABEL),
+                   INDENT           = %superq(INDENT),
+                   SUFFIX           = %superq(SUFFIX));
 
     %if %bquote(&qualify_multi_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;

@@ -9,23 +9,27 @@ Version Date: 2023-12-26 0.1
               2024-04-16 0.4
               2024-04-18 0.5
               2024-04-25 0.6
+              2024-04-25 0.7
 ===================================
 */
 
 %macro qualify_multi(INDATA,
                      VAR,
                      GROUP,
-                     GROUPBY        = #AUTO,
-                     BY             = #AUTO,
-                     UID            = #NULL,
-                     PATTERN        = %nrstr(#FREQ(#RATE)),
-                     OUTDATA        = RES_&VAR,
-                     STAT_FORMAT    = #AUTO,
-                     LABEL          = #AUTO,
-                     INDENT         = #AUTO,
-                     SUFFIX         = #AUTO,
-                     PROCHTTP_PROXY = 127.0.0.1:7890,
-                     DEL_TEMP_DATA  = TRUE)
+                     GROUPBY          = #AUTO,
+                     BY               = #AUTO,
+                     UID              = #NULL,
+                     PATTERN          = %nrstr(#FREQ(#RATE)),
+                     MISSING          = FALSE,
+                     MISSING_NOTE     = "缺失",
+                     MISSING_POSITION = LAST,
+                     OUTDATA          = RES_&VAR,
+                     STAT_FORMAT      = #AUTO,
+                     LABEL            = #AUTO,
+                     INDENT           = #AUTO,
+                     SUFFIX           = #AUTO,
+                     PROCHTTP_PROXY   = 127.0.0.1:7890,
+                     DEL_TEMP_DATA    = TRUE)
                      /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -271,23 +275,26 @@ Version Date: 2023-12-26 0.1
     %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
                                                                             &&group_level_&i %bquote(,)
                                                                         %end;))),
-             VAR         = %superq(VAR),
-             BY          = %superq(BY),
-             UID         = %superq(UID),
-             PATTERN     = %superq(PATTERN),
-             OUTDATA     = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
-                                                           FREQ      = FREQ_SUM
-                                                           FREQ_FMT  = FREQ_SUM_FMT
-                                                           N         = N_SUM
-                                                           N_FMT     = N_SUM_FMT
-                                                           TIMES     = TIMES_SUM
-                                                           TIMES_FMT = TIMES_SUM_FMT
-                                                           RATE      = RATE_SUM
-                                                           RATE_FMT  = RATE_SUM_FMT)),
-             STAT_FORMAT = %superq(STAT_FORMAT),
-             LABEL       = %superq(LABEL),
-             INDENT      = %superq(INDENT),
-             SUFFIX      = %superq(SUFFIX));
+             VAR              = %superq(VAR),
+             BY               = %superq(BY),
+             UID              = %superq(UID),
+             PATTERN          = %superq(PATTERN),
+             MISSING          = %superq(MISSING),
+             MISSING_NOTE     = %superq(MISSING_NOTE),
+             MISSING_POSITION = %superq(MISSING_POSITION),
+             OUTDATA          = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
+                                                                FREQ      = FREQ_SUM
+                                                                FREQ_FMT  = FREQ_SUM_FMT
+                                                                N         = N_SUM
+                                                                N_FMT     = N_SUM_FMT
+                                                                TIMES     = TIMES_SUM
+                                                                TIMES_FMT = TIMES_SUM_FMT
+                                                                RATE      = RATE_SUM
+                                                                RATE_FMT  = RATE_SUM_FMT)),
+             STAT_FORMAT      = %superq(STAT_FORMAT),
+             LABEL            = %superq(LABEL),
+             INDENT           = %superq(INDENT),
+             SUFFIX           = %superq(SUFFIX));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -303,24 +310,27 @@ Version Date: 2023-12-26 0.1
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
-        %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
-                 VAR         = %superq(VAR),
-                 BY          = %superq(BY),
-                 UID         = %superq(UID),
-                 PATTERN     = %superq(PATTERN),
-                 OUTDATA     = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
-                                                                     FREQ      = FREQ_&i
-                                                                     FREQ_FMT  = FREQ_&i._FMT
-                                                                     N         = N_&i
-                                                                     N_FMT     = N_&i._FMT
-                                                                     TIMES     = TIMES_&i
-                                                                     TIMES_FMT = TIMES_&i._FMT
-                                                                     RATE      = RATE_&i
-                                                                     RATE_FMT  = RATE_&i._FMT)),
-                 STAT_FORMAT = %superq(STAT_FORMAT),
-                 LABEL       = %superq(LABEL),
-                 INDENT      = %superq(INDENT),
-                 SUFFIX      = %superq(SUFFIX));
+        %qualify(INDATA           = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
+                 VAR              = %superq(VAR),
+                 BY               = %superq(BY),
+                 UID              = %superq(UID),
+                 PATTERN          = %superq(PATTERN),
+                 MISSING          = %superq(MISSING),
+                 MISSING_NOTE     = %superq(MISSING_NOTE),
+                 MISSING_POSITION = %superq(MISSING_POSITION),
+                 OUTDATA          = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
+                                                                         FREQ      = FREQ_&i
+                                                                         FREQ_FMT  = FREQ_&i._FMT
+                                                                         N         = N_&i
+                                                                         N_FMT     = N_&i._FMT
+                                                                         TIMES     = TIMES_&i
+                                                                         TIMES_FMT = TIMES_&i._FMT
+                                                                         RATE      = RATE_&i
+                                                                         RATE_FMT  = RATE_&i._FMT)),
+                 STAT_FORMAT      = %superq(STAT_FORMAT),
+                 LABEL            = %superq(LABEL),
+                 INDENT           = %superq(INDENT),
+                 SUFFIX           = %superq(SUFFIX));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
