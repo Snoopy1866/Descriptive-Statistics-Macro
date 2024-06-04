@@ -22,6 +22,7 @@
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
+- [TOTAL]()
 
 ### 调试参数
 
@@ -447,6 +448,26 @@ SUFFIX = "，n(%)"
 
 ---
 
+### TOTAL
+
+**Syntax** : TRUE | FALSE
+
+指定是否在标签行输出各分类合计的统计结果。
+
+**Default** : FALSE
+
+默认情况下，标签行仅显示参数 [LABEL](#label) 指定的字符串，不显示各分类合计的统计结果。
+
+**Usage** :
+
+```sas
+TOTAL = TRUE
+```
+
+[**Example**](#指定分类名称后缀)
+
+---
+
 ### DEL_TEMP_DATA
 
 **Syntax** : TRUE | FALSE
@@ -520,10 +541,24 @@ SUFFIX = "，n(%)"
 
 ![](./assets/example-by-format-label.png)
 
+### 指定唯一标识符变量
+
+```sas
+%qualify(indata = adam.addv(where = (FASFL = "Y")),
+         var = dvtype,
+         uid = usubjid,
+         outdata = t1(keep = item value freq times));
+```
+
+![](./assets/example-uid.png)
+
 ### 指定是否统计缺失分类
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true);
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true);
 ```
 
 ![](./assets/example-missing.png)
@@ -531,7 +566,11 @@ SUFFIX = "，n(%)"
 ### 指定缺失分类的说明文字
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, missing_note = "不适用");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         missing_note = "不适用");
 ```
 
 ![](./assets/example-missing-note.png)
@@ -539,7 +578,12 @@ SUFFIX = "，n(%)"
 ### 指定缺失分类的显示位置
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, missing_note = "不适用", missing_position = first);
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         missing_note = "不适用",
+         missing_position = first);
 ```
 
 ![](./assets/example-missing-position.png)
@@ -547,7 +591,11 @@ SUFFIX = "，n(%)"
 ### 指定需要保留的变量
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, outdata = t1(keep = seq item value n rate));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         outdata = t1(keep = seq item value n rate));
 ```
 
 ![](./assets/example-outdata.png)
@@ -555,7 +603,11 @@ SUFFIX = "，n(%)"
 ### 指定统计量的输出格式
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, stat_format = (#N = z4., #RATE = 5.3));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+        var = ecgcsig,
+        by = clsig.,
+        missing = true,
+        stat_format = (#N = z4., #RATE = 5.3));
 ```
 
 ![](./assets/example-stat-format.png)
@@ -563,7 +615,11 @@ SUFFIX = "，n(%)"
 ### 指定分析变量标签
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定-n(%)");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         label = "ECG 临床意义判定-n(%)");
 ```
 
 ![](./assets/example-label.png)
@@ -571,7 +627,12 @@ SUFFIX = "，n(%)"
 ### 指定缩进字符串
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定-n(%)", indent = "\li420 ");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         label = "ECG 临床意义判定-n(%)",
+         indent = "\li420 ");
 ```
 
 ![](./assets/example-indent.png)
@@ -581,15 +642,28 @@ SUFFIX = "，n(%)"
 ### 指定分类名称后缀
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, by = clsig., missing = true, label = "ECG 临床意义判定", indent = "\li420 ", suffix = "，n(%)");
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         label = "ECG 临床意义判定",
+         indent = "\li420 ",
+         suffix = "，n(%)");
 ```
 
 ![](./assets/example-suffix.png)
 
-### 指定唯一标识符变量
+### 指定是否输出各分类合计的统计结果
 
 ```sas
-%qualify(indata = adam.addv(where = (FASFL = "Y")), var = dvtype, uid = usubjid, outdata = t1(keep = item value freq times));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")),
+         var = ecgcsig,
+         by = clsig.,
+         missing = true,
+         label = "ECG 临床意义判定",
+         indent = "\li420 ",
+         suffix = "，n(%)",
+         total = true);
 ```
 
-![](./assets/example-uid.png)
+![](./assets/example-total.png)
