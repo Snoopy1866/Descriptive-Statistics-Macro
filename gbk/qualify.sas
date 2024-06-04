@@ -21,6 +21,7 @@ Version Date: 2023-03-08 1.0.1
               2024-04-28 1.0.16
               2024-05-31 1.0.17
               2024-06-03 1.0.18
+              2024-06-04 1.0.19
 ===================================
 */
 
@@ -37,6 +38,7 @@ Version Date: 2023-03-08 1.0.1
                LABEL            = #AUTO,
                INDENT           = #AUTO,
                SUFFIX           = #AUTO,
+               TOTAL            = FALSE,
                DEL_TEMP_DATA    = TRUE)
                /des = "定性指标分析" parmbuff;
 
@@ -57,6 +59,7 @@ Version Date: 2023-03-08 1.0.1
     %let missing_position     = %upcase(%sysfunc(strip(%bquote(&missing_position))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let total                = %upcase(%sysfunc(strip(%bquote(&total))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*受支持的统计量*/
@@ -602,15 +605,33 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
 
+    /*TOTAL*/
+    %if %superq(total) = %bquote() %then %do;
+        %put ERROR: 参数 TOTAL 为空！;
+        %goto exit;
+    %end;
+
+    %if %superq(total) ^= TRUE and %superq(total) ^= FALSE %then %do;
+        %put ERROR: 参数 TOTAL 只能是 TRUE 和 FALSE 其中之一！;
+        %goto exit;
+    %end;
+
+
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 去重UID*/
     %if %superq(uid) = #NULL %then %do;
-        data tmp_qualify_indata_unique;
+        data tmp_qualify_indata_unique_total
+             tmp_qualify_indata_unique_var;
             set tmp_qualify_indata;
+            output tmp_qualify_indata_unique_total;
+            output tmp_qualify_indata_unique_var;
         run;
     %end;
     %else %do;
-        proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique nodupkey;
+        proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_total nodupkey;
+            by &uid;
+        run;
+        proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_var nodupkey;
             by &uid &var_name;
         run;
     %end;
@@ -648,9 +669,32 @@ Version Date: 2023-03-08 1.0.1
         create table tmp_qualify_outdata as
             select
                 0                                 as SEQ,
-                %unquote(%superq(label_sql_expr)) as ITEM,
-                ""                                as VALUE
-            from tmp_qualify_indata(firstobs = 1 obs = 1)
+                %unquote(%superq(label_sql_expr)) as ITEM
+                %if &total = TRUE %then %do;
+                    ,
+                    /*频数*/
+                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata_unique_total)
+                                                                                           as FREQ,
+                    strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
+                    /*频数-兼容旧版本*/
+                    calculated FREQ                                                        as N,
+                    calculated FREQ_FMT                                                    as N_FMT,
+                    /*频次*/
+                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata)
+                                                                                           as TIMES,
+                    strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
+                    /*频率*/
+                    1                                                                      as RATE,
+                    strip(put(1, &RATE_format))                                            as RATE_FMT,
+                    cat(%unquote(
+                                 %do j = 1 %to &stat_n;
+                                     %temp_combpl_hash("&&string_&j") %bquote(,) strip(calculated &&stat_&j.._FMT) %bquote(,)
+                                 %end;
+                                 %temp_combpl_hash("&&string_&j")
+                                )
+                        )                                                                  as VALUE
+                %end;
+            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1)
             %do i = 1 %to &var_level_n;
                 outer union corr
                 select
@@ -677,7 +721,7 @@ Version Date: 2023-03-08 1.0.1
                                  %temp_combpl_hash("&&string_&j")
                                 )
                         )                                                                  as VALUE
-                from tmp_qualify_indata_unique
+                from tmp_qualify_indata_unique_var
             %end;
             %bquote(;)
     quit;
@@ -699,11 +743,12 @@ Version Date: 2023-03-08 1.0.1
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
+                   tmp_qualify_indata_unique_total
                    %if %sysmexecdepth < 2 %then %do;
-                       tmp_qualify_indata_unique
+                       tmp_qualify_indata_unique_var
                    %end;
-                   %else %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique*/
-                       tmp_qualify_indata_unique
+                   %else %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
+                       tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt
                    tmp_qualify_distinct_var

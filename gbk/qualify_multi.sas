@@ -10,6 +10,7 @@ Version Date: 2023-12-26 0.1
               2024-04-18 0.5
               2024-04-25 0.6
               2024-04-25 0.7
+              2024-06-04 0.8
 ===================================
 */
 
@@ -28,6 +29,7 @@ Version Date: 2023-12-26 0.1
                      LABEL            = #AUTO,
                      INDENT           = #AUTO,
                      SUFFIX           = #AUTO,
+                     TOTAL            = FALSE,
                      PROCHTTP_PROXY   = 127.0.0.1:7890,
                      DEL_TEMP_DATA    = TRUE)
                      /des = "多组别定性指标分析" parmbuff;
@@ -294,7 +296,8 @@ Version Date: 2023-12-26 0.1
              STAT_FORMAT      = %superq(STAT_FORMAT),
              LABEL            = %superq(LABEL),
              INDENT           = %superq(INDENT),
-             SUFFIX           = %superq(SUFFIX));
+             SUFFIX           = %superq(SUFFIX),
+             TOTAL            = %superq(TOTAL));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -330,7 +333,8 @@ Version Date: 2023-12-26 0.1
                  STAT_FORMAT      = %superq(STAT_FORMAT),
                  LABEL            = %superq(LABEL),
                  INDENT           = %superq(INDENT),
-                 SUFFIX           = %superq(SUFFIX));
+                 SUFFIX           = %superq(SUFFIX),
+                 TOTAL            = %superq(TOTAL));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;

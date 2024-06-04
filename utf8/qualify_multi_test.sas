@@ -10,6 +10,7 @@ Version Date: 2024-01-08 0.1
               2024-04-18 0.5
               2024-04-28 0.6
               2024-06-03 0.7
+              2024-06-04 0.8
 ===================================
 */
 
@@ -28,6 +29,7 @@ Version Date: 2024-01-08 0.1
                           LABEL            = #AUTO,
                           INDENT           = #AUTO,
                           SUFFIX           = #AUTO,
+                          TOTAL            = FALSE,
                           PROCHTTP_PROXY   = 127.0.0.1:7890,
                           DEL_TEMP_DATA    = TRUE)
                           /des = "多组别定性指标汇总统计" parmbuff;
@@ -268,7 +270,8 @@ Version Date: 2024-01-08 0.1
                    STAT_FORMAT      = %superq(STAT_FORMAT),
                    LABEL            = %superq(LABEL),
                    INDENT           = %superq(INDENT),
-                   SUFFIX           = %superq(SUFFIX));
+                   SUFFIX           = %superq(SUFFIX),
+                   TOTAL            = %superq(TOTAL));
 
     %if %bquote(&qualify_multi_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -286,7 +289,7 @@ Version Date: 2024-01-08 0.1
     %end;
 
     /*卡方和Fisher精确检验*/
-    proc freq data = tmp_qmt_indata_unique noprint;
+    proc freq data = tmp_qualify_indata_unique_var noprint;
         tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
         output out = tmp_qmt_chisq chisq;
     run;
