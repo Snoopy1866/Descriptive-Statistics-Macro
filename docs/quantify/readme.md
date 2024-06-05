@@ -289,7 +289,7 @@ STAT_FORMAT = #PREV
 
 **Syntax** : <(> #_statisic-keyword-1_ = _string-1_ <, #_statistic-keyword-2_ = _string-2_ <, ...>> <)>
 
-指定输出结果中统计量的说明文字，该说明文字将会出现在输出数据集的 `ITEM` 列中。
+指定输出结果中统计量的说明文字，该说明文字将会出现在输出数据集的 `ITEM` 列中。说明文字必须使用匹配的单（双）引号包围。
 
 **Default** : #AUTO
 
