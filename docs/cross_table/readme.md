@@ -71,7 +71,7 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 ```sas
 ROWCAT = PARSIG
-ROWCAT = PARSIG("正常" "异常无临床意义" "异常有临床意义")
+ROWCAT = PARSIG("正常", "异常无临床意义", "异常有临床意义")
 ```
 
 [**Example**](#一般用法)
@@ -306,8 +306,8 @@ ROWCAT = PARSIGN(DESCENDING)
 
 ```sas
 %cross_table(indata = analysis1,
-             rowcat = PARSIG1("正常" "异常无临床意义" "异常有临床意义"),
-             colcat = PARSIG2("正常" "异常无临床意义" "异常有临床意义"));
+             rowcat = PARSIG1("正常", "异常无临床意义", "异常有临床意义"),
+             colcat = PARSIG2("正常", "异常无临床意义", "异常有临床意义"));
 ```
 
 ![](./assets/example-normal-2.png)
