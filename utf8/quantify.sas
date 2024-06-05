@@ -14,6 +14,7 @@ Version Date: 2023-03-16 1.3.1
               2024-03-19 1.3.9
               2024-04-26 1.3.10
               2024-04-28 1.3.11
+              2024-06-05 1.3.12
 ===================================
 */
 
@@ -47,46 +48,46 @@ Version Date: 2023-03-16 1.3.1
     %let stat_supported = %bquote(KURTOSIS|SKEWNESS|MEDIAN|QRANGE|STDDEV|STDERR|NMISS|RANGE|KURT|LCLM|MEAN|MODE|SKEW|UCLM|CSS|MAX|MIN|P10|P20|P25|P30|P40|P50|P60|P70|P75|P80|P90|P95|P99|STD|SUM|USS|VAR|CV|P1|P5|Q1|Q3|N);
 
     /*统计量对应的说明文字*/
-    %let KURTOSIS_note = %bquote(峰度);
-    %let SKEWNESS_note = %bquote(偏度);
-    %let MEDIAN_note   = %bquote(中位数);
-    %let QRANGE_note   = %bquote(四分位间距);
-    %let STDDEV_note   = %bquote(标准差);
-    %let STDERR_note   = %bquote(标准误);
-    %let NMISS_note    = %bquote(缺失);
-    %let RANGE_note    = %bquote(极差);
-    %let KURT_note     = %bquote(峰度);
-    %let LCLM_note     = %bquote(均值的 95% 置信下限);
-    %let MEAN_note     = %bquote(均值);
-    %let MODE_note     = %bquote(众数);
-    %let SKEW_note     = %bquote(偏度);
-    %let UCLM_note     = %bquote(均值的 95% 置信上限);
-    %let CSS_note      = %bquote(校正平方和);
-    %let MAX_note      = %bquote(最大值);
-    %let MIN_note      = %bquote(最小值);
-    %let P10_note      = %bquote(第 10 百分位数);
-    %let P20_note      = %bquote(第 20 百分位数);
-    %let P25_note      = %bquote(第 25 百分位数);
-    %let P30_note      = %bquote(第 30 百分位数);
-    %let P40_note      = %bquote(第 40 百分位数);
-    %let P50_note      = %bquote(第 50 百分位数);
-    %let P60_note      = %bquote(第 60 百分位数);
-    %let P70_note      = %bquote(第 70 百分位数);
-    %let P75_note      = %bquote(第 75 百分位数);
-    %let P80_note      = %bquote(第 80 百分位数);
-    %let P90_note      = %bquote(第 90 百分位数);
-    %let P95_note      = %bquote(第 95 百分位数);
-    %let P99_note      = %bquote(第 99 百分位数);
-    %let STD_note      = %bquote(标准差);
-    %let SUM_note      = %bquote(总和);
-    %let USS_note      = %bquote(未校正平方和);
-    %let VAR_note      = %bquote(方差);
-    %let CV_note       = %bquote(变异系数);
-    %let P1_note       = %bquote(第 1 百分位数);
-    %let P5_note       = %bquote(第 5 百分位数);
-    %let Q1_note       = %bquote(Q1);
-    %let Q3_note       = %bquote(Q3);
-    %let N_note        = %bquote(例数);
+    %let KURTOSIS_note = %bquote('峰度');
+    %let SKEWNESS_note = %bquote('偏度');
+    %let MEDIAN_note   = %bquote('中位数');
+    %let QRANGE_note   = %bquote('四分位间距');
+    %let STDDEV_note   = %bquote('标准差');
+    %let STDERR_note   = %bquote('标准误');
+    %let NMISS_note    = %bquote('缺失');
+    %let RANGE_note    = %bquote('极差');
+    %let KURT_note     = %bquote('峰度');
+    %let LCLM_note     = %bquote('均值的 95% 置信下限');
+    %let MEAN_note     = %bquote('均值');
+    %let MODE_note     = %bquote('众数');
+    %let SKEW_note     = %bquote('偏度');
+    %let UCLM_note     = %bquote('均值的 95% 置信上限');
+    %let CSS_note      = %bquote('校正平方和');
+    %let MAX_note      = %bquote('最大值');
+    %let MIN_note      = %bquote('最小值');
+    %let P10_note      = %bquote('第 10 百分位数');
+    %let P20_note      = %bquote('第 20 百分位数');
+    %let P25_note      = %bquote('第 25 百分位数');
+    %let P30_note      = %bquote('第 30 百分位数');
+    %let P40_note      = %bquote('第 40 百分位数');
+    %let P50_note      = %bquote('第 50 百分位数');
+    %let P60_note      = %bquote('第 60 百分位数');
+    %let P70_note      = %bquote('第 70 百分位数');
+    %let P75_note      = %bquote('第 75 百分位数');
+    %let P80_note      = %bquote('第 80 百分位数');
+    %let P90_note      = %bquote('第 90 百分位数');
+    %let P95_note      = %bquote('第 95 百分位数');
+    %let P99_note      = %bquote('第 99 百分位数');
+    %let STD_note      = %bquote('标准差');
+    %let SUM_note      = %bquote('总和');
+    %let USS_note      = %bquote('未校正平方和');
+    %let VAR_note      = %bquote('方差');
+    %let CV_note       = %bquote('变异系数');
+    %let P1_note       = %bquote('第 1 百分位数');
+    %let P5_note       = %bquote('第 5 百分位数');
+    %let Q1_note       = %bquote('Q1');
+    %let Q3_note       = %bquote('Q3');
+    %let N_note        = %bquote('例数');
 
 
     /*统计量对应的PROC MEANS过程输出的数据集中的变量名*/
@@ -500,7 +501,7 @@ Version Date: 2023-03-16 1.3.1
 
     %if %bquote(&stat_note) ^= #AUTO %then %do;
         %let stat_note_n = %eval(%sysfunc(kcountw(%bquote(&stat_note), %bquote(=), q)) - 1);
-        %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*"((?:.|\n)*)"[\s,]*);
+        %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*(\x22[^\x22]*\x22|\x27[^\x27]*\x27)[\s,]*);
         %let reg_stat_note_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_note_expr_unit, %eval(&stat_note_n - 1)))\)?$/i);
         %let reg_stat_note_id = %sysfunc(prxparse(&reg_stat_note_expr));
 
@@ -608,7 +609,7 @@ Version Date: 2023-03-16 1.3.1
                         %unquote(
                                  %do j = 1 %to &&stat_&i;
                                      %temp_combpl_hash("&&string_&i._&j") %bquote(,)
-                                     "&&&&&&stat_&i._&j.._note" %bquote(,)
+                                     %unquote(&&&&&&stat_&i._&j.._note) %bquote(,)
                                  %end;
                                  %temp_combpl_hash("&&string_&i._&j")
                                 )
