@@ -5,6 +5,7 @@ Macro Label:基本列联表
 Author: wtwang
 Version Date: 2022-09-21 V1.1
               2024-05-28 V1.2
+              2024-06-05 V1.2.1
 ===================================
 */
 
@@ -92,7 +93,7 @@ Version Date: 2022-09-21 V1.1
     %end;
 
     %let IS_ROW_CAT_SPECIFIED = FALSE;
-    %let reg_rowcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:\s+".*")*\s*)?\))?$/);
+    %let reg_rowcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:[\s,]+".*")*\s*)?\))?$/);
     %let reg_rowcat_id = %sysfunc(prxparse(&reg_rowcat));
     %if %sysfunc(prxmatch(&reg_rowcat_id, &rowcat)) = 0 %then %do;
         %put ERROR: 参数 ROWCAT = &rowcat 格式不正确！;
@@ -111,7 +112,7 @@ Version Date: 2022-09-21 V1.1
         %else %do;
             %if %bquote(&row_val) = %bquote() %then %do; /*未指定分类的值*/
                 proc sql noprint;
-                    select distinct cats("""", &row_var, """") into :row_val separated by " " from &indata where not missing(&row_var);
+                    select distinct cats("""", &row_var, """") into :row_val separated by "," from &indata where not missing(&row_var);
                 quit;
             %end;
             %else %do; /*指定了分类的值*/
@@ -129,7 +130,7 @@ Version Date: 2022-09-21 V1.1
     %end;
 
     %let IS_COL_CAT_SPECIFIED = FALSE;
-    %let reg_colcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:\s+".*")*\s*)?\))?$/);
+    %let reg_colcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:[\s,]+".*")*\s*)?\))?$/);
     %let reg_colcat_id = %sysfunc(prxparse(&reg_colcat));
     %if %sysfunc(prxmatch(&reg_colcat_id, &colcat)) = 0 %then %do;
         %put ERROR: 参数 COLCAT = &colcat 格式不正确！;
@@ -151,7 +152,7 @@ Version Date: 2022-09-21 V1.1
         %else %do;
             %if %bquote(&col_val) = %bquote() %then %do; /*未指定分类的值*/
                 proc sql noprint;
-                    select distinct cats("""", &col_var, """") into :col_val separated by " " from &indata where not missing(&col_var);
+                    select distinct cats("""", &col_var, """") into :col_val separated by "," from &indata where not missing(&col_var);
                 quit;
             %end;
             %else %do; /*指定了分类的值*/
@@ -501,9 +502,9 @@ Version Date: 2022-09-21 V1.1
     %end;
     %else %do;
         /*直接指定分类值，拆分rowval的分类*/
-        %let row_cat_n = %sysfunc(kcountw(%bquote(&row_val), %bquote( ), q));
+        %let row_cat_n = %sysfunc(kcountw(%bquote(&row_val), %bquote(,), qs));
         %do i = 1 %to &row_cat_n;
-            %let row_&i = %sysfunc(kscanx(%bquote(&row_val), &i, %bquote( ), q));
+            %let row_&i = %sysfunc(kscanx(%bquote(&row_val), &i, %bquote(,), qs));
         %end;
     %end;
     
@@ -548,9 +549,9 @@ Version Date: 2022-09-21 V1.1
     %end;
     %else %do;
         /*直接指定分类值，拆分colval的分类*/
-        %let col_cat_n = %sysfunc(kcountw(%bquote(&col_val), %bquote( ), q));
+        %let col_cat_n = %sysfunc(kcountw(%bquote(&col_val), %bquote(,), qs));
         %do i = 1 %to &col_cat_n;
-            %let col_&i = %sysfunc(kscanx(%bquote(&col_val), &i, %bquote( ), q));
+            %let col_&i = %sysfunc(kscanx(%bquote(&col_val), &i, %bquote(,), qs));
         %end;
     %end;
 
