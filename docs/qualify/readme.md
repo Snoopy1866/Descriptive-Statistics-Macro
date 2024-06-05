@@ -22,7 +22,7 @@
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
-- [TOTAL]()
+- [TOTAL](#total)
 
 ### 调试参数
 
