@@ -11,6 +11,7 @@ Version Date: 2023-12-26 0.1
               2024-04-25 0.6
               2024-04-25 0.7
               2024-06-04 0.8
+              2024-06-13 0.9
 ===================================
 */
 
@@ -303,10 +304,10 @@ Version Date: 2023-12-26 0.1
         %goto exit_with_error;
     %end;
 
-    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI_TEST %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique*/
+    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI_TEST %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
         proc datasets library = work noprint nowarn;
-            delete tmp_qmt_indata_unique;
-            change tmp_qualify_indata_unique = tmp_qmt_indata_unique;
+            delete tmp_qmt_indata_unique_var;
+            change tmp_qualify_indata_unique_var = tmp_qmt_indata_unique_var;
         quit;
     %end;
 
