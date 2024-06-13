@@ -22,6 +22,7 @@ Version Date: 2023-03-08 1.0.1
               2024-05-31 1.0.17
               2024-06-03 1.0.18
               2024-06-04 1.0.19
+              2024-06-13 1.0.20
 ===================================
 */
 
@@ -744,10 +745,7 @@ Version Date: 2023-03-08 1.0.1
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total
-                   %if %sysmexecdepth < 2 %then %do;
-                       tmp_qualify_indata_unique_var
-                   %end;
-                   %else %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
+                   %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
                        tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt

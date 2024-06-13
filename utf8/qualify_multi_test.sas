@@ -11,6 +11,7 @@ Version Date: 2024-01-08 0.1
               2024-04-28 0.6
               2024-06-03 0.7
               2024-06-04 0.8
+              2024-06-13 0.9
 ===================================
 */
 
@@ -289,7 +290,7 @@ Version Date: 2024-01-08 0.1
     %end;
 
     /*卡方和Fisher精确检验*/
-    proc freq data = tmp_qualify_indata_unique_var noprint;
+    proc freq data = tmp_qmt_indata_unique_var noprint;
         tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
         output out = tmp_qmt_chisq chisq;
     run;
@@ -374,13 +375,13 @@ Version Date: 2024-01-08 0.1
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
-                   tmp_qmt_indata_unique
+                   tmp_qmt_indata_unique_var
                    tmp_qmt_desc
                    tmp_qmt_stat
                    tmp_qmt_outdata
                    tmp_qmt_chisq
 
-                   tmp_qualify_indata_unique /*%qualify_multi 拆分 group 各水平调用 %qualify 残留的数据集*/
+                   tmp_qualify_indata_unique_var /*%qualify_multi 拆分 group 各水平调用 %qualify 残留的数据集*/
                    ;
         quit;
     %end;
