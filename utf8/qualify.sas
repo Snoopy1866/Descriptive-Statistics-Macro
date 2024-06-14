@@ -23,6 +23,7 @@ Version Date: 2023-03-08 1.0.1
               2024-06-03 1.0.18
               2024-06-04 1.0.19
               2024-06-13 1.0.20
+              2024-06-14 1.0.21
 ===================================
 */
 
@@ -409,7 +410,7 @@ Version Date: 2023-03-08 1.0.1
             %let var_level_n = %eval(&var_level_n + 1);
             %do i = &var_level_n %to 2 %by -1;
                 %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
-                %let var_level_note_&i = &&var_level_&i;
+                %let var_level_note_&i = %unquote(%nrbquote(&&)var_level_note_%eval(&i - 1));
             %end;
             %let var_level_1 = "";
             %let var_level_note_1 = %superq(missing_note_sql_expr);
