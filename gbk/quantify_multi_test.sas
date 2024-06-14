@@ -7,6 +7,7 @@ Version Date: 2024-01-05 0.1
               2024-01-18 0.2
               2024-01-23 0.3
               2024-05-29 0.4
+              2024-06-14 0.5
 ===================================
 */
 
@@ -215,15 +216,26 @@ Version Date: 2024-01-05 0.1
     run;
 
     proc sql noprint;
-        select sum(probn < 0.05) into : nrmtest_reject from tmp_qmt_nrmtest;
+        select sum(not missing(probn)) into : nrmtest_valid  from tmp_qmt_nrmtest;
+        select sum(0 <= probn < 0.05)  into : nrmtest_reject from tmp_qmt_nrmtest;
     quit;
 
     /*定义宏变量，存储说明文字*/
     %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
     %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
-
-    /*至少一个组别不符合正态性，使用 Wilcoxon 检验*/
-    %if &nrmtest_reject > 0 %then %do;
+    
+    %if &nrmtest_valid = 0 %then %do; /*两组均为单点分布，无法检验正态性，不计算统计量*/
+        proc sql noprint;
+            insert into tmp_qmt_outdata
+                set item = &note_stat,
+                    value_1 = "-",
+                    value_2 = "-";
+            insert into tmp_qmt_outdata
+                set item = &note_pvalue,
+                    value_1 = "-";
+        quit;
+    %end;
+    %else %if &nrmtest_reject > 0 %then %do; /*至少一个组别不符合正态性，使用 Wilcoxon 检验*/
         %put NOTE: 至少一个组别不符合正态性，使用 Wilcoxon 检验！;
         proc npar1way data = tmp_qmt_indata wilcoxon noprint;
             var %superq(VAR);
