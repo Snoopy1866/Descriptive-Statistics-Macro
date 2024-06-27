@@ -131,9 +131,9 @@ _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `|`，�
 > [!IMPORTANT]
 >
 > - 若紧跟在 _statistic-keyword_ 之后的 _string(s)_ 的部分字符与 _statistic-keyword_ 可以组合成另一个 _statistic-keyword_，为了避免混淆，应当在 _statistic-keyword_ 后添加一个 `.`，然后再添加 _string(s)_。例如：`PATTERN = #N(#N.MISS)|#MEAN(#STD)`，其中 `#N.MISS` 代表将计算例数与字符串 `MISS` 进行连接；
-> - 若 _statistic-keyword_ 之后的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = #N(#N..MISS)|#MEAN(#STD)`；
-> - 若 #_statistic-keyword_ 之前的第一个字符是 `#`，则需要使用 `#.` 才能正确表示。例如：`PATTERN = ##.#MEAN`；
+> - 若 #_statistic-keyword_ 之后的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = #N(#N..MISS)|#MEAN(#STD)`；
 > - 若 #_statistic-keyword_ 之前的第一个字符是 `.`，则需要使用 `..` 才能正确表示。例如：`PATTERN = ..#MEAN`；
+> - 若 #_statistic-keyword_ 之前的第一个字符是 `#`，则需要使用 `##.` 才能正确表示。例如：`PATTERN = ##.#MEAN`；
 > - 若未指定任何 _statistic-keyword_，则会直接输出原始字符串，而不进行任何统计量的计算。
 
 **Usage** :
