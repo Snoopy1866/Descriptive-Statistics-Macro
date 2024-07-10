@@ -760,7 +760,7 @@ Version Date: 2023-03-08 1.0.1
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total
-                   %if not (%sysmexecname(%sysmexecdepth - 2) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
+                   %if not (%sysmexecname(%sysfunc(max(%sysmexecdepth - 2, 0))) = QUALIFY_MULTI_TEST) %then %do; /*如果被 %qualify_multi_test 调用，则保留数据集 tmp_qualify_indata_unique_var*/
                        tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt
