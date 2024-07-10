@@ -24,6 +24,7 @@ Version Date: 2023-03-08 1.0.1
               2024-06-04 1.0.19
               2024-06-13 1.0.20
               2024-06-14 1.0.21
+              2024-07-10 1.0.22
 ===================================
 */
 
@@ -338,9 +339,12 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
     proc sql noprint;
-        select quote(strip(var_level))      into : var_level_1-      from tmp_qualify_distinct_var;
-        select quote(strip(var_level_note)) into : var_level_note_1- from tmp_qualify_distinct_var;
-        select count(var_level)             into : var_level_n       from tmp_qualify_distinct_var;
+        select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
+        select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
+
+        select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
+        select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
+        select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
     quit;
 
 
@@ -668,7 +672,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*汇总*/
     proc sql noprint;
-        create table tmp_qualify_outdata as
+        create table tmp_qualify_outdata_label as
             select
                 0                                 as SEQ,
                 %unquote(%superq(label_sql_expr)) as ITEM
@@ -688,22 +692,21 @@ Version Date: 2023-03-08 1.0.1
                     /*频率*/
                     1                                                                      as RATE,
                     strip(put(1, &RATE_format))                                            as RATE_FMT,
-                    cat(%unquote(
-                                 %do j = 1 %to &stat_n;
-                                     %temp_combpl_hash("&&string_&j") %bquote(,) strip(calculated &&stat_&j.._FMT) %bquote(,)
-                                 %end;
-                                 %temp_combpl_hash("&&string_&j")
-                                )
-                        )                                                                  as VALUE
+                    %do j = 1 %to &stat_n;
+                        %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
+                    %end;
+                    %temp_combpl_hash("&&string_&j")                                       as VALUE
                 %end;
-            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1)
-            %do i = 1 %to &var_level_n;
-                outer union corr
+            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1);
+    quit;
+
+    %do i = 1 %to &var_level_n;
+        proc sql noprint;
+            create table tmp_qualify_outdata_level_&i as
                 select
                     &i                                                                     as SEQ,
-                    cat(%unquote(%superq(indent_sql_expr)),
-                        %unquote(&&var_level_note_&i),
-                        %unquote(%superq(suffix_sql_expr)))                                as ITEM,
+                    %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
+                                                                                           as ITEM,
                     /*频数*/
                     sum(&var_name = &&var_level_&i)                                        as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
@@ -716,30 +719,36 @@ Version Date: 2023-03-08 1.0.1
                     /*频率*/
                     calculated N/count(*)                                                  as RATE,
                     strip(put(calculated RATE, &RATE_format))                              as RATE_FMT,
-                    cat(%unquote(
-                                 %do j = 1 %to &stat_n;
-                                     %temp_combpl_hash("&&string_&j") %bquote(,) strip(calculated &&stat_&j.._FMT) %bquote(,)
-                                 %end;
-                                 %temp_combpl_hash("&&string_&j")
-                                )
-                        )                                                                  as VALUE
-                from tmp_qualify_indata_unique_var
-            %end;
-            %bquote(;)
-    quit;
+                    %do j = 1 %to &stat_n;
+                        %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
+                    %end;
+                    %temp_combpl_hash("&&string_&j")                                       as VALUE
+                from tmp_qualify_indata_unique_var;
+        quit;
+    %end;
 
 
     /*3. 输出数据集*/
+    proc sql noprint;
+        select max(length) into : column_item_len_max from DICTIONARY.COLUMNS where libname = "WORK" and
+                                                                                    memname in (%do i = 1 %to &var_level_n; "TMP_QUALIFY_OUTDATA_LEVEL_&i" %end;) and
+                                                                                    name = "ITEM";
+    quit;
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item value
                                     %end;
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        set tmp_qualify_outdata;
+        length item $&column_item_len_max;
+        set tmp_qualify_outdata_label
+            %do i = 1 %to &var_level_n;
+                tmp_qualify_outdata_level_&i
+            %end;
+            ;
     run;
 
-    
+
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
@@ -751,7 +760,10 @@ Version Date: 2023-03-08 1.0.1
                    %end;
                    tmp_qualify_by_fmt
                    tmp_qualify_distinct_var
-                   tmp_qualify_outdata
+                   tmp_qualify_outdata_label
+                   %do i = 1 %to &var_level_n;
+                       tmp_qualify_outdata_level_&i
+                   %end;
                    ;
         quit;
     %end;
