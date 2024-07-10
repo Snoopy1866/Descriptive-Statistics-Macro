@@ -276,7 +276,10 @@ MISSING_POSITION = FIRST
 >
 > <sup>1</sup> 建议改用 `FREQ`, `FREQ_FMT`，保留 `N`, `N_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
 
-其中，变量 `ITEM` 和 `VALUE` 默认输出到 `OUTDATA` 指定的数据集中，其余变量默认隐藏。
+其中：
+
+- 若指定参数 [UID](#uid) = `#NULL` 或 ` ` （空值），则默认输出变量 `ITEM` 和 `VALUE`
+- 若指定参数 [UID](#uid) = _`variable`_，则默认输出变量 `ITEM`, `VALUE` 和 `TIMES_FMT`
 
 **Default** : #AUTO
 
