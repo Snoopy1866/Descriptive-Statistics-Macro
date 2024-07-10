@@ -735,7 +735,12 @@ Version Date: 2023-03-08 1.0.1
                                                                                     name = "ITEM";
     quit;
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
-                                        keep = item value
+                                        %if &uid ^= #NULL %then %do;
+                                            keep = item times_fmt value
+                                        %end;
+                                        %else %do;
+                                            keep = item value
+                                        %end;
                                     %end;
                                     %else %do;
                                         &dataset_options_out
