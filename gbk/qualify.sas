@@ -25,6 +25,7 @@ Version Date: 2023-03-08 1.0.1
               2024-06-13 1.0.20
               2024-06-14 1.0.21
               2024-07-10 1.0.22
+              2024-07-19 1.0.23
 ===================================
 */
 
@@ -731,7 +732,7 @@ Version Date: 2023-03-08 1.0.1
     /*3. 输出数据集*/
     proc sql noprint;
         select max(length) into : column_item_len_max from DICTIONARY.COLUMNS where libname = "WORK" and
-                                                                                    memname in (%do i = 1 %to &var_level_n; "TMP_QUALIFY_OUTDATA_LEVEL_&i" %end;) and
+                                                                                    memname in ("TMP_QUALIFY_OUTDATA_LABEL" %do i = 1 %to &var_level_n; "TMP_QUALIFY_OUTDATA_LEVEL_&i" %end;) and
                                                                                     name = "ITEM";
     quit;
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
