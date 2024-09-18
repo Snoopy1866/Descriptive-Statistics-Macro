@@ -650,14 +650,10 @@ _`denominator-specification`_ 的具体取值及含义如下：
 %qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)));
 ```
 
-![](./assets/example-6.png)
-
 ### 指定缩进字符串
 
 ```sas
 %qualify(indata = adsl(where = (FASFL = "Y")), var = tuloc, by = tulocn, label = %nrstr(肿瘤部位，n(%%)), indent = %str(\li420 ));
 ```
-
-![](./assets/example-7.png)
 
 上述例子中，使用参数 `INDENT` 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
