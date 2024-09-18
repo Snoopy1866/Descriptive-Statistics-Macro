@@ -26,6 +26,7 @@ Version Date: 2023-03-08 1.0.1
               2024-06-14 1.0.21
               2024-07-10 1.0.22
               2024-07-19 1.0.23
+              2024-09-18 1.0.24
 ===================================
 */
 
@@ -731,10 +732,20 @@ Version Date: 2023-03-08 1.0.1
 
     /*3. 输出数据集*/
     proc sql noprint;
-        select max(length) into : column_item_len_max from DICTIONARY.COLUMNS where libname = "WORK" and
-                                                                                    memname in ("TMP_QUALIFY_OUTDATA_LABEL" %do i = 1 %to &var_level_n; "TMP_QUALIFY_OUTDATA_LEVEL_&i" %end;) and
-                                                                                    name = "ITEM";
+        create table tmp_qualify_outdata as
+            select * from tmp_qualify_outdata_label
+            %do i = 1 %to &var_level_n;
+                outer union corr select * from tmp_qualify_outdata_level_&i
+            %end;
+            ;
+
+        select max(length(item)), max(length(value)) into :column_item_len_max, :column_value_len_max from tmp_qualify_outdata;
+
+        alter table tmp_qualify_outdata
+            modify item  char(&column_item_len_max),
+                   value char(&column_value_len_max);
     quit;
+
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         %if &uid ^= #NULL %then %do;
                                             keep = item times_fmt value
@@ -746,12 +757,7 @@ Version Date: 2023-03-08 1.0.1
                                     %else %do;
                                         &dataset_options_out
                                     %end;);
-        length item $&column_item_len_max;
-        set tmp_qualify_outdata_label
-            %do i = 1 %to &var_level_n;
-                tmp_qualify_outdata_level_&i
-            %end;
-            ;
+        set tmp_qualify_outdata;
     run;
 
 
