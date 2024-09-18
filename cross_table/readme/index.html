@@ -1,0 +1,1662 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="描述性统计 SAS 宏程序。">
+      
+      
+        <meta name="author" content="Snoopy1866">
+      
+      
+        <link rel="canonical" href="https://Snoopy1866.github.io/Descriptive-Statistics-Macro/cross_table/readme/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../../desc_coun/readme/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>%cross_table - Descriptive-Statistics-Macro</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35f28582.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  <!-- Add announcement here, including arbitrary HTML -->
+    <div class="alert alert-info" role="alert">
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Descriptive-Statistics-Macro" class="md-header__button md-logo" aria-label="Descriptive-Statistics-Macro" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Descriptive-Statistics-Macro
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              %cross_table
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Descriptive-Statistics-Macro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  主页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  文档
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Descriptive-Statistics-Macro" class="md-nav__button md-logo" aria-label="Descriptive-Statistics-Macro" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Descriptive-Statistics-Macro
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Descriptive-Statistics-Macro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    文档
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            文档
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    %cross_table
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    %cross_table
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      语法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="语法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      必选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      可选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      调试参数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      参数说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="参数说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indata" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rowcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROWCAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLCAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      OUTDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rowcat_by" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROWCAT_BY
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colcat_by" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLCAT_BY
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_MISSING
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_other" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_OTHER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_ALL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      N
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pct_out" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCT_OUT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      FORMAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#del_temp_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEL_TEMP_DATA
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      例子
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      打开帮助文档
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般用法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定输出数据集
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定行、列变量的分类值的排序变量和方向
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“缺失”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“其他”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“合计”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定实际的合计频数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算频率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定频率的输出格式
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../desc_coun/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %desc_coun
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../qualify/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %qualify
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../qualify_multi/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %qualify_multi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../qualify_multi_test/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %qualify_multi_test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify_multi/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify_multi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify_multi_test/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify_multi_test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      语法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="语法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      必选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      可选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      调试参数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      参数说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="参数说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indata" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rowcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROWCAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colcat" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLCAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      OUTDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rowcat_by" class="md-nav__link">
+    <span class="md-ellipsis">
+      ROWCAT_BY
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colcat_by" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLCAT_BY
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_MISSING
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_other" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_OTHER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add_cat_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADD_CAT_ALL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      N
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pct_out" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCT_OUT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      FORMAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#del_temp_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEL_TEMP_DATA
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      例子
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      打开帮助文档
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般用法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定输出数据集
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定行、列变量的分类值的排序变量和方向
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“缺失”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“其他”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算“合计”分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定实际的合计频数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否计算频率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定频率的输出格式
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/cross_table/readme.md" title="编辑此页" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro/raw/main/docs/cross_table/readme.md" title="查看本页的源代码" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+  <h1>%cross_table</h1>
+
+<h2 id="_1">简介<a class="headerlink" href="#_1" title="链接到本节以供参考">&para;</a></h2>
+<p><span class="arithmatex">\(R \times C\)</span> 列联表，计算频数及频率(可选)。</p>
+<h2 id="_2">语法<a class="headerlink" href="#_2" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="_3">必选参数<a class="headerlink" href="#_3" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#indata">INDATA</a></li>
+<li><a href="#rowcat">ROWCAT</a></li>
+<li><a href="#colcat">COLCAT</a></li>
+<li><a href="#outdata">OUTDATA</a></li>
+</ul>
+<h3 id="_4">可选参数<a class="headerlink" href="#_4" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#rowcat_by">ROWCAT_BY</a></li>
+<li><a href="#colcat_by">COLCAT_BY</a></li>
+<li><a href="#n">N</a></li>
+<li><a href="#add_cat_missing">ADD_CAT_MISSING</a></li>
+<li><a href="#add_cat_other">ADD_CAT_OTHER</a></li>
+<li><a href="#add_cat_all">ADD_CAT_ALL</a></li>
+<li><a href="#pct_out">PCT_OUT</a></li>
+<li><a href="#format">FORMAT</a></li>
+</ul>
+<h3 id="_5">调试参数<a class="headerlink" href="#_5" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#del_temp_data">DEL_TEMP_DATA</a></li>
+</ul>
+<h2 id="_6">参数说明<a class="headerlink" href="#_6" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="indata">INDATA<a class="headerlink" href="#indata" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;<em>libname.</em>&gt;<em>dataset</em>(<em>dataset-options</em>)</p>
+<p>指定用于定性分析的数据集，可包含数据集选项</p>
+<p><em>libname</em>: 数据集所在的逻辑库名称</p>
+<p><em>dataset</em>: 数据集名称</p>
+<p><em>dataset-options</em>: 数据集选项，兼容 SAS 系统支持的所有数据集选项</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>INDATA = ADSL
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>INDATA = SHKY<span class="m">.</span>ADSL
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>INDATA = SHKY<span class="m">.</span>ADSL(<span class="k">where</span> = (FAS = <span class="s">&quot;Y&quot;</span>))
+</span></code></pre></div>
+<p><a href="#一般用法"><strong>Example</strong></a></p>
+<hr />
+<h3 id="rowcat">ROWCAT<a class="headerlink" href="#rowcat" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> :</p>
+<ul>
+<li><em>variable</em></li>
+<li><em>variable</em>("<em>category-1</em>"&lt;, "<em>category-2</em>", ...&gt;)</li>
+</ul>
+<p>指定列联表的行变量，<em><code>category</code></em> 表示行变量的分类名称。</p>
+<blockquote>
+<p>[!WARNING]</p>
+<ul>
+<li>参数 ROWCAT 不允许指定不存在于参数 <a href="#indata">INDATA</a> 指定的数据集中的变量；</li>
+<li>参数 ROWCAT 不允许指定数值分类，例如：ROWCAT = PARSIGN(1 2 3) 是不被允许的；</li>
+<li>参数 ROWCAT 允许指定重复的分类值，但没必要。</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ROWCAT = PARSIG
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>ROWCAT = PARSIG(<span class="s">&quot;正常&quot;</span>, <span class="s">&quot;异常无临床意义&quot;</span>, <span class="s">&quot;异常有临床意义&quot;</span>)
+</span></code></pre></div>
+<p><a href="#一般用法"><strong>Example</strong></a></p>
+<hr />
+<h3 id="colcat">COLCAT<a class="headerlink" href="#colcat" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> :</p>
+<ul>
+<li><em>variable</em></li>
+<li><em>variable</em>("<em>category-1</em>"&lt;, "<em>category-2</em>", ...&gt;)</li>
+</ul>
+<p>指定列联表的列变量，<em><code>category</code></em> 表示行变量的分类名称。用法同 <a href="#rowcat">ROWCAT</a></p>
+<p><a href="#一般用法"><strong>Example</strong></a></p>
+<hr />
+<h3 id="outdata">OUTDATA<a class="headerlink" href="#outdata" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;<em>libname.</em>&gt;<em>dataset</em>(<em>dataset-options</em>)</p>
+<p>指定统计结果输出的数据集，可包含数据集选项，用法同参数 <a href="#indata">INDATA</a>。</p>
+<blockquote>
+<p>[!NOTE]</p>
+<ul>
+<li>输出数据集为一个 <span class="arithmatex">\(R \times C\)</span> 表的结构，行分类和列分类的组合构成数据集的主体部分，默认情况下还将输出行合计和列合计的频数及频率；</li>
+<li>若参数 <a href="#add_cat_missing">ADD_CAT_MISSING</a> 指定了行和（或）列变量为 <code>TRUE</code>，则额外输出“缺失”分类的频数及频率；</li>
+<li>若参数 <a href="#add_cat_other">ADD_CAT_OTHER</a> 指定了行和（或）列变量为 <code>TRUE</code>，则额外输出“其他”分类的频数及频率；</li>
+<li>对于行分类的排序方式：参数 <a href="#rowcat">ROWCAT</a> 指定的行变量的分类值按参数 <a href="#rowcat_by">ROWCAT_BY</a> 指定的排序变量及排序方向进行排序，若参数 <a href="#rowcat">ROWCAT</a> 使用了手动指定分类值的方式，将按照手动指定的顺序进行排序（此时参数 <a href="#rowcat_by">ROWCAT_BY</a> 的值将被忽略）；若额外指定了“缺失”、“其他”、“合计”分类，则按照“缺失”、“其他”、“合计”的顺序排序；列分类的排序方式同上所述;</li>
+<li>输出数据集的列名以 <code>COL_</code> 开头，按照列分类的顺序，使用数字作为后缀依次命名：<code>COL_1</code>、<code>COL_2</code>、<code>COL_3</code>、......，“缺失”分类的列名为 <code>COL_MISSING</code>、“其他”分类的列名为 <code>COL_OTHER</code>、“合计”分类的列名为 <code>COL_ALL</code>，此外第一列的内容为行变量的分类名称，列名为 <code>COL_0</code>;</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>OUTDATA = CrossTable
+</span></code></pre></div>
+<hr />
+<h3 id="rowcat_by">ROWCAT_BY<a class="headerlink" href="#rowcat_by" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>variable</em>&lt;(ASC\<ENDING> | DESC\<ENDING>)&gt;</p>
+<p>指定列联表中行变量的排序变量和排序方向。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<p>根据参数 ROWCAT 的值的不同情况，宏程序将根据以下逻辑对行分类进行排序：</p>
+<ol>
+<li>若参数 ROWCAT 指定了具体的分类值，则按照各个分类指定的顺序进行排序，参数 ROWCAT 指定的第一个分类将输出至列联表的第一行，指定的第二个分类将输出至列联表的第二行，以此类推。此时将忽略参数 ROWCAT_BY 的值；</li>
+<li>若参数 ROWCAT 未指定具体的分类值，则考虑参数 ROWCAT_BY 指定的值。</li>
+<li>若参数 ROWCAT_BY 指定为默认值 #AUTO，则按照默认顺序对行分类值进行排序；</li>
+<li>若参数 ROWCAT_BY 指定为一个变量名，则根据行分类值在分析数据集中对应的该变量的值进行排序。例如：指定参数 ROWCAT = PARSIG, ROWCAT_BY = PARSIGN，宏程序自动获取变量 PARSIG 的分类为：“异常无临床意义”、“异常有临床意义”、“正常”，在分析数据集中对应的 PARSIGN 的值分别为：2、3、1，宏程序将首先对 PARSIGN 的值进行排序，根据排序结果调整 PARSIG 的分类顺序，若 PARSIGN 存在重复值，则根据 PARSIG 的值进一步排序。排序方向可手动指定为顺序或逆序排列，若未指定排序方向，则默认为升序排列。</li>
+</ol>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ROWCAT = PARSIGN
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>ROWCAT = PARSIGN(DESC)
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>ROWCAT = PARSIGN(DESCENDING)
+</span></code></pre></div>
+<p><a href="#指定行列变量的分类值的排序变量和方向"><strong>Example</strong></a></p>
+<hr />
+<h3 id="colcat_by">COLCAT_BY<a class="headerlink" href="#colcat_by" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>variable</em>&lt;(ASC\<ENDING> | DESC\<ENDING>)&gt;</p>
+<p>指定列联表中列变量的排序变量和排序方向。用法同参数 <a href="#rowcat_by">ROWCAT_BY</a>。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<hr />
+<h3 id="add_cat_missing">ADD_CAT_MISSING<a class="headerlink" href="#add_cat_missing" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE <TRUE | FALSE></p>
+<p>指定是否在列联表的行或列中添加“缺失”分类。</p>
+<p>参数 ADD_CAT_MISSING 的第一个值控制列联表的行是否添加“缺失”分类，第二个值控制列联表的列是否添加“缺失”分类。</p>
+<p><strong>Default</strong> : FALSE FALSE</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>若参数 ADD_CAT_MISSING 仅指定了一个值，则对列联表的行或列中是否添加“缺失”分类均应用相同的策略。</li>
+</ul>
+</blockquote>
+<p><a href="#指定是否计算缺失分类"><strong>Example</strong></a></p>
+<hr />
+<h3 id="add_cat_other">ADD_CAT_OTHER<a class="headerlink" href="#add_cat_other" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE&lt;(TYPE = 1 | 2)&gt; | FALSE &lt;TRUE&lt;(TYPE = 1 | 2)&gt; | FALSE&gt;</p>
+<p>指定是否在列联表的行或列中添加“其他”分类。</p>
+<p>参数 ADD_CAT_OTHER 的第一个值控制列联表的行是否添加“其他”分类，第二个值控制列联表的列是否添加“其他”分类。</p>
+<p>参数 ADD_CAT_OTHER 指定为 TRUE 时，“其他”分类的频数计算方式可通过选项 TYPE 进行控制：</p>
+<ul>
+<li><strong>TYPE = 1</strong> : 将 ROWCAT 或 COLCAT 未指定的分类（排除缺失值）计入“其他”分类，TYPE = 1 为默认选项；</li>
+<li><strong>TYPE = 2</strong> : 将 ROWCAT 或 COLCAT 未指定的分类（包含缺失值）计入“其他”分类。</li>
+</ul>
+<p><strong>Default</strong> : FALSE FALSE</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>若参数 ADD_CAT_OTHER 仅指定了一个值，则对列联表的行或列中是否添加“其他”分类均应用相同的策略；</li>
+<li>若参数 ADD_CAT_OTHER 指定了 TRUE，但未指定选项 TYPE，则使用默认选项值 TYPE = 1；</li>
+</ul>
+</blockquote>
+<p><a href="#指定是否计算其他分类"><strong>Example</strong></a></p>
+<hr />
+<h3 id="add_cat_all">ADD_CAT_ALL<a class="headerlink" href="#add_cat_all" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE <TRUE | FALSE></p>
+<p>指定是否在列联表的行或列中添加“合计”分类。</p>
+<p>参数 ADD_CAT_ALL 的第一个值控制列联表的行是否添加“合计”分类，第二个值控制列联表的列是否添加“合计”分类。</p>
+<p><strong>Default</strong> : TRUE TRUE</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>若参数 ADD_CAT_ALL 仅指定了一个值，则对列联表的行或列中是否添加“合计”分类均应用相同的策略。</li>
+</ul>
+</blockquote>
+<p><a href="#指定是否计算合计分类"><strong>Example</strong></a></p>
+<hr />
+<h3 id="n">N<a class="headerlink" href="#n" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>numeric</em></p>
+<p>指定实际合计频数。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<p>默认情况下，参数 N 的值为参数 <a href="#indata">INDATA</a> 指定的数据集的观测总数 <em>n_obs</em>。在参数 N 为默认值 <code>#AUTO</code> 的情况下，若参数 <a href="#add_cat_missing">ADD_CAT_MISSING</a> 指定的值为 <code>FALSE FALSE</code> （默认值）时，行变量与列变量均为缺失值的观测将不计入观测总数 <em>n_obs</em> 。</p>
+<blockquote>
+<p>[!TIP]</p>
+<ul>
+<li>参数 N 的值应当被指定为某个分析集的总频数。例如：在生成实验室检查的交叉表时，某次随访未进行实验室检查的受试者可能不在分析数据集 ADLB 中，此时可使用参数 N 指定安全性集人数，宏程序将根据已有检查结果的受试者人数与参数 N 指定的人数自动计算缺失人数，使用这种方法，无需将 ADLB 与 ADSL 合并。</li>
+</ul>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>参数 N 的值将影响列联表中<strong>所有</strong>单元格<strong>频率</strong>的计算；</li>
+<li>参数 N 的值仅影响列联表中<strong>某些</strong>单元格<strong>频数</strong>的计算，具体如下（× 即为受影响的单元格频数）：
+  | | 列分类 1 | 列分类 2 | 缺失 | 其他（类型 1） | 其他（类型 2） | 合计 |
+  | -------------- | --------------------------- | --------------------------- | --------------------------------------- | --------------------------- | --------------------------------------- | --------------------------------------- |
+  | 行分类 1 | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> |
+  | 行分类 2 | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> |
+  | 缺失 | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font color = red size = 5><strong>×</strong></font> |
+  | 其他（类型 1） | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> |
+  | 其他（类型 2） | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font color = red size = 5><strong>×</strong></font> |
+  | 合计 | <font size = 5><strong>-</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font size = 5><strong>-</strong></font> | <font color = red size = 5><strong>×</strong></font> | <font color = red size = 5><strong>×</strong></font> |</li>
+</ul>
+<p>[!CAUTION]</p>
+<ul>
+<li>通常情况下 N 应当是一个不小于分析数据集观测数 <em>n_obs</em> 的正整数，但当参数 N 被指定为负数、零或正浮点数时，宏程序仍将继续运行，但结果可能是非预期的。</li>
+</ul>
+</blockquote>
+<p><a href="#指定实际的合计频数"><strong>Example</strong></a></p>
+<hr />
+<h3 id="pct_out">PCT_OUT<a class="headerlink" href="#pct_out" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE</p>
+<p>指定是否计算列联表中各个单元格对应行列分类组合的频率。</p>
+<p><strong>Default</strong> : FALSE</p>
+<p><a href="#指定是否计算频率"><strong>Example</strong></a></p>
+<hr />
+<h3 id="format">FORMAT<a class="headerlink" href="#format" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>format</em></p>
+<p>指定百分比的输出格式，该参数仅在 <a href="#pct_out">PCT_OUT</a> 指定为 <code>TRUE</code> 时生效。</p>
+<p><strong>Default</strong> : PERCENTN9.2</p>
+<p><a href="#指定频率的输出格式"><strong>Example</strong></a></p>
+<hr />
+<h3 id="del_temp_data">DEL_TEMP_DATA<a class="headerlink" href="#del_temp_data" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE</p>
+<p>指定是否删除宏程序运行过程生成的中间数据集。</p>
+<p><strong>Default</strong> : TRUE</p>
+<p>默认情况下，宏程序会自动删除运行过程生成的中间数据集。</p>
+<blockquote>
+<p>[!NOTE]</p>
+<p>此参数用于开发者调试，一般无需关注。</p>
+</blockquote>
+<hr />
+<h2 id="_7">例子<a class="headerlink" href="#_7" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="_8">打开帮助文档<a class="headerlink" href="#_8" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">%cross_table</span>();
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nf">%cross_table</span>(help);
+</span></code></pre></div>
+<h3 id="_9">一般用法<a class="headerlink" href="#_9" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">%cross_table</span>(indata = analysis1, rowcat = PARSIG1, colcat = PARSIG2);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-normal-1.png" /></p>
+<p>上述例子中，行变量为 PARSIG1，列变量为 PARSIG2，宏程序根据变量 PARSIG1 与 PARSIG2 的分类值自动构建列联表。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>             rowcat = PARSIG1(<span class="s">&quot;正常&quot;</span>, <span class="s">&quot;异常无临床意义&quot;</span>, <span class="s">&quot;异常有临床意义&quot;</span>),
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>             colcat = PARSIG2(<span class="s">&quot;正常&quot;</span>, <span class="s">&quot;异常无临床意义&quot;</span>, <span class="s">&quot;异常有临床意义&quot;</span>));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-normal-2.png" /></p>
+<p>上述例子中，行列变量均通过参数指定了各自的分类值，因此宏程序将根据分类值及出现的顺序构建列联表。</p>
+<h3 id="_10">指定输出数据集<a class="headerlink" href="#_10" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c">/*指定输出数据集*/</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>             rowcat = PARSIG1,
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>             colcat = PARSIG2,
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>             add_cat_<span class="kc">missing</span> = TRUE TRUE,
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>             add_cat_all = TRUE TRUE,
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>             pct_out = TRUE,
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>             outdata = result);
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="c">/*指定输出数据集和数据集选项*/</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>             rowcat = PARSIG1,
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>             colcat = PARSIG2,
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>             add_cat_<span class="kc">missing</span> = TRUE TRUE,
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>             add_cat_all = TRUE TRUE,
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>             pct_out = TRUE,
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>             outdata = result(<span class="k">rename</span> = (COL_0 = ROWCAT COL_1 = NORMAL COL_2 = NCS COL_3 = CS COL_<span class="kc">MISSING</span> = <span class="k">MISSING</span> COL_ALL = ALL)));
+</span></code></pre></div>
+<h3 id="_11">指定行、列变量的分类值的排序变量和方向<a class="headerlink" href="#_11" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nf">%cross_table</span>(indata = analysis,
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>             colcat = PARSIG2,
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>             colcat_by = PARSIG2N);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-cat_by-1.png" /></p>
+<p>上述例子中，通过参数 ROWCAT_BY 和 COLCAT_BY 对行变量 PARSIG1 和列变量 PARSIG2 的分类值的排列顺序进行控制，由于未指定排序方向，因此默认使用升序排列。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nf">%cross_table</span>(indata = analysis,
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>             colcat = PARSIG2,
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>             rowcat_by = PARSIG1N(desc),
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>             colcat_by = PARSIG2N(desc));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-cat_by-2.png" /></p>
+<p>上述例子中，通过参数 ROWCAT_BY 和 COLCAT_BY 对行变量 PARSIG1 和列变量 PARSIG2 的分类值的排列顺序进行控制，并同时指定了降序的排列方式。</p>
+<h3 id="_12">指定是否计算“缺失”分类<a class="headerlink" href="#_12" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>             colcat = PARSIG2,
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>             add_cat_<span class="kc">missing</span> = TRUE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_missing-1.png" /></p>
+<p>上述例子中，参数 ADD_CAT_MISSING 指定行列变量均计算“缺失”分类。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>             colcat = PARSIG2,
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>             add_cat_<span class="kc">missing</span> = TRUE FALSE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_missing-2.png" /></p>
+<p>上述例子中，参数 ADD_CAT_MISSING 指定行变量计算“缺失”分类，列变量不计算“缺失”分类。</p>
+<h3 id="_13">指定是否计算“其他”分类<a class="headerlink" href="#_13" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>             colcat = PARSIG2,
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>             add_cat_other = TRUE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_other-1.png" /></p>
+<p>上述例子中，参数 ADD_CAT_OTHER 指定行列变量均计算“其他”分类，由于未指定计算类型，因此按默认处理方式，缺失值不纳入到“其他”分类中。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>             colcat = PARSIG2,
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>             add_cat_other = TRUE(type = <span class="m">2</span>));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_other-2.png" /></p>
+<p>上述例子中，参数 ADD_CAT_OTHER 指定行列变量均计算“其他”分类，由于指定了 TYPE = 2，因此缺失值也被纳入到“其他”分类中。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>             colcat = PARSIG2,
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>             add_cat_other = TRUE(type = <span class="m">1</span>) TRUE(type = <span class="m">2</span>));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_other-3.png" /></p>
+<p>上述例子中，参数 ADD_CAT_OTHER 指定行列变量均计算“其他”分类，对于行变量 PARSIG1，指定了 TYPE = 1，因此 PARSIG1 的缺失值不纳入到行分类的“其他”分类中，对于列变量 PARSIG2，指定了 TYPE = 2，因此 PARSIG2 的缺失值被纳入到列分类的“其他”分类中。</p>
+<h3 id="_14">指定是否计算“合计”分类<a class="headerlink" href="#_14" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>             colcat = PARSIG2,
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>             add_cat_other = TRUE,
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>             add_cat_all = TRUE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_all-1.png" /></p>
+<p>上述例子中，参数 ADD_CAT_ALL 指定行列变量均计算“合计”分类，这也是宏程序的默认处理方式。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>             colcat = PARSIG2,
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>             add_cat_other = TRUE,
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>             add_cat_all = FALSE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_all-2.png" /></p>
+<p>上述例子中，参数 ADD_CAT_ALL 指定行列变量均不计算“合计”分类。</p>
+<div class="highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>             colcat = PARSIG2,
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>             add_cat_<span class="kc">missing</span> = TRUE,
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>             add_cat_other = TRUE,
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>             add_cat_all = TRUE FALSE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-add_cat_all-3.png" /></p>
+<p>上述例子中，参数 ADD_CAT_ALL 指定行变量计算“合计”分类，列变量不计算“合计”分类。</p>
+<h3 id="_15">指定实际的合计频数<a class="headerlink" href="#_15" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>             colcat = PARSIG2,
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>             add_cat_<span class="kc">missing</span> = TRUE TRUE,
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>             add_cat_all = TRUE TRUE,
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>             n = <span class="m">50</span>);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-n.png" /></p>
+<p>上述例子中，参数 N 指定了实际的合计频数为 50，超过了分析数据集 ANALYSIS1 的观测总数，此时说明存在某些行变量 PARSIG1 和 列变量 PARSIG2 均缺失的观测，由于未记录 PARSIG1 和 PARSIG2 的值，导致分析数据集的观测总数低于实际的合计频数。</p>
+<h3 id="_16">指定是否计算频率<a class="headerlink" href="#_16" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>             rowcat = PARSIG1,
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>             colcat = PARSIG2,
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>             add_cat_<span class="kc">missing</span> = TRUE TRUE,
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>             add_cat_all = TRUE TRUE,
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>             pct_out = TRUE);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-pct_out.png" /></p>
+<p>上述例子中，参数 PCT_OUT 指定宏程序计算列联表中每个单元格对应的行列分类组合的频率。</p>
+<h3 id="_17">指定频率的输出格式<a class="headerlink" href="#_17" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kr">proc format;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    picture srate(round)
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>            <span class="m">0</span> = <span class="s">&quot;0&quot;</span>(noedit)
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>            <span class="m">0</span> &lt; - &lt; <span class="m">1</span> = <span class="s">&quot;009.99%&quot;</span>(multiplier = <span class="m">10000</span>)
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>            <span class="m">1</span> = <span class="s">&quot;100%&quot;</span>(noedit)<span class="kr">;</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="kr">run;</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="nf">%cross_table</span>(indata = analysis1,
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>             rowcat = PARSIG1,
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>             colcat = PARSIG2,
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>             rowcat_by = PARSIG1N,
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>             colcat_by = PARSIG2N,
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>             add_cat_<span class="kc">missing</span> = TRUE TRUE,
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>             add_cat_all = TRUE TRUE,
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>             pct_out = TRUE,
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>             <span class="k">format</span> = srate.);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-format.png" /></p>
+<p>上述例子中，参数 FORMAT 指定了一个自定义输出格式 SRATE.，宏程序使用该格式输出频率。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2024 Snoopy1866
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" target="_blank" rel="noopener" title="Github 仓库" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.annotate", "content.action.edit", "content.action.view", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

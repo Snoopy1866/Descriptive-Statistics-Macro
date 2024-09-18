@@ -1,0 +1,1944 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="描述性统计 SAS 宏程序。">
+      
+      
+        <meta name="author" content="Snoopy1866">
+      
+      
+        <link rel="canonical" href="https://Snoopy1866.github.io/Descriptive-Statistics-Macro/qualify/readme/">
+      
+      
+        <link rel="prev" href="../../desc_coun/readme/">
+      
+      
+        <link rel="next" href="../../qualify_multi/readme/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>%qualify - Descriptive-Statistics-Macro</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.35f28582.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+        <aside class="md-banner">
+          <div class="md-banner__inner md-grid md-typeset">
+            
+            
+  <!-- Add announcement here, including arbitrary HTML -->
+    <div class="alert alert-info" role="alert">
+
+          </div>
+          
+        </aside>
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Descriptive-Statistics-Macro" class="md-header__button md-logo" aria-label="Descriptive-Statistics-Macro" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Descriptive-Statistics-Macro
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              %qualify
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Descriptive-Statistics-Macro
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  主页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../cross_table/readme/" class="md-tabs__link">
+          
+  
+  文档
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Descriptive-Statistics-Macro" class="md-nav__button md-logo" aria-label="Descriptive-Statistics-Macro" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Descriptive-Statistics-Macro
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Descriptive-Statistics-Macro
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    文档
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            文档
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cross_table/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %cross_table
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../desc_coun/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %desc_coun
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    %qualify
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    %qualify
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      语法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="语法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      必选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      可选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      调试参数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      参数说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="参数说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indata" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var" class="md-nav__link">
+    <span class="md-ellipsis">
+      VAR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by" class="md-nav__link">
+    <span class="md-ellipsis">
+      BY
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#freqascending-desc" class="md-nav__link">
+    <span class="md-ellipsis">
+      FREQ&lt;(ASC\&lt;ENDING> | DESC\)>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FREQ<(ASC\<ENDING> | DESC\)>">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uid" class="md-nav__link">
+    <span class="md-ellipsis">
+      UID
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      PATTERN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing_note" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING_NOTE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING_POSITION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      OUTDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stat_format" class="md-nav__link">
+    <span class="md-ellipsis">
+      STAT_FORMAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#label" class="md-nav__link">
+    <span class="md-ellipsis">
+      LABEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      SUFFIX
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total" class="md-nav__link">
+    <span class="md-ellipsis">
+      TOTAL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#del_temp_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEL_TEMP_DATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      例子
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      打开帮助文档
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般用法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定统计量的输出模式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分类排序方式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定唯一标识符变量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否统计缺失分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缺失分类的说明文字
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缺失分类的显示位置
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定需要保留的变量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定统计量的输出格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分析变量标签
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缩进字符串
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分类名称后缀
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否输出各分类合计的统计结果
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../qualify_multi/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %qualify_multi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../qualify_multi_test/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %qualify_multi_test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify_multi/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify_multi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quantify_multi_test/readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    %quantify_multi_test
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      简介
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      语法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="语法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      必选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      可选参数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      调试参数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      参数说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="参数说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indata" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#var" class="md-nav__link">
+    <span class="md-ellipsis">
+      VAR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#by" class="md-nav__link">
+    <span class="md-ellipsis">
+      BY
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#freqascending-desc" class="md-nav__link">
+    <span class="md-ellipsis">
+      FREQ&lt;(ASC\&lt;ENDING> | DESC\)>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FREQ<(ASC\<ENDING> | DESC\)>">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uid" class="md-nav__link">
+    <span class="md-ellipsis">
+      UID
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      PATTERN
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing_note" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING_NOTE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing_position" class="md-nav__link">
+    <span class="md-ellipsis">
+      MISSING_POSITION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      OUTDATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stat_format" class="md-nav__link">
+    <span class="md-ellipsis">
+      STAT_FORMAT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#label" class="md-nav__link">
+    <span class="md-ellipsis">
+      LABEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indent" class="md-nav__link">
+    <span class="md-ellipsis">
+      INDENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      SUFFIX
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total" class="md-nav__link">
+    <span class="md-ellipsis">
+      TOTAL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#del_temp_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEL_TEMP_DATA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      例子
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="例子">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      打开帮助文档
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般用法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定统计量的输出模式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分类排序方式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定唯一标识符变量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否统计缺失分类
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缺失分类的说明文字
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缺失分类的显示位置
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定需要保留的变量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定统计量的输出格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分析变量标签
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定缩进字符串
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定分类名称后缀
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      指定是否输出各分类合计的统计结果
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify/readme.md" title="编辑此页" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro/raw/main/docs/qualify/readme.md" title="查看本页的源代码" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
+    </a>
+  
+
+
+<h2 id="_1">简介<a class="headerlink" href="#_1" title="链接到本节以供参考">&para;</a></h2>
+<p>单组单个定性指标的分析，输出频数、构成比（率）指标。</p>
+<h2 id="_2">语法<a class="headerlink" href="#_2" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="_3">必选参数<a class="headerlink" href="#_3" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#indata">INDATA</a></li>
+<li><a href="#var">VAR</a></li>
+</ul>
+<h3 id="_4">可选参数<a class="headerlink" href="#_4" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#by">BY</a></li>
+<li><a href="#uid">UID</a></li>
+<li><a href="#pattern">PATTERN</a></li>
+<li><a href="#missing">MISSING</a></li>
+<li><a href="#missing_note">MISSING_NOTE</a></li>
+<li><a href="#missing_position">MISSING_POSITION</a></li>
+<li><a href="#outdata">OUTDATA</a></li>
+<li><a href="#stat_format">STAT_FORMAT</a></li>
+<li><a href="#label">LABEL</a></li>
+<li><a href="#indent">INDENT</a></li>
+<li><a href="#suffix">SUFFIX</a></li>
+<li><a href="#total">TOTAL</a></li>
+</ul>
+<h3 id="_5">调试参数<a class="headerlink" href="#_5" title="链接到本节以供参考">&para;</a></h3>
+<ul>
+<li><a href="#del_temp_data">DEL_TEMP_DATA</a></li>
+</ul>
+<h2 id="_6">参数说明<a class="headerlink" href="#_6" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="indata">INDATA<a class="headerlink" href="#indata" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;<em>libname.</em>&gt;<em>dataset</em>(<em>dataset-options</em>)</p>
+<p>指定用于定性分析的数据集，可包含数据集选项</p>
+<p><em>libname</em>: 数据集所在的逻辑库名称</p>
+<p><em>dataset</em>: 数据集名称</p>
+<p><em>dataset-options</em>: 数据集选项，兼容 SAS 系统支持的所有数据集选项</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>INDATA = ADSL
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>INDATA = SHKY<span class="m">.</span>ADSL
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>INDATA = SHKY<span class="m">.</span>ADSL(<span class="k">where</span> = (FAS = <span class="s">&quot;Y&quot;</span>))
+</span></code></pre></div>
+<p><a href="#一般用法"><strong>Example</strong></a></p>
+<hr />
+<h3 id="var">VAR<a class="headerlink" href="#var" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> :</p>
+<ul>
+<li><em>variable</em></li>
+<li><em>variable</em>("<em>category-1</em>" = "<em>note-1</em>" &lt;, "<em>category-2</em>" ="<em>note-2</em>", ...&gt;)</li>
+</ul>
+<p>指定定性分析的变量。</p>
+<p><em><code>category</code></em> 表示重命名前的分类名称，<em><code>note</code></em> 表示重命名后的分类名称。重命名后的分类名称仅作为输出数据集中该分类显示的名称，实际输出的统计量结果仍然是按照重命名前的分类名称进行计算的。例如：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>VAR = SEX(<span class="s">&quot;男&quot;</span> = <span class="s">&quot;Male&quot;</span>, <span class="s">&quot;女&quot;</span> = <span class="s">&quot;Female&quot;</span>)
+</span></code></pre></div>
+<blockquote>
+<p>[!WARNING]</p>
+<ul>
+<li>参数 <code>VAR</code> 不允许指定不存在于参数 <code>INDATA</code> 指定的数据集中的变量；</li>
+<li>参数 <code>VAR</code> 不允许指定数值型变量；</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>VAR = SEX
+</span></code></pre></div>
+<p><a href="#一般用法"><strong>Example</strong></a></p>
+<hr />
+<h3 id="by">BY<a class="headerlink" href="#by" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> :</p>
+<ul>
+<li>
+<h1 id="freqascending-desc">FREQ&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)><a class="headerlink" href="#freqascending-desc" title="链接到本节以供参考">&para;</a></h1>
+</li>
+<li><em>variable</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></li>
+<li><em>format</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></li>
+</ul>
+<p>指定各分类在输出数据集中的排列顺序依据。</p>
+<p><strong>Default</strong> : #FREQ(DESCENDING)</p>
+<p>默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。</p>
+<p>当指定一个输出格式作为排序依据时，该输出格式应当使用 <code>VALUE</code> 语句生成，例如：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">proc format;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    value sexn
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="m">1</span> = <span class="s">&quot;男&quot;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        <span class="m">2</span> = <span class="s">&quot;女&quot;</span><span class="kr">;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kr">run;</span>
+</span></code></pre></div>
+<p>宏程序将根据格式化之前的数值对各分类进行排序。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>若参数 <code>BY</code> 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 <code>DICTIONARY.FORMATS</code> 表中，变量 <code>source</code> 的值应当是 <code>C</code>。</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">BY</span> = #freq
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">BY</span> = SEXN(asc)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">BY</span> = SEXN.(descending)
+</span></code></pre></div>
+<p><a href="#指定分类排序方式"><strong>Example</strong></a></p>
+<hr />
+<h3 id="uid">UID<a class="headerlink" href="#uid" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>variable</em></p>
+<p>指定唯一标识符变量。宏程序将根据参数 <code>UID</code> 指定的变量，对分析数据集统计频数和频次，<code>UID</code> 的值通常是能够标识观测所属试验对象的变量，例如：<code>USUBJID</code>。</p>
+<p><strong>Default</strong> : #NULL</p>
+<p>默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>由于默认不输出频次统计结果，因此还需要在参数 <a href="#outdata">OUTDATA</a> 中通过数据集选项指定显示频次统计结果，例如：<code>OUTDATA = T1(KEEP = ITEM VALUE TIMES)</code>。</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>UID = USUBJID
+</span></code></pre></div>
+<p><a href="#指定唯一标识符变量"><strong>Example</strong></a></p>
+<hr />
+<h3 id="pattern">PATTERN<a class="headerlink" href="#pattern" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;<em>string(s)</em>&gt;#<em>statistic-keyword-1</em>&lt;<em>string(s)</em>&gt;&lt;#<em>statistic-keyword-2</em>&lt;<em>string(s)</em>&gt;&gt;&lt;...&gt;</p>
+<p>指定需计算的统计量及统计量的输出模式，输出模式定义了统计量是如何进行组合的，以及统计量在输出数据集中的位置。</p>
+<p>其中，<em><code>statistic-keyword</code></em> 可以指定以下统计量：</p>
+<table>
+<thead>
+<tr>
+<th>统计量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RATE</td>
+<td>构成比（率）</td>
+</tr>
+<tr>
+<td>N</td>
+<td>频数</td>
+</tr>
+</tbody>
+</table>
+<p><em><code>string(s)</code></em> 可以是任意字符（串），若字符串含有字符 <code>#</code>，则使用 <code>##</code> 进行转义。</p>
+<p><strong>Default</strong> : <code>%nrstr(#N(#RATE))</code></p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>PATTERN = #N
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>PATTERN = #N[#RATE]##
+</span></code></pre></div>
+<p><a href="#指定统计量的输出模式"><strong>Example</strong></a></p>
+<hr />
+<h3 id="missing">MISSING<a class="headerlink" href="#missing" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE</p>
+<p>指定是否统计缺失分类。</p>
+<p><strong>Default</strong> : FALSE</p>
+<p>默认情况下，宏程序不统计缺失分类的频数和频率。</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">MISSING</span> = TRUE
+</span></code></pre></div>
+<p><a href="#指定是否统计缺失分类"><strong>Example</strong></a></p>
+<hr />
+<h3 id="missing_note">MISSING_NOTE<a class="headerlink" href="#missing_note" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>string</em></p>
+<p>指定缺失分类的的说明文字，该字符串必须使用匹配的单（双）引号包围。</p>
+<p>如果指定的 <code>MISSING_NOTE</code> 中含有不匹配的引号，例如，需要指定 <code>MISSING_NOTE</code> 为一个单引号，可以选择以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kc">MISSING</span>_NOTE = <span class="s">&quot;&#39;&quot;</span>
+</span></code></pre></div>
+<p>但不能使用以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kc">MISSING</span>_NOTE = <span class="s">&#39;&#39;&#39;&#39;</span>
+</span></code></pre></div>
+<p>这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。</p>
+<p><strong>Default</strong> : "缺失"</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kc">MISSING</span>_NOTE = <span class="s">&quot;缺失-n(%)&quot;</span>
+</span></code></pre></div>
+<p><a href="#指定缺失分类的说明文字"><strong>Example</strong></a></p>
+<hr />
+<h3 id="missing_position">MISSING_POSITION<a class="headerlink" href="#missing_position" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : FIRST | LAST</p>
+<p>指定缺失分类在输出数据集中显示的位置。FIRST 表示显示在所有分类前面，LAST 表示显示在所有分类后面。</p>
+<p>当指定 <code>MISSING = FALSE</code> 时，该参数将被忽略。</p>
+<p><strong>Default</strong> : LAST</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kc">MISSING</span>_POSITION = FIRST
+</span></code></pre></div>
+<p><a href="#指定缺失分类的显示位置"><strong>Example</strong></a></p>
+<hr />
+<h3 id="outdata">OUTDATA<a class="headerlink" href="#outdata" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;<em>libname.</em>&gt;<em>dataset</em>(<em>dataset-options</em>)</p>
+<p>指定统计结果输出的数据集，可包含数据集选项，用法同参数 <a href="#indata">INDATA</a>。</p>
+<p>输出数据集含有以下变量：</p>
+<table>
+<thead>
+<tr>
+<th>变量名</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SEQ</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>ITEM</td>
+<td>分类名称（展示名称）</td>
+</tr>
+<tr>
+<td>VALUE</td>
+<td>统计量在 <a href="#pattern">PATTERN</a> 指定的模式下的值</td>
+</tr>
+<tr>
+<td>FREQ</td>
+<td>频数</td>
+</tr>
+<tr>
+<td>FREQ_FMT</td>
+<td>频数格式化值</td>
+</tr>
+<tr>
+<td><font color=red>N<sup>1</sup></font></td>
+<td>频数</td>
+</tr>
+<tr>
+<td><font color=red>N_FMT<sup>1</sup></font></td>
+<td>频数格式化值</td>
+</tr>
+<tr>
+<td>TIMES</td>
+<td>频次</td>
+</tr>
+<tr>
+<td>TIMES_FMT</td>
+<td>频次格式化值</td>
+</tr>
+<tr>
+<td>RATE</td>
+<td>频率</td>
+</tr>
+<tr>
+<td>RATE_FMT</td>
+<td>频率格式化值</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<p><sup>1</sup> 建议改用 <code>FREQ</code>, <code>FREQ_FMT</code>，保留 <code>N</code>, <code>N_FMT</code> 仅为兼容旧版本程序，未来的版本 (<em>v1.5+</em>) 可能不受支持；</p>
+</blockquote>
+<p>其中：</p>
+<ul>
+<li>若指定参数 <a href="#uid">UID</a> = <code>#NULL</code> 或 <code></code> （空值），则默认输出变量 <code>ITEM</code> 和 <code>VALUE</code></li>
+<li>若指定参数 <a href="#uid">UID</a> = <em><code>variable</code></em>，则默认输出变量 <code>ITEM</code>, <code>VALUE</code> 和 <code>TIMES_FMT</code></li>
+</ul>
+<p><strong>Default</strong> : #AUTO</p>
+<p>默认情况下，输出数据集被命名为 <code>RES_</code><em><code>var</code></em>，其中 <em><code>var</code></em> 为参数 <a href="#var">VAR</a> 指定的变量的名称。</p>
+<blockquote>
+<p>[!TIP]</p>
+<ul>
+<li>如需显示隐藏的变量，可使用数据集选项实现，例如：<code>OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)</code></li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>OUTDATA = T1
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>OUTDATA = T1(<span class="k">KEEP</span> = SEQ ITEM VALUE FREQ TIMES)
+</span></code></pre></div>
+<p><a href="#指定需要保留的变量"><strong>Example</strong></a></p>
+<p><strong>See Also</strong> :</p>
+<ul>
+<li><a href="../../qualify_multi/readme/#outdata">qualify_multi</a></li>
+</ul>
+<hr />
+<h3 id="stat_format">STAT_FORMAT<a class="headerlink" href="#stat_format" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : &lt;(&gt; #<em>statistic-keyword-1</em> = <em>format-1</em> &lt;, #<em>statistic-keyword-2</em> = <em>format-2</em> &lt;, ...&gt;&gt;&lt;)&gt;</p>
+<p>指定输出结果中统计量的输出格式。</p>
+<p>其中，<em><code>statistic-keyword</code></em> 可以指定以下统计量：</p>
+<table>
+<thead>
+<tr>
+<th>统计量</th>
+<th>含义</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FREQ</td>
+<td>频数</td>
+<td>BEST.</td>
+</tr>
+<tr>
+<td><font color=red>N<sup>1</sup></font></td>
+<td>频数</td>
+<td>BEST.</td>
+</tr>
+<tr>
+<td>TIMES</td>
+<td>频次</td>
+<td>BEST.</td>
+</tr>
+<tr>
+<td>RATE</td>
+<td>构成比（率）</td>
+<td>PERCENTN9.2</td>
+</tr>
+<tr>
+<td>TS <sup>2</sup></td>
+<td>检验统计量</td>
+<td><em>#AUTO</em> <sup>3</sup></td>
+</tr>
+<tr>
+<td>P <sup>2</sup></td>
+<td>假设检验 P 值</td>
+<td><em>#AUTO</em> <sup>4</sup></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>
+<p><sup>1</sup> 建议改用 <code>FREQ</code>，保留 <code>N</code> 仅为兼容旧版本程序，未来的版本 (<em>v1.5+</em>) 可能不受支持；</p>
+</li>
+<li>
+<p><sup>2</sup> 仅在宏 <code>%qualify_multi_test</code> 中可用；</p>
+</li>
+<li>
+<p><sup>3</sup> 检验统计量输出格式的默认值为 <em>w.d</em>，其中：</p>
+</li>
+<li>
+<p><em>w</em> = <span class="arithmatex">\(\max(\lceil\log_{10}\left|s\right|\rceil, 7)\)</span>， <span class="arithmatex">\(s\)</span> 表示检验统计量的值</p>
+</li>
+<li>
+<p><em>d</em> = 4</p>
+</li>
+<li>
+<p><sup>4</sup> 假设检验 P 值输出格式的默认值为 <code>qlmt_pvalue.</code>，<code>qlmt_pvalue.</code> 由以下 PROC FORMAT 过程定义：</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kr">proc format;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    picture qlmt_pvalue(round  max = <span class="m">7</span>)
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>            low - &lt; <span class="m">0.0001</span> = <span class="s">&quot;&lt;0.0001&quot;</span>(noedit)
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>            other = <span class="s">&quot;9.9999&quot;</span><span class="kr">;</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="kr">run;</span>
+</span></code></pre></div>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>STAT_FORMAT = (#N = z4., #RATE = percentn9<span class="m">.2</span>)
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>STAT_FORMAT = (#RATE = qual., #TS = <span class="m">8.4</span>, #P = pv.)
+</span></code></pre></div>
+<p><a href="#指定统计量的输出格式"><strong>Example</strong></a></p>
+<hr />
+<h3 id="label">LABEL<a class="headerlink" href="#label" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>string</em></p>
+<p>指定输出结果中第一行显示的标签字符串，该字符串必须使用匹配的单（双）引号包围。</p>
+<p>如果指定的 <code>LABEL</code> 中含有不匹配的引号，例如，需要指定 <code>LABEL</code> 为一个单引号，可以选择以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">LABEL</span> = <span class="s">&quot;&#39;&quot;</span>
+</span></code></pre></div>
+<p>但不能使用以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="k">LABEL</span> = <span class="s">&#39;&#39;&#39;&#39;</span>
+</span></code></pre></div>
+<p>这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<p>默认情况下，宏程序将自动获取变量 <a href="#var">VAR</a> 的标签，若标签为空，则使用变量 <a href="#var">VAR</a> 的变量名作为标签。</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">LABEL</span> = <span class="s">&quot;性别-n(%)&quot;</span>
+</span></code></pre></div>
+<p><a href="#指定分析变量标签"><strong>Example</strong></a></p>
+<hr />
+<h3 id="indent">INDENT<a class="headerlink" href="#indent" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>string</em></p>
+<p>指定输出结果各分类的缩进字符串，该字符串必须使用匹配的单（双）引号包围。</p>
+<p>如果指定的 <code>INDENT</code> 中含有不匹配的引号，例如，需要指定 <code>INDENT</code> 为一个单引号，可以选择以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>INDENT = <span class="s">&quot;&#39;&quot;</span>
+</span></code></pre></div>
+<p>但不能使用以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>INDENT = <span class="s">&#39;&#39;&#39;&#39;</span>
+</span></code></pre></div>
+<p>这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<p>默认情况下，各分类前使用 4 个英文空格作为缩进字符。</p>
+<blockquote>
+<p>[!TIP]</p>
+<ul>
+<li>可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 <code>INDENT = "\li420 "</code>；</li>
+</ul>
+</blockquote>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>INDENT = <span class="s">&quot;\li420 &quot;</span>
+</span></code></pre></div>
+<p><a href="#指定缩进字符串"><strong>Example</strong></a></p>
+<hr />
+<h3 id="suffix">SUFFIX<a class="headerlink" href="#suffix" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : <em>string</em></p>
+<p>指定输出结果各分类名称的后缀，该字符串必须使用匹配的单（双）引号包围。</p>
+<p>如果指定的 <code>SUFFIX</code> 中含有不匹配的引号，例如，需要指定 <code>SUFFIX</code> 为一个单引号，可以选择以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>SUFFIX = <span class="s">&quot;&#39;&quot;</span>
+</span></code></pre></div>
+<p>但不能使用以下传参方式：</p>
+<div class="highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>SUFFIX = <span class="s">&#39;&#39;&#39;&#39;</span>
+</span></code></pre></div>
+<p>这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。</p>
+<p><strong>Default</strong> : #AUTO</p>
+<p>默认情况下，各分类名称不添加后缀。</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>SUFFIX = <span class="s">&quot;，n(%)&quot;</span>
+</span></code></pre></div>
+<p><a href="#指定分类名称后缀"><strong>Example</strong></a></p>
+<hr />
+<h3 id="total">TOTAL<a class="headerlink" href="#total" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE</p>
+<p>指定是否在标签行输出各分类合计的统计结果。</p>
+<p><strong>Default</strong> : FALSE</p>
+<p>默认情况下，标签行仅显示参数 <a href="#label">LABEL</a> 指定的字符串，不显示各分类合计的统计结果。</p>
+<p><strong>Usage</strong> :</p>
+<div class="highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>TOTAL = TRUE
+</span></code></pre></div>
+<p><a href="#指定分类名称后缀"><strong>Example</strong></a></p>
+<hr />
+<h3 id="del_temp_data">DEL_TEMP_DATA<a class="headerlink" href="#del_temp_data" title="链接到本节以供参考">&para;</a></h3>
+<p><strong>Syntax</strong> : TRUE | FALSE</p>
+<p>指定是否删除宏程序运行过程生成的中间数据集。</p>
+<p><strong>Default</strong> : TRUE</p>
+<p>默认情况下，宏程序会自动删除运行过程生成的中间数据集。</p>
+<blockquote>
+<p>[!NOTE]</p>
+<p>此参数用于开发者调试，一般无需关注。</p>
+</blockquote>
+<hr />
+<h2 id="_7">例子<a class="headerlink" href="#_7" title="链接到本节以供参考">&para;</a></h2>
+<h3 id="_8">打开帮助文档<a class="headerlink" href="#_8" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nf">%qualify</span>();
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="nf">%qualify</span>(help);
+</span></code></pre></div>
+<h3 id="_9">一般用法<a class="headerlink" href="#_9" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-var.png" /></p>
+<div class="highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig(<span class="s">&quot;异常无临床意义&quot;</span> = <span class="s">&quot;NCS&quot;</span>, <span class="s">&quot;异常有临床意义&quot;</span> = <span class="s">&quot;CS&quot;</span>));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-var-category-note.png" /></p>
+<h3 id="_10">指定统计量的输出模式<a class="headerlink" href="#_10" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, pattern = <span class="nb">%str</span>(#n[#rate]##));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-pattern.png" /></p>
+<p>上述例子中，使用参数 <code>PATTERN</code> 改变了默认的统计量输出模式，构成比使用中括号[]包围，结尾使用 <code>##</code> 对 <code>#</code> 进行转义。</p>
+<h3 id="_11">指定分类排序方式<a class="headerlink" href="#_11" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = #freq(desc));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-by-freq.png" /></p>
+<div class="highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = ecgcsign);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-by-var.png" /></p>
+<div class="highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig.);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-by-format.png" /></p>
+<p>输出格式 <code>clsig.</code> 包含的具体分类如下：</p>
+<p><img alt="" src="../assets/example-by-format-label.png" /></p>
+<h3 id="_12">指定唯一标识符变量<a class="headerlink" href="#_12" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>addv(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>         var = dvtype,
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>         uid = usubjid,
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>         outdata = t1(<span class="k">keep</span> = item value freq times));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-uid.png" /></p>
+<h3 id="_13">指定是否统计缺失分类<a class="headerlink" href="#_13" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>         var = ecgcsig,
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>         <span class="k">missing</span> = true);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-missing.png" /></p>
+<h3 id="_14">指定缺失分类的说明文字<a class="headerlink" href="#_14" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>         var = ecgcsig,
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>         <span class="kc">missing</span>_note = <span class="s">&quot;不适用&quot;</span>);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-missing-note.png" /></p>
+<h3 id="_15">指定缺失分类的显示位置<a class="headerlink" href="#_15" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>         var = ecgcsig,
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>         <span class="kc">missing</span>_note = <span class="s">&quot;不适用&quot;</span>,
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>         <span class="kc">missing</span>_position = first);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-missing-position.png" /></p>
+<h3 id="_16">指定需要保留的变量<a class="headerlink" href="#_16" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>         var = ecgcsig,
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>         outdata = t1(<span class="k">keep</span> = seq item value n rate));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-outdata.png" /></p>
+<h3 id="_17">指定统计量的输出格式<a class="headerlink" href="#_17" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>        var = ecgcsig,
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>        <span class="k">by</span> = clsig.,
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>        <span class="k">missing</span> = true,
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>        stat_format = (#N = z4., #RATE = <span class="m">5.3</span>));
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-stat-format.png" /></p>
+<h3 id="_18">指定分析变量标签<a class="headerlink" href="#_18" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>         var = ecgcsig,
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>         <span class="k">label</span> = <span class="s">&quot;ECG 临床意义判定-n(%)&quot;</span>);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-label.png" /></p>
+<h3 id="_19">指定缩进字符串<a class="headerlink" href="#_19" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>         var = ecgcsig,
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-39-5"><a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>         <span class="k">label</span> = <span class="s">&quot;ECG 临床意义判定-n(%)&quot;</span>,
+</span><span id="__span-39-6"><a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>         indent = <span class="s">&quot;\li420 &quot;</span>);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-indent.png" /></p>
+<p>上述例子中，使用参数 <code>INDENT</code> 指定了 RTF 控制符 <code>\li420</code> 作为缩进字符串。如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 <code>PROTECTSPECIALCHAR</code> 属性值为 <code>OFF</code>。</p>
+<h3 id="_20">指定分类名称后缀<a class="headerlink" href="#_20" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>         var = ecgcsig,
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-40-5"><a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>         <span class="k">label</span> = <span class="s">&quot;ECG 临床意义判定&quot;</span>,
+</span><span id="__span-40-6"><a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>         indent = <span class="s">&quot;\li420 &quot;</span>,
+</span><span id="__span-40-7"><a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a>         suffix = <span class="s">&quot;，n(%)&quot;</span>);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-suffix.png" /></p>
+<h3 id="_21">指定是否输出各分类合计的统计结果<a class="headerlink" href="#_21" title="链接到本节以供参考">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="nf">%qualify</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)),
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>         var = ecgcsig,
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>         <span class="k">by</span> = clsig.,
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>         <span class="k">missing</span> = true,
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>         <span class="k">label</span> = <span class="s">&quot;ECG 临床意义判定&quot;</span>,
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>         indent = <span class="s">&quot;\li420 &quot;</span>,
+</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a>         suffix = <span class="s">&quot;，n(%)&quot;</span>,
+</span><span id="__span-41-8"><a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a>         total = true);
+</span></code></pre></div>
+<p><img alt="" src="../assets/example-total.png" /></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2024 Snoopy1866
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/Snoopy1866/Descriptive-Statistics-Macro" target="_blank" rel="noopener" title="Github 仓库" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.code.annotate", "content.action.edit", "content.action.view", "navigation.instant", "navigation.instant.progress", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
