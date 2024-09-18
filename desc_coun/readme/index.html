@@ -2041,11 +2041,9 @@
 <h3 id="_19">指定分析变量标签<a class="headerlink" href="#_19" title="链接到本节以供参考">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nf">%qualify</span>(indata = adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = tuloc, <span class="k">by</span> = tulocn, <span class="k">label</span> = <span class="nb">%nrstr</span>(肿瘤部位，<span class="nb">n(</span>%%)));
 </span></code></pre></div>
-<p><img alt="" src="./assets/example-6.png" /></p>
 <h3 id="_20">指定缩进字符串<a class="headerlink" href="#_20" title="链接到本节以供参考">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nf">%qualify</span>(indata = adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = tuloc, <span class="k">by</span> = tulocn, <span class="k">label</span> = <span class="nb">%nrstr</span>(肿瘤部位，<span class="nb">n(</span>%%)), indent = <span class="nb">%str</span>(\li420 ));
 </span></code></pre></div>
-<p><img alt="" src="./assets/example-7.png" /></p>
 <p>上述例子中，使用参数 <code>INDENT</code> 指定了缩进字符串，如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 <code>PROTECTSPECIALCHAR</code> 属性值为 <code>OFF</code>。</p>
 
 
