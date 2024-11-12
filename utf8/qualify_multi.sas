@@ -12,6 +12,7 @@ Version Date: 2023-12-26 0.1
               2024-04-25 0.7
               2024-06-04 0.8
               2024-06-13 0.9
+              2024-07-15 0.10
 ===================================
 */
 
@@ -390,12 +391,23 @@ Version Date: 2023-12-26 0.1
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
-                                        keep = item %do i = 1 %to &group_level_n;
-                                                        value_&i
+                                        keep = item %if &uid ^= #NULL %then %do;
+                                                        %do i = 1 %to &group_level_n;
+                                                            times_&i._fmt value_&i
+                                                        %end;
+                                                        %if &group_level_n > 1 %then %do;
+                                                            times_sum_fmt value_sum
+                                                        %end;
                                                     %end;
-                                                    %if &group_level_n > 1 %then %do;
-                                                        value_sum
+                                                    %else %do;
+                                                        %do i = 1 %to &group_level_n;
+                                                            value_&i
+                                                        %end;
+                                                        %if &group_level_n > 1 %then %do;
+                                                            value_sum
+                                                        %end;
                                                     %end;
+                                                    
                                     %end;
                                     %else %do;
                                         &dataset_options_out

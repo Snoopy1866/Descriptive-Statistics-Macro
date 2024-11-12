@@ -15,6 +15,7 @@ Version Date: 2023-03-16 1.3.1
               2024-04-26 1.3.10
               2024-04-28 1.3.11
               2024-06-05 1.3.12
+              2024-09-18 1.3.13
 ===================================
 */
 
@@ -645,6 +646,13 @@ Version Date: 2023-03-16 1.3.1
     quit;
 
     /*3. 输出数据集*/
+    proc sql noprint;
+        select max(length(item)), max(length(value)) into :column_item_len_max, :column_value_len_max from tmp_quantify_outdata;
+
+        alter table tmp_quantify_outdata
+            modify item  char(&column_item_len_max),
+                   value char(&column_value_len_max);
+    quit;
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item value
                                     %end;

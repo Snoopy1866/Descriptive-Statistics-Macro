@@ -318,8 +318,8 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 | <font color=red>N<sup>1</sup></font> | 频数          | BEST.                |
 | TIMES                                | 频次          | BEST.                |
 | RATE                                 | 构成比（率）  | PERCENTN9.2          |
-| TS <sup>2</sup>                      | 检验统计量    | _#AUTO_ <sup>2</sup> |
-| P <sup>3</sup>                       | 假设检验 P 值 | _#AUTO_ <sup>3</sup> |
+| TS <sup>2</sup>                      | 检验统计量    | _#AUTO_ <sup>3</sup> |
+| P <sup>2</sup>                       | 假设检验 P 值 | _#AUTO_ <sup>4</sup> |
 
 > [!IMPORTANT]
 >
@@ -327,12 +327,12 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 >
 > - <sup>2</sup> 仅在宏 `%qualify_multi_test` 中可用；
 >
-> - <sup>2</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+> - <sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
 >
 >   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
 >   - _d_ = 4
 >
-> - <sup>3</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+> - <sup>4</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
 >
 >   ```sas
 >   proc format;
