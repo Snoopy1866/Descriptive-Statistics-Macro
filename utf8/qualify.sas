@@ -27,6 +27,7 @@ Version Date: 2023-03-08 1.0.1
               2024-07-10 1.0.22
               2024-07-19 1.0.23
               2024-09-18 1.0.24
+              2024-11-13 1.0.25
 ===================================
 */
 
@@ -776,6 +777,7 @@ Version Date: 2023-03-08 1.0.1
                    %do i = 1 %to &var_level_n;
                        tmp_qualify_outdata_level_&i
                    %end;
+                   tmp_qualify_outdata
                    ;
         quit;
     %end;
