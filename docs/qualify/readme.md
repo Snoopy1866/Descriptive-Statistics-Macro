@@ -329,7 +329,7 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 >
 > - <sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
 >
->   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+>   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 1) + 6$， $s$ 表示检验统计量的值
 >   - _d_ = 4
 >
 > - <sup>4</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
