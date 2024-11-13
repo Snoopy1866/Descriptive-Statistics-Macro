@@ -13,6 +13,7 @@ Version Date: 2024-01-08 0.1
               2024-06-04 0.8
               2024-06-13 0.9
               2024-07-15 0.10
+              2024-11-13 0.11
 ===================================
 */
 
@@ -330,8 +331,8 @@ Version Date: 2024-01-08 0.1
             %end;
             %else %do; /*卡方检验适用*/
                 %if &ts_format = #AUTO %then %do;
-                    select max(ceil(log10(abs(_PCHI_))) + 6, 7) into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
-                    %let ts_format = &ts_fmt_width..4;
+                    select max(ceil(log10(abs(_PCHI_))), 1) + 6 into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
+                    %let ts_format = &ts_fmt_width..4;             
                 %end;
                 create table tmp_qmt_stat as
                     select
