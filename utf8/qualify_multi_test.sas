@@ -332,7 +332,7 @@ Version Date: 2024-01-08 0.1
             %else %do; /*卡方检验适用*/
                 %if &ts_format = #AUTO %then %do;
                     select max(ceil(log10(abs(_PCHI_))), 1) + 6 into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
-                    %let ts_format = &ts_fmt_width..4;             
+                    %let ts_format = &ts_fmt_width..4;
                 %end;
                 create table tmp_qmt_stat as
                     select
