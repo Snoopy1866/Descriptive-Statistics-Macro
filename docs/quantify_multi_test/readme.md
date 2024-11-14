@@ -9,10 +9,10 @@
 - [INDATA](#indata)
 - [VAR](#var)
 - [GROUP](#group)
-- [GROUPBY](#groupby)
 
 ### 可选参数
 
+- [GROUPBY](#groupby)
 - [PATTERN](#pattern)
 - [OUTDATA](#outdata)
 - [STAT_FORMAT](#stat_format)
