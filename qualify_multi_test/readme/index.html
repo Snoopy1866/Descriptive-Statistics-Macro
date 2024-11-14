@@ -1125,10 +1125,10 @@
 <li><a href="#indata">INDATA</a></li>
 <li><a href="#var">VAR</a></li>
 <li><a href="#group">GROUP</a></li>
-<li><a href="#groupby">GROUPBY</a></li>
 </ul>
 <h3 id="_4">可选参数<a class="headerlink" href="#_4" title="链接到本节以供参考">&para;</a></h3>
 <ul>
+<li><a href="#groupby">GROUPBY</a></li>
 <li><a href="#by">BY</a></li>
 <li><a href="#uid">UID</a></li>
 <li><a href="#pattern">PATTERN</a></li>
@@ -1154,33 +1154,10 @@
 <p>用法同 <a href="../../qualify/readme/#var">VAR</a>。</p>
 <hr />
 <h3 id="group">GROUP<a class="headerlink" href="#group" title="链接到本节以供参考">&para;</a></h3>
-<p><strong>Syntax</strong> : <em>variable</em></p>
-<p>指定分组变量。</p>
-<blockquote>
-<p>[!WARNING]</p>
-<ul>
-<li>参数 <code>GROUP</code> 不允许指定不存在于参数 <code>INDATA</code> 指定的数据集中的变量；</li>
-<li>参数 <code>GROUP</code> 不允许指定数值型变量；</li>
-</ul>
-</blockquote>
-<p><strong>Usage</strong> :</p>
-<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">GROUP</span> = ARM
-</span></code></pre></div>
-<p><a href="#一般用法"><strong>Example</strong></a></p>
+<p>用法同 <a href="../../qualify_multi/readme/#group">GROUP</a></p>
 <hr />
 <h3 id="groupby">GROUPBY<a class="headerlink" href="#groupby" title="链接到本节以供参考">&para;</a></h3>
-<p><strong>Syntax</strong> : <em>variable</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></p>
-<p>指定分组变量的排序变量及排序方向。</p>
-<blockquote>
-<p>[!WARNING]</p>
-<ul>
-<li>参数 <code>GROUPBY</code> 不允许指定不存在于参数 <code>INDATA</code> 指定的数据集中的变量；</li>
-</ul>
-</blockquote>
-<p><strong>Usage</strong> :</p>
-<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>GROUPBY = ARMN
-</span></code></pre></div>
-<p><a href="#一般用法"><strong>Example</strong></a></p>
+<p>用法同 <a href="../../qualify_multi/readme/#groupby">GROUPBY</a></p>
 <hr />
 <h3 id="by">BY<a class="headerlink" href="#by" title="链接到本节以供参考">&para;</a></h3>
 <p>用法同 <a href="../../qualify/readme/#by">BY</a>。</p>
@@ -1233,11 +1210,11 @@
 <hr />
 <h2 id="_7">例子<a class="headerlink" href="#_7" title="链接到本节以供参考">&para;</a></h2>
 <h3 id="_8">打开帮助文档<a class="headerlink" href="#_8" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">%qualify_multi_test</span>();
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">%qualify_multi_test</span>(help);
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">%qualify_multi_test</span>();
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nf">%qualify_multi_test</span>(help);
 </span></code></pre></div>
 <h3 id="_9">一般用法<a class="headerlink" href="#_9" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">%qualify_multi_test</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (fasfl = <span class="s">&quot;Y&quot;</span>)), var = sex, <span class="k">group</span> = arm, groupby = armn);
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nf">%qualify_multi_test</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (fasfl = <span class="s">&quot;Y&quot;</span>)), var = sex, <span class="k">group</span> = arm, groupby = armn);
 </span></code></pre></div>
 <p><img alt="" src="../assets/example-regular.png" /></p>
 
