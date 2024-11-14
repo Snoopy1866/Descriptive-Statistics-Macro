@@ -245,7 +245,7 @@ Version Date: 2024-01-05 0.1
         run;
         proc sql noprint;
             %if %superq(ts_format) = #AUTO %then %do;
-                select max(ceil(log10(abs(Z_WIL))) + 6, 7) into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
+                select max(ceil(log10(abs(Z_WIL))), 1) + 6 into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
                 %let ts_format = &ts_fmt_width..4;
             %end;
             insert into tmp_qmt_outdata
@@ -276,7 +276,7 @@ Version Date: 2024-01-05 0.1
             %put NOTE: 方差不齐，使用 Satterthwaite t 检验！;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
@@ -291,7 +291,7 @@ Version Date: 2024-01-05 0.1
         %else %do;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
