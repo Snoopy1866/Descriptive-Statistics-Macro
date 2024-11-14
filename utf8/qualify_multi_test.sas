@@ -14,13 +14,14 @@ Version Date: 2024-01-08 0.1
               2024-06-13 0.9
               2024-07-15 0.10
               2024-11-13 0.11
+              2024-11-14 0.12
 ===================================
 */
 
 %macro qualify_multi_test(INDATA,
                           VAR,
                           GROUP,
-                          GROUPBY,
+                          GROUPBY          = #AUTO,
                           BY               = #AUTO,
                           UID              = #NULL,
                           PATTERN          = %nrstr(#FREQ(#RATE)),
@@ -45,8 +46,6 @@ Version Date: 2024-01-08 0.1
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let group                = %sysfunc(strip(%bquote(&group)));
-    %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*声明全局变量*/

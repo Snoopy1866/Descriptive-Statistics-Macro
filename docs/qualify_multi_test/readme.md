@@ -9,10 +9,10 @@
 - [INDATA](#indata)
 - [VAR](#var)
 - [GROUP](#group)
-- [GROUPBY](#groupby)
 
 ### 可选参数
 
+- [GROUPBY](#groupby)
 - [BY](#by)
 - [UID](#uid)
 - [PATTERN](#pattern)
@@ -46,42 +46,13 @@
 
 ### GROUP
 
-**Syntax** : _variable_
-
-指定分组变量。
-
-> [!WARNING]
->
-> - 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-> - 参数 `GROUP` 不允许指定数值型变量；
-
-**Usage** :
-
-```sas
-GROUP = ARM
-```
-
-[**Example**](#一般用法)
+用法同 [GROUP](../qualify_multi/readme.md#group)
 
 ---
 
 ### GROUPBY
 
-**Syntax** : _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
-
-指定分组变量的排序变量及排序方向。
-
-> [!WARNING]
->
-> - 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-
-**Usage** :
-
-```sas
-GROUPBY = ARMN
-```
-
-[**Example**](#一般用法)
+用法同 [GROUPBY](../qualify_multi/readme.md#groupby)
 
 ---
 
