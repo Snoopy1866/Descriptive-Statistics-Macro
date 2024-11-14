@@ -28,6 +28,7 @@ Version Date: 2023-03-08 1.0.1
               2024-07-19 1.0.23
               2024-09-18 1.0.24
               2024-11-13 1.0.25
+              2024-11-14 1.0.26
 ===================================
 */
 
@@ -126,6 +127,14 @@ Version Date: 2023-03-08 1.0.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
+                %goto exit_with_error;
+            %end;
+
+            proc sql noprint;
+                select count(*) into : nobs from &indata;
+            quit;
+            %if &nobs = 0 %then %do;
+                %put ERROR: 分析数据集 &indata 为空！;
                 %goto exit_with_error;
             %end;
         %end;

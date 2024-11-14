@@ -8,13 +8,14 @@ Version Date: 2024-01-05 0.1
               2024-01-23 0.3
               2024-05-29 0.4
               2024-06-14 0.5
+              2024-11-14 0.6
 ===================================
 */
 
 %macro quantify_multi_test(INDATA,
                            VAR,
                            GROUP,
-                           GROUPBY,
+                           GROUPBY        = #AUTO,
                            OUTDATA        = RES_&VAR,
                            PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
                            STAT_FORMAT    = #AUTO,
@@ -38,7 +39,7 @@ Version Date: 2024-01-05 0.1
 
     /*声明全局变量*/
     %global qtmt_exit_with_error
-            groupby_var;
+            groupby_criteria;
     %let qtmt_exit_with_error = FALSE;
 
     /*声明局部变量*/
@@ -211,7 +212,7 @@ Version Date: 2024-01-05 0.1
     /*正态性检验*/
     proc univariate data = tmp_qmt_indata normaltest noprint;
         var %superq(VAR);
-        class &groupby_var;
+        class &groupby_criteria;
         output out = tmp_qmt_nrmtest normaltest = normaltest probn = probn;
     run;
 
@@ -239,7 +240,7 @@ Version Date: 2024-01-05 0.1
         %put NOTE: 至少一个组别不符合正态性，使用 Wilcoxon 检验！;
         proc npar1way data = tmp_qmt_indata wilcoxon noprint;
             var %superq(VAR);
-            class &groupby_var;
+            class &groupby_criteria;
             output out = tmp_qmt_wcxtest wilcoxon;
         run;
         proc sql noprint;
@@ -261,7 +262,7 @@ Version Date: 2024-01-05 0.1
         ods output TTests = tmp_qmt_ttests Equality = tmp_qmt_equality;
         proc ttest data = tmp_qmt_indata plots = none;
             var %superq(VAR);
-            class &groupby_var;
+            class &groupby_criteria;
         run;
         ods html;
 

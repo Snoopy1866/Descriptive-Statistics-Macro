@@ -7,6 +7,7 @@ Version Date: 2023-12-21 0.1
               2023-12-25 0.2
               2024-01-05 0.3
               2024-01-19 0.4
+              2024-11-14 0.5
 ===================================
 */
 
@@ -168,6 +169,7 @@ Version Date: 2023-12-21 0.1
         %if %superq(groupby) ^= %bquote() and %superq(groupby) ^= #AUTO %then %do;
             %put WARNING: 已通过参数 GROUP 指定了分组的排序，参数 GROUPBY 已被忽略！;
         %end;
+        %let groupby_criteria = &group_var;
     %end;
     %else %do;
         %if %superq(groupby) = %bquote() %then %do;
@@ -183,15 +185,15 @@ Version Date: 2023-12-21 0.1
         %else %do;
             %let reg_groupby_id = %sysfunc(prxparse(%bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:ASC|DESC)(?:ENDING)?)\))?$/)));
             %if %sysfunc(prxmatch(&reg_groupby_id, %superq(groupby))) %then %do;
-                %let groupby_var = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
+                %let groupby_criteria = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
                 %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
 
                 /*检查排序变量存在性*/
                 proc sql noprint;
-                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
+                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_criteria";
                 quit;
                 %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
-                    %put ERROR: 在 &libname_in..&memname_in 中没有找到分组排序变量 &groupby_var;
+                    %put ERROR: 在 &libname_in..&memname_in 中没有找到分组排序变量 &groupby_criteria;
                     %goto exit_with_error;
                 %end;
 
@@ -200,8 +202,8 @@ Version Date: 2023-12-21 0.1
                         select
                             distinct
                             &group_var,
-                            &groupby_var
-                        from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
+                            &groupby_criteria
+                        from %superq(indata) where not missing(&group_var) order by &groupby_criteria &groupby_direction, &group_var;
                     select quote(strip(&group_var)) into : group_level_1- from tmp_quantify_m_groupby_sorted;
                     select count(distinct &group_var) into : group_level_n from tmp_quantify_m_groupby_sorted;
                 quit;
