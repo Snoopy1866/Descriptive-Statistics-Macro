@@ -13,6 +13,7 @@ Version Date: 2023-12-26 0.1
               2024-06-04 0.8
               2024-06-13 0.9
               2024-07-15 0.10
+              2024-11-14 0.11
 ===================================
 */
 
@@ -166,8 +167,19 @@ Version Date: 2023-12-26 0.1
         %else %do;
             %let IS_GROUP_LEVEL_SPECIFIED = TRUE;
             %let group_level_n = %sysfunc(countw(%bquote(&group_level), %bquote(,), %bquote(sq)));
+            
             %do i = 1 %to &group_level_n;
                 %let group_level_&i = %sysfunc(scan(%bquote(&group_level), &i, %bquote(,), %bquote(sq)));
+                %let group_level_unquote_&i = %sysfunc(compress(&&group_level_&i, %nrstr(%")));
+
+                %let group_level_freq_&i      = "&&group_level_unquote_&i(频数)";
+                %let group_level_freq_fmt_&i  = "&&group_level_unquote_&i(频数格式化)";
+                %let group_level_n_&i         = "&&group_level_unquote_&i(频数)(兼容)";
+                %let group_level_n_fmt_&i     = "&&group_level_unquote_&i(频数格式化)(兼容)";
+                %let group_level_times_&i     = "&&group_level_unquote_&i(频次)";
+                %let group_level_times_fmt_&i = "&&group_level_unquote_&i(频次格式化)";
+                %let group_level_rate_&i      = "&&group_level_unquote_&i(频率)";
+                %let group_level_rate_fmt_&i  = "&&group_level_unquote_&i(频率格式化)";
             %end;
         %end;
     %end;
