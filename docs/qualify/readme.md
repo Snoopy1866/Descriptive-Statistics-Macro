@@ -114,6 +114,10 @@ run;
 >
 > - 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
 
+> [!TIP]
+>
+> - 如果需要按照参数 `VAR` 自身的值进行排序，可以指定 `BY = %nrstr(&VAR)`。
+
 **Usage** :
 
 ```sas
