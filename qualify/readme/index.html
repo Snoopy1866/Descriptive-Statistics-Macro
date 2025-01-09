@@ -1413,6 +1413,10 @@
 <ul>
 <li>若参数 <code>BY</code> 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 <code>DICTIONARY.FORMATS</code> 表中，变量 <code>source</code> 的值应当是 <code>C</code>。</li>
 </ul>
+<p>[!TIP]</p>
+<ul>
+<li>如果需要按照参数 <code>VAR</code> 自身的值进行排序，可以指定 <code>BY = %nrstr(&amp;VAR)</code>。</li>
+</ul>
 </blockquote>
 <p><strong>Usage</strong> :</p>
 <div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">BY</span> = #freq
