@@ -274,7 +274,7 @@ Version Date: 2023-03-08 1.0.1
     /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
     %if %bquote(&by_stat) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -291,14 +291,13 @@ Version Date: 2023-03-08 1.0.1
                     %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
                 from tmp_qualify_indata
-                where not missing(var_level)
                 group by var_level
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
     %else %if %bquote(&by_var) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -315,7 +314,6 @@ Version Date: 2023-03-08 1.0.1
                     %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
                 from tmp_qualify_indata
-                where not missing(var_level)
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
@@ -324,7 +322,7 @@ Version Date: 2023-03-08 1.0.1
             select &by_fmt;
         run;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     coalescec(a.&var_name, b.label)       as var_level,
@@ -344,7 +342,6 @@ Version Date: 2023-03-08 1.0.1
                     ifc(missing(b.label), 'Y', '')
                                                           as var_level_fmt_not_defined
                 from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
-                where not missing(var_level)
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
