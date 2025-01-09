@@ -29,6 +29,7 @@ Version Date: 2023-03-08 1.0.1
               2024-09-18 1.0.24
               2024-11-13 1.0.25
               2024-11-14 1.0.26
+              2025-01-09 1.0.27
 ===================================
 */
 
@@ -290,6 +291,7 @@ Version Date: 2023-03-08 1.0.1
                     %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
                 from tmp_qualify_indata
+                where not missing(var_level)
                 group by var_level
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
@@ -313,6 +315,7 @@ Version Date: 2023-03-08 1.0.1
                     %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
                 from tmp_qualify_indata
+                where not missing(var_level)
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
@@ -341,6 +344,7 @@ Version Date: 2023-03-08 1.0.1
                     ifc(missing(b.label), 'Y', '')
                                                           as var_level_fmt_not_defined
                 from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                where not missing(var_level)
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
