@@ -16,6 +16,7 @@ Version Date: 2023-03-16 1.3.1
               2024-04-28 1.3.11
               2024-06-05 1.3.12
               2024-09-18 1.3.13
+              2025-01-09 1.3.14
 ===================================
 */
 
@@ -528,7 +529,7 @@ Version Date: 2023-03-16 1.3.1
         proc sql noprint;
             select
                 (case when label ^= "" then cats("'", label, "'")
-                      else cats("'", name, "-n(%)", "'") end)
+                      else cats("'", name, "'") end)
                 into: label_sql_expr from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&VAR";
         quit;
     %end;
