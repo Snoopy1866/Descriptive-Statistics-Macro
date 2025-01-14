@@ -30,6 +30,7 @@ Version Date: 2023-03-08 1.0.1
               2024-11-13 1.0.25
               2024-11-14 1.0.26
               2025-01-09 1.0.27
+              2025-01-14 1.1.0
 ===================================
 */
 
@@ -687,6 +688,7 @@ Version Date: 2023-03-08 1.0.1
     proc sql noprint;
         create table tmp_qualify_outdata_label as
             select
+                0                                 as IDT,
                 0                                 as SEQ,
                 %unquote(%superq(label_sql_expr)) as ITEM
                 %if &total = TRUE %then %do;
@@ -717,6 +719,7 @@ Version Date: 2023-03-08 1.0.1
         proc sql noprint;
             create table tmp_qualify_outdata_level_&i as
                 select
+                    1                                                                      as IDT,
                     &i                                                                     as SEQ,
                     %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
                                                                                            as ITEM,

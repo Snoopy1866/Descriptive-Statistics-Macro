@@ -16,6 +16,7 @@ Version Date: 2024-01-08 0.1
               2024-11-13 0.11
               2024-11-14 0.12
               2025-01-08 0.13
+              2025-01-14 0.14
 ===================================
 */
 
@@ -309,14 +310,16 @@ Version Date: 2024-01-08 0.1
         select * from DICTIONARY.COLUMNS where libname = "WORK" and memname = "TMP_QMT_CHISQ";
         %if &SQLOBS = 0 %then %do; /*行或列的非缺失观测少于2，无法计算统计量*/
             create table tmp_qmt_stat
-                (seq num, item char(%eval(%length(%bquote(&indent_sql_expr)) + 12)), value_1 char(10), value_2 char(10));
+                (idt num, seq num, item char(%eval(%length(%bquote(&indent_sql_expr)) + 12)), value_1 char(10), value_2 char(10));
             insert into tmp_qmt_stat
-                set seq     = &desc_seq_max + 1,
+                set idt     = 1,
+                    seq     = &desc_seq_max + 1,
                     item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
             insert into tmp_qmt_stat
-                set seq     = &desc_seq_max + 2,
+                set idt     = 1,
+                    seq     = &desc_seq_max + 2,
                     item    = &note_pvalue,
                     value_1 = "-";
         %end;
@@ -325,6 +328,7 @@ Version Date: 2024-01-08 0.1
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
                     select
+                        1                 as idt,
                         &desc_seq_max + 1 as seq,
                         &note_stat        as item,
                         "Fisher精确检验"  as value_1,
@@ -332,6 +336,7 @@ Version Date: 2024-01-08 0.1
                     from tmp_qmt_chisq
                     outer union corr
                     select
+                        1                               as idt,
                         &desc_seq_max + 2               as seq,
                         &note_pvalue                    as item,
                         strip(put(XP2_FISH, &p_format)) as value_1
@@ -344,6 +349,7 @@ Version Date: 2024-01-08 0.1
                 %end;
                 create table tmp_qmt_stat as
                     select
+                        1                              as idt,
                         &desc_seq_max + 1              as seq,
                         &note_stat                     as item,
                         "卡方检验"                     as value_1,
@@ -351,6 +357,7 @@ Version Date: 2024-01-08 0.1
                     from tmp_qmt_chisq
                     outer union corr
                     select
+                        1                             as idt,
                         &desc_seq_max + 2             as seq,
                         &note_pvalue                  as item,
                         strip(put(P_PCHI, &p_format)) as value_1
