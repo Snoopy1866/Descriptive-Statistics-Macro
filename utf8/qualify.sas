@@ -31,6 +31,7 @@ Version Date: 2023-03-08 1.0.1
               2024-11-14 1.0.26
               2025-01-09 1.0.27
               2025-01-14 1.1.0
+              2025-01-15 1.1.1
 ===================================
 */
 
@@ -369,20 +370,46 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
     %if %bquote(&uid) ^= #NULL %then %do;
-        %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %let uid_n = %sysfunc(max(1, %sysfunc(kcountw(%bquote(&uid), %bquote(), s))));
+        %if &uid_n = 1 %then %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %end;
+        %else %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)%sysfunc(repeat((?:\s+([A-Za-z_][A-Za-z_\d]*)), %eval(&uid_n - 2)))$/);
+        %end;
         %let reg_uid_id = %sysfunc(prxparse(&reg_uid));
+
         %if %sysfunc(prxmatch(&reg_uid_id, %bquote(&uid))) = 0 %then %do;
             %put ERROR: 参数 UID = %bquote(&uid) 格式不正确！;
             %goto exit_with_error;
         %end;
         %else %do;
-            proc sql noprint;
-                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&uid";
-            quit;
-            %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
-                %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &uid;
-                %goto exit_with_error;
+            /*判断是否指定重复的变量*/
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                %if &i < &uid_n %then %do;
+                    %do j = %eval(&i + 1) %to &uid_n;
+                        %let uid_&j = %sysfunc(prxposn(&reg_uid_id, &j, %bquote(&uid)));
+                        %if %bquote(&&uid_&i) = %bquote(&&uid_&j) %then %do;
+                            %put ERROR: 不允许重复指定标识符变量 %bquote(&&uid_&i)！;
+                            %goto exit_with_error;
+                        %end;
+                    %end;
+                %end;
             %end;
+            /*判断变量是否存在*/
+            %let IS_VALID_UID = TRUE;
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                proc sql noprint;
+                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&&uid_&i";
+                quit;
+                %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
+                    %put ERROR: 在 &libname_in..&memname_in 中没有找到标识符变量 %bquote(&&uid_&i)！;
+                    %let IS_VALID_UID = FALSE;
+                %end;
+            %end;
+            %if &IS_VALID_UID = FALSE %then %goto exit_with_error;
         %end;
     %end;
 
@@ -649,10 +676,10 @@ Version Date: 2023-03-08 1.0.1
     %end;
     %else %do;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_total nodupkey;
-            by &uid;
+            by %do i = 1 %to &uid_n; &&uid_&i %end;;
         run;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_var nodupkey;
-            by &uid &var_name;
+            by %do i = 1 %to &uid_n; &&uid_&i %end; &var_name;
         run;
     %end;
 
