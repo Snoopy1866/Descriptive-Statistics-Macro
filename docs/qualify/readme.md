@@ -138,7 +138,7 @@ BY = SEXN.(descending)
 
 `UID` 的值通常是能够标识观测所属 `频数统计对象` 的变量。
 
-对 `统计对象` 的详细解释如下：
+对 `频数统计对象` 的详细解释如下：
 
 1. 若数据集 `adsl` 的主键是 `USUBJID`，需要统计性别 `sex` 的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，与主键相同，此时可以指定 `UID = USUBJID`，也可以不指定 `UID`
 2. 若数据集 `adlb` 的主键是 `USUBJID PARCAT PARAM VISIT`，需要统计实验室检查的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，无法构成主键，需要指定 `UID = USUBJID`
