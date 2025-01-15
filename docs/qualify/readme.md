@@ -136,7 +136,9 @@ BY = SEXN.(descending)
 
 指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量，对分析数据集统计频数和频次。
 
-`UID` 的值通常是能够标识观测所属统计对象的变量，在 `one subject one observation` 的数据集（例如 `adsl`）中，`UID` 的值一般是 `USUBJID`；在 `one subject one param one observation` 的数据集（例如 `advs`）中，`UID` 的值一般是 `USUBJID PARAM`。
+`UID` 的值通常是能够标识观测所属统计对象的变量。
+
+在 `one subject one observation` 的数据集（例如 `adsl`）中，`UID` 的值一般是 `USUBJID`；在 `one subject one param one observation` 的数据集（例如 `advs`）中，`UID` 的值一般是 `USUBJID PARAM`。
 
 **Default** : #NULL
 
