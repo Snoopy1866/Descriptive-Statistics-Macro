@@ -132,13 +132,15 @@ BY = SEXN.(descending)
 
 ### UID
 
-**Syntax** : _variable_
+**Syntax** : _variable_ <_variable_, ...>
 
-指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量，对分析数据集统计频数和频次，`UID` 的值通常是能够标识观测所属试验对象的变量，例如：`USUBJID`。
+指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量，对分析数据集统计频数和频次。
+
+`UID` 的值通常是能够标识观测所属统计对象的变量，在 `one subject one observation` 的数据集（例如 `adsl`）中，`UID` 的值一般是 `USUBJID`；在 `one subject one param one observation` 的数据集（例如 `advs`）中，`UID` 的值一般是 `USUBJID PARAM`。
 
 **Default** : #NULL
 
-默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
+默认情况下，宏程序将分析数据集中的每一条观测都视为不同统计对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
 
 > [!IMPORTANT]
 >
@@ -148,6 +150,8 @@ BY = SEXN.(descending)
 
 ```sas
 UID = USUBJID
+UID = USUBJID PARAM
+UID = USUBJID PARAM VISIT
 ```
 
 [**Example**](#指定唯一标识符变量)
@@ -264,6 +268,7 @@ MISSING_POSITION = FIRST
 
 | 变量名                                   | 含义                                          |
 | ---------------------------------------- | --------------------------------------------- |
+| IDT                                      | 缩进标识（_indent identifier_）               |
 | SEQ                                      | 行号                                          |
 | ITEM                                     | 分类名称（展示名称）                          |
 | VALUE                                    | 统计量在 [PATTERN](#pattern) 指定的模式下的值 |
