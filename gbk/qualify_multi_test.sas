@@ -17,6 +17,7 @@ Version Date: 2024-01-08 0.1
               2024-11-14 0.12
               2025-01-08 0.13
               2025-01-14 0.14
+              2025-01-15 0.15
 ===================================
 */
 
@@ -296,34 +297,31 @@ Version Date: 2024-01-08 0.1
         %let p_format = qlmt_pvalue.;
     %end;
 
-    /*卡方和Fisher精确检验*/
-    proc freq data = tmp_qmt_indata_unique_var noprint;
-        tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
-        output out = tmp_qmt_chisq chisq;
-    run;
-
     /*定义宏变量，存储说明文字*/
     %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
     %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
 
     proc sql noprint;
-        select * from DICTIONARY.COLUMNS where libname = "WORK" and memname = "TMP_QMT_CHISQ";
-        %if &SQLOBS = 0 %then %do; /*行或列的非缺失观测少于2，无法计算统计量*/
+        select count(distinct &var_name) into :var_nonmissing_level_n from tmp_qmt_indata_unique_var where not missing(&var_name);
+        select count(distinct &group_var) into :group_nonmissing_level_n from tmp_qmt_indata_unique_var where not missing(&group_var);
+    quit;
+
+    %if &var_nonmissing_level_n < 2 or &group_nonmissing_level_n < 2 %then %do;
+        /*行或列的非缺失观测少于2，无法计算统计量，输出空数据集*/
+        %put NOTE: 行或列的非缺失观测少于2，无法计算统计量，将输出空数据集！;
+        proc sql noprint;
             create table tmp_qmt_stat
-                (idt num, seq num, item char(%eval(%length(%bquote(&indent_sql_expr)) + 12)), value_1 char(10), value_2 char(10));
-            insert into tmp_qmt_stat
-                set idt     = 1,
-                    seq     = &desc_seq_max + 1,
-                    item    = &note_stat,
-                    value_1 = "-",
-                    value_2 = "-";
-            insert into tmp_qmt_stat
-                set idt     = 1,
-                    seq     = &desc_seq_max + 2,
-                    item    = &note_pvalue,
-                    value_1 = "-";
-        %end;
-        %else %do;
+                    (idt num, seq num, item char(10), value_1 char(10), value_2 char(10));
+        quit;
+    %end;
+    %else %do;
+        /*卡方和Fisher精确检验*/
+        proc freq data = tmp_qmt_indata_unique_var noprint;
+            tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
+            output out = tmp_qmt_chisq chisq;
+        run;
+
+        proc sql noprint;
             select WARN_PCHI into : chisq_warn from tmp_qmt_chisq;
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
@@ -363,8 +361,8 @@ Version Date: 2024-01-08 0.1
                         strip(put(P_PCHI, &p_format)) as value_1
                     from tmp_qmt_chisq;
             %end;
-        %end;
-    quit;
+        quit;
+    %end;
 
     /*4. 合并结果*/
     proc sql noprint;
