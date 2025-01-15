@@ -1426,10 +1426,25 @@
 <p><a href="#指定分类排序方式"><strong>Example</strong></a></p>
 <hr />
 <h3 id="uid">UID<a class="headerlink" href="#uid" title="链接到本节以供参考">&para;</a></h3>
-<p><strong>Syntax</strong> : <em>variable</em></p>
-<p>指定唯一标识符变量。宏程序将根据参数 <code>UID</code> 指定的变量，对分析数据集统计频数和频次，<code>UID</code> 的值通常是能够标识观测所属试验对象的变量，例如：<code>USUBJID</code>。</p>
+<p><strong>Syntax</strong> : <em>variable</em> &lt;<em>variable</em>, ...&gt;</p>
+<p>指定唯一标识符变量。宏程序将根据参数 <code>UID</code> 指定的变量对数据集进行去重，使用去重后的数据集统计频数，去重前的数据集统计频次。</p>
+<p><code>UID</code> 的值通常是能够标识观测所属 <code>频数统计对象</code> 的变量。</p>
+<p>对 <code>频数统计对象</code> 的详细解释如下：</p>
+<ul>
+<li>若数据集 <code>adsl</code> 的主键是 <code>USUBJID</code>，需要统计性别 <code>sex</code> 的频数和频次，此时的 <code>频数统计对象</code> 是 <code>USUBJID</code>，与主键相同，此时可以指定 <code>UID = USUBJID</code>，也可以不指定 <code>UID</code></li>
+<li>若数据集 <code>adlb</code> 的主键是 <code>USUBJID PARCAT PARAM VISIT</code>，需要统计实验室检查的频数和频次，此时的 <code>频数统计对象</code> 是 <code>USUBJID</code>，无法构成主键，需要指定 <code>UID = USUBJID</code></li>
+<li>若数据集 <code>adlb</code> 的主键是 <code>USUBJID PARCAT PARAM VISIT</code>，需要统计实验室检查-检查项目的频数和频次，此时的 <code>频数统计对象</code> 是 <code>USUBJID PARCAT PARAM</code>，无法构成主键，需要指定 <code>UID = USUBJID PARCAT PARAM</code></li>
+</ul>
+<blockquote>
+<p>[!NOTE]</p>
+<ul>
+<li>在 <code>ADSL</code> 数据集中，<code>UID</code> 的值一般是 <code></code>（空值）</li>
+<li>在 <code>OCCDS</code> 数据集中，<code>UID</code> 的值一般是 <code>USUBJID</code></li>
+<li>在 <code>BDS</code> 数据集中，<code>UID</code> 的值一般是 <code>USUBJID PARCAT PARAM ...</code></li>
+</ul>
+</blockquote>
 <p><strong>Default</strong> : #NULL</p>
-<p>默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。</p>
+<p>默认情况下，宏程序将分析数据集中的每一条观测都视为不同统计对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。</p>
 <blockquote>
 <p>[!IMPORTANT]</p>
 <ul>
@@ -1438,6 +1453,8 @@
 </blockquote>
 <p><strong>Usage</strong> :</p>
 <div class="highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>UID = USUBJID
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>UID = USUBJID PARAM
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>UID = USUBJID PARAM VISIT
 </span></code></pre></div>
 <p><a href="#指定唯一标识符变量"><strong>Example</strong></a></p>
 <hr />
@@ -1519,6 +1536,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>IDT</td>
+<td>缩进标识（<em>indent identifier</em>）</td>
+</tr>
 <tr>
 <td>SEQ</td>
 <td>行号</td>
