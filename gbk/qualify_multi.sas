@@ -14,6 +14,7 @@ Version Date: 2023-12-26 0.1
               2024-06-13 0.9
               2024-07-15 0.10
               2024-11-14 0.11
+              2025-01-14 0.12
 ===================================
 */
 
@@ -359,6 +360,7 @@ Version Date: 2023-12-26 0.1
     proc sql noprint;
         create table tmp_qualify_m_outdata as
             select
+                sum.idt,
                 sum.seq,
                 sum.item                 label = "·ÖÀà",
                 %do i = 1 %to &group_level_n;
