@@ -353,15 +353,6 @@ Version Date: 2023-03-08 1.0.1
         quit;
     %end;
 
-    proc sql noprint;
-        select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
-        select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
-
-        select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
-        select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
-        select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
-    quit;
-
 
     /*UID*/
     %if %bquote(&uid) = %bquote() %then %do;
@@ -452,24 +443,45 @@ Version Date: 2023-03-08 1.0.1
             %goto exit_with_error;
         %end;
         %else %if %superq(missing_position) = FIRST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %do i = &var_level_n %to 2 %by -1;
-                %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
-                %let var_level_note_&i = %unquote(%nrbquote(&&)var_level_note_%eval(&i - 1));
-            %end;
-            %let var_level_1 = "";
-            %let var_level_note_1 = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var
+                if _n_ = 1 then do;
+                    var_level = "";
+                    var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                    output;
+                end;
+                set tmp_qualify_distinct_var;
+                output;
+            run;
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %let var_level_&var_level_n = "";
-            %let var_level_note_&var_level_n = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var;
+                set tmp_qualify_distinct_var;
+                output;
+                var_level = "";
+                var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                output;
+            run;
         %end;
         %else %do;
             %put ERROR: 参数 MISSING_POSITION 只能是 FIRST 或 LAST！;
             %goto exit_with_error;
         %end;
     %end;
+
+    proc sql noprint;
+        select count(*)                    into : var_level_n        from tmp_qualify_distinct_var;
+        %if &var_level_n > 0 %then %do;
+            select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
+            select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
+
+            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
+            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
+            select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
+        %end;
+        %else %do;
+            %put NOTE: 数据集中没有任何分类！;
+        %end;
+    quit;
 
 
     /*PATTERN*/
@@ -717,9 +729,8 @@ Version Date: 2023-03-08 1.0.1
             select
                 0                                 as IDT,
                 0                                 as SEQ,
-                %unquote(%superq(label_sql_expr)) as ITEM
+                %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
-                    ,
                     /*频数*/
                     (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata_unique_total)
                                                                                            as FREQ,
@@ -738,6 +749,17 @@ Version Date: 2023-03-08 1.0.1
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
                     %temp_combpl_hash("&&string_&j")                                       as VALUE
+                %end;
+                %else %do;
+                    .                                                                      as FREQ,
+                    ""                                                                     as FREQ_FMT,
+                    .                                                                      as N,
+                    ""                                                                     as N_FMT,
+                    .                                                                      as TIMES,
+                    ""                                                                     as TIMES_FMT,
+                    .                                                                      as RATE,
+                    ""                                                                     as RATE_FMT,
+                    ""                                                                     as VALUE
                 %end;
             from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1);
     quit;
@@ -780,11 +802,21 @@ Version Date: 2023-03-08 1.0.1
             %end;
             ;
 
-        select max(length(item)), max(length(value)) into :column_item_len_max, :column_value_len_max from tmp_qualify_outdata;
+        select max(length(item)), max(length(FREQ_FMT)), max(length(N_FMT)), max(length(TIMES_FMT)), max(length(RATE_FMT)), max(length(value))
+            into :column_item_len_max, :column_freq_fmt_len_max, :column_n_fmt_len_max, :column_times_fmt_len_max, :column_rate_fmt_len_max, :column_value_len_max from tmp_qualify_outdata;
+        %let column_freq_fmt_len_max  = %sysfunc(max(&column_freq_fmt_len_max, %length(FREQ_zero_fmt)));
+        %let column_n_fmt_len_max     = %sysfunc(max(&column_n_fmt_len_max, %length(N_zero_fmt)));
+        %let column_times_fmt_len_max = %sysfunc(max(&column_times_fmt_len_max, %length(TIMES_zero_fmt)));
+        %let column_rate_fmt_len_max  = %sysfunc(max(&column_rate_fmt_len_max, %length(RATE_zero_fmt)));
+        %let column_value_len_max  = %sysfunc(max(&column_value_len_max, %length(VALUE_zero)));
 
         alter table tmp_qualify_outdata
-            modify item  char(&column_item_len_max),
-                   value char(&column_value_len_max);
+            modify item      char(&column_item_len_max),
+                   freq_fmt  char(&column_freq_fmt_len_max),
+                   n_fmt     char(&column_n_fmt_len_max),
+                   times_fmt char(&column_times_fmt_len_max),
+                   rate_fmt  char(&column_rate_fmt_len_max),
+                   value     char(&column_value_len_max);
     quit;
 
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
