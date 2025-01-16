@@ -32,6 +32,7 @@ Version Date: 2023-03-08 1.0.1
               2025-01-09 1.0.27
               2025-01-14 1.1.0
               2025-01-15 1.1.1
+              2025-01-16 1.1.2
 ===================================
 */
 
@@ -137,8 +138,7 @@ Version Date: 2023-03-08 1.0.1
                 select count(*) into : nobs from &indata;
             quit;
             %if &nobs = 0 %then %do;
-                %put ERROR: 分析数据集 &indata 为空！;
-                %goto exit_with_error;
+                %put NOTE: 分析数据集 &indata 为空！;
             %end;
         %end;
     %end;
@@ -725,26 +725,29 @@ Version Date: 2023-03-08 1.0.1
 
     /*汇总*/
     proc sql noprint;
+        select count(*) into :total_n from tmp_qualify_indata_unique_total;
         create table tmp_qualify_outdata_label as
             select
+                distinct
                 0                                 as IDT,
                 0                                 as SEQ,
                 %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
                     /*频数*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata_unique_total)
+                    coalesce(sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)), 0)
                                                                                            as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
                     /*频数-兼容旧版本*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata)
+                    coalesce((select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata), 0)
                                                                                            as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*频率*/
-                    1                                                                      as RATE,
-                    strip(put(1, &RATE_format))                                            as RATE_FMT,
+                    ifn(&total_n = 0, ., 1)                                                as RATE,
+                    ifc(not missing(calculated RATE), strip(put(1, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
@@ -761,7 +764,7 @@ Version Date: 2023-03-08 1.0.1
                     ""                                                                     as RATE_FMT,
                     ""                                                                     as VALUE
                 %end;
-            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1);
+            from tmp_qualify_indata_unique_total;
     quit;
 
     %do i = 1 %to &var_level_n;
@@ -773,17 +776,19 @@ Version Date: 2023-03-08 1.0.1
                     %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
                                                                                            as ITEM,
                     /*频数*/
-                    sum(&var_name = &&var_level_&i)                                        as FREQ,
+                    coalesce(sum(&var_name = &&var_level_&i), 0)                           as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
                     /*频数-兼容旧版本*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
-                    (select sum(&var_name = &&var_level_&i) from tmp_qualify_indata)       as TIMES,
+                    coalesce((select sum(&var_name = &&var_level_&i) from tmp_qualify_indata), 0)
+                                                                                           as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*频率*/
                     calculated N/count(*)                                                  as RATE,
-                    strip(put(calculated RATE, &RATE_format))                              as RATE_FMT,
+                    ifc(not missing(calculated RATE), strip(put(calculated RATE, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
