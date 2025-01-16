@@ -1400,7 +1400,12 @@
 <p>指定各分类在输出数据集中的排列顺序依据。</p>
 <p><strong>Default</strong> : #FREQ(DESCENDING)</p>
 <p>默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。</p>
-<p>当指定一个输出格式作为排序依据时，该输出格式应当使用 <code>VALUE</code> 语句生成，例如：</p>
+<blockquote>
+<p>[!IMPORTANT]</p>
+<ul>
+<li>若参数 <code>BY</code> 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 <code>DICTIONARY.FORMATS</code> 表中，变量 <code>source</code> 的值应当是 <code>C</code>。</li>
+<li>当指定一个输出格式作为排序依据时，该输出格式应当使用 <code>VALUE</code> 语句生成，例如：</li>
+</ul>
 <div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">proc format;</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    value sexn
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>        <span class="m">1</span> = <span class="s">&quot;男&quot;</span>
@@ -1408,15 +1413,6 @@
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kr">run;</span>
 </span></code></pre></div>
 <p>宏程序将根据格式化之前的数值对各分类进行排序。</p>
-<blockquote>
-<p>[!IMPORTANT]</p>
-<ul>
-<li>若参数 <code>BY</code> 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 <code>DICTIONARY.FORMATS</code> 表中，变量 <code>source</code> 的值应当是 <code>C</code>。</li>
-</ul>
-<p>[!TIP]</p>
-<ul>
-<li>如果需要按照参数 <code>VAR</code> 自身的值进行排序，可以指定 <code>BY = %nrstr(&amp;VAR)</code>。</li>
-</ul>
 </blockquote>
 <p><strong>Usage</strong> :</p>
 <div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">BY</span> = #freq

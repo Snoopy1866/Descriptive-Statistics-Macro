@@ -1209,22 +1209,31 @@
 <p><a href="#指定分组变量的水平名称"><strong>Example</strong></a></p>
 <hr />
 <h3 id="groupby">GROUPBY<a class="headerlink" href="#groupby" title="链接到本节以供参考">&para;</a></h3>
-<p><strong>Syntax</strong> : <em>variable</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></p>
-<p>指定分组变量的排序变量及排序方向。</p>
+<p><strong>Syntax</strong> :</p>
+<ul>
+<li><em>variable</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></li>
+<li><em>format</em>&lt;(ASC\&lt;ENDING&gt; | DESC\<ENDING\>)></li>
+</ul>
+<p>指定各分组在输出数据集中的排列顺序依据。</p>
 <p><strong>Default</strong> : #AUTO</p>
 <p>默认情况下，各个分组的输出结果根据分组水平名称在当前语言环境下的默认排列顺序排序（例如：gbk 环境下，按照水平名称的汉语拼音顺序）</p>
 <blockquote>
-<p>[!WARNING]</p>
+<p>[!IMPORTANT]</p>
 <ul>
-<li>参数 <code>GROUPBY</code> 不允许指定不存在于参数 <code>INDATA</code> 指定的数据集中的变量；</li>
+<li>若参数 <code>GROUPBY</code> 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 <code>DICTIONARY.FORMATS</code> 表中，变量 <code>source</code> 的值应当是 <code>C</code>。</li>
+<li>当指定一个输出格式作为排序依据时，该输出格式应当使用 <code>VALUE</code> 语句生成，例如：</li>
 </ul>
-<p>[!NOTE]</p>
-<ul>
-<li>参数 <code>GROUP</code> 若指定了分组变量的各水平名称，则各水平分组的统计结果将按照参数 <code>GROUP</code> 中各水平名称指定的顺序显示在输出数据集中，此时参数 <code>GROUPBY</code> 无效。</li>
-</ul>
+<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">proc format;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    value armn
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        <span class="m">1</span> = <span class="s">&quot;试验组&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        <span class="m">2</span> = <span class="s">&quot;对照组&quot;</span><span class="kr">;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kr">run;</span>
+</span></code></pre></div>
+<p>宏程序将根据格式化之前的数值对各分类进行排序。</p>
 </blockquote>
 <p><strong>Usage</strong> :</p>
-<div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>GROUPBY = ARMN
+<div class="highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>GROUPBY = ARMN(desc)
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>GROUPBY = ARMN.
 </span></code></pre></div>
 <p><a href="#指定分组变量的排序变量"><strong>Example</strong></a></p>
 <hr />
@@ -1366,8 +1375,8 @@
 </ul>
 </blockquote>
 <p><strong>Usage</strong> :</p>
-<div class="highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>OUTDATA = T1
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>OUTDATA = T1(<span class="k">KEEP</span> = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)
+<div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>OUTDATA = T1
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>OUTDATA = T1(<span class="k">KEEP</span> = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM)
 </span></code></pre></div>
 <hr />
 <h3 id="stat_format">STAT_FORMAT<a class="headerlink" href="#stat_format" title="链接到本节以供参考">&para;</a></h3>
@@ -1403,19 +1412,19 @@
 <hr />
 <h2 id="_7">例子<a class="headerlink" href="#_7" title="链接到本节以供参考">&para;</a></h2>
 <h3 id="_8">打开帮助文档<a class="headerlink" href="#_8" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">%qualify_multi</span>();
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nf">%qualify_multi</span>(help);
+<div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">%qualify_multi</span>();
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nf">%qualify_multi</span>(help);
 </span></code></pre></div>
 <h3 id="_9">一般用法<a class="headerlink" href="#_9" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm);
+<div class="highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm);
 </span></code></pre></div>
 <p><img alt="" src="../assets/example-regular.png" /></p>
 <h3 id="_10">指定分组变量的水平名称<a class="headerlink" href="#_10" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm(<span class="s">&quot;试验组&quot;</span>));
+<div class="highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm(<span class="s">&quot;试验组&quot;</span>));
 </span></code></pre></div>
 <p><img alt="" src="../assets/example-group-level.png" /></p>
 <h3 id="_11">指定分组变量的排序变量<a class="headerlink" href="#_11" title="链接到本节以供参考">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm, groupby = armn);
+<div class="highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nf">%qualify_multi</span>(indata = adam<span class="m">.</span>adsl(<span class="k">where</span> = (FASFL = <span class="s">&quot;Y&quot;</span>)), var = ecgcsig, <span class="k">by</span> = clsig., <span class="k">group</span> = arm, groupby = armn);
 </span></code></pre></div>
 <p><img alt="" src="../assets/example-groupby.png" /></p>
 
