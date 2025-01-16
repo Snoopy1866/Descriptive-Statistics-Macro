@@ -15,6 +15,7 @@ Version Date: 2023-12-26 0.1
               2024-07-15 0.10
               2024-11-14 0.11
               2025-01-14 0.12
+              2025-01-15 0.13
 ===================================
 */
 
@@ -129,8 +130,7 @@ Version Date: 2023-12-26 0.1
                 select count(*) into : nobs from &indata;
             quit;
             %if &nobs = 0 %then %do;
-                %put ERROR: 分析数据集 &indata 为空！;
-                %goto exit_with_error;
+                %put NOTE: 分析数据集 &indata 为空！;
             %end;
         %end;
     %end;
@@ -190,65 +190,112 @@ Version Date: 2023-12-26 0.1
     %end;
 
     /*GROUPBY*/
-    %if &IS_GROUP_LEVEL_SPECIFIED = TRUE %then %do;
-        %if %superq(groupby) ^= %bquote() and %superq(groupby) ^= #AUTO %then %do;
-            %put WARNING: 已通过参数 GROUP 指定了分组的排序，参数 GROUPBY 已被忽略！;
-        %end;
+    %if %superq(groupby) = %bquote() %then %do;
+        %put ERROR: 参数 GROUPBY 为空！;
+        %goto exit_with_error;
     %end;
-    %else %do;
-        %if %superq(groupby) = %bquote() %then %do;
-            %put ERROR: 未指定分组排序变量！;
-            %goto exit_with_error;
-        %end;
-        %else %if %superq(groupby) = #AUTO %then %do;
+    %else %if %superq(groupby) = #AUTO %then %do;
+        %put NOTE: 未指定分组的排序方式，将按照分组变量自身的值升序排列！;
+        %let groupby = &group_var(desc);
+    %end;
+
+    /*解析参数 by, 检查合法性*/
+    %let reg_groupby_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/)));
+    %if %sysfunc(prxmatch(&reg_groupby_id, %superq(groupby))) %then %do;
+        %let groupby_var       = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
+        %let groupby_fmt       = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
+        %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 3, %superq(groupby)));
+
+        %if %bquote(&groupby_var) ^= %bquote() %then %do;
+            /*检查排序变量存在性*/
             proc sql noprint;
-                create table tmp_qualify_m_groupby_sorted as select * from %superq(indata) where not missing(&group_var);
+                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
             quit;
-        %end;
-        %else %do;
-            %let reg_groupby_id = %sysfunc(prxparse(%bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:ASC|DESC)(?:ENDING)?)\))?$/)));
-            %if %sysfunc(prxmatch(&reg_groupby_id, %superq(groupby))) %then %do;
-                %let groupby_var = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
-                %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
-
-                /*检查排序变量存在性*/
-                proc sql noprint;
-                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
-                quit;
-                %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
-                    %put ERROR: 在 &libname_in..&memname_in 中没有找到分组排序变量 &groupby_var;
-                    %goto exit_with_error;
-                %end;
-
-                proc sql noprint;
-                    create table tmp_qualify_m_groupby_sorted as
-                        select
-                            distinct
-                            &group_var,
-                            &groupby_var
-                        from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
-                quit;
-            %end;
-            %else %do;
-                %put ERROR: 参数 GROUPBY 必须指定一个合法的变量名！;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: 在 &libname_in..&memname_in 中没有找到分组排序变量 &groupby_var;
                 %goto exit_with_error;
             %end;
         %end;
 
-        /*创建宏变量，用于输出数据集的变量标签*/
+        %if %bquote(&groupby_fmt) ^= %bquote() %then %do;
+            /*检查排序格式存在性*/
+            proc sql noprint;
+                select libname, memname, source into :groupby_fmt_libname, :groupby_fmt_memname, :groupby_fmt_source from DICTIONARY.FORMATS where fmtname = "&groupby_fmt";
+            quit;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: 参数 BY 指定的排序格式 &groupby_fmt.. 不存在！;
+                %goto exit_with_error;
+            %end;
+            %else %do;
+                %if &groupby_fmt_source ^= C %then %do;
+                    %put ERROR: 参数 BY 指定的排序格式 &groupby_fmt.. 不是 CATALOG-BASED！;
+                    %goto exit_with_error;
+                %end;
+            %end;
+        %end;
+
+        /*检查排序方向*/
+        %if %bquote(&groupby_direction) = %bquote() %then %do;
+            %put NOTE: 未指定分组的排序方向，默认升序排列！;
+            %let groupby_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&groupby_direction) = ASC %then %do;
+            %let groupby_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&groupby_direction) = DESC %then %do;
+            %let groupby_direction = DESCENDING;
+        %end;
+    %end;
+    %else %do;
+        %put ERROR: 参数 GROUPBY = %bquote(&groupby) 格式不正确！;
+        %goto exit_with_error;
+    %end;
+
+    %if %bquote(&groupby_var) ^= %bquote() %then %do;
         proc sql noprint;
-            select quote(strip(&group_var))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(频率格式化)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
-            select count(distinct &group_var)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
+            create table tmp_qualify_m_groupby_sorted as
+                select
+                    distinct
+                    &group_var                       as group_level,
+                    &groupby_var                     as group_level_by_criteria
+                from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
         quit;
     %end;
+    %else %if %bquote(&groupby_fmt) ^= %bquote() %then %do;
+        proc format library = &groupby_fmt_libname..&groupby_fmt_memname cntlout = tmp_qualify_m_groupby_fmt;
+            select &groupby_fmt;
+        run;
+        proc sql noprint;
+            create table tmp_qualify_m_groupby_sorted(where = (not missing(group_level))) as
+                select
+                    distinct
+                    coalescec(a.&group_var, b.label) as group_level,
+                    ifn(not missing(b.label), input(strip(b.start), 8.), constant('BIG'))
+                                                     as group_level_by_criteria,
+                    ifc(missing(b.label), 'Y', '')   as group_level_fmt_not_defined
+                from %superq(indata) as a full join tmp_qualify_m_groupby_fmt as b on a.&group_var = b.label
+                order by group_level_by_criteria &groupby_direction, group_level ascending;
+
+            select sum(group_level_fmt_not_defined = "Y") into : groupby_fmt_not_defined_n trimmed from tmp_qualify_m_groupby_sorted where not missing(group_level);
+            %if &groupby_fmt_not_defined_n > 0 %then %do;
+                %put WARNING: 指定用于分组排序的输出格式中，存在 &groupby_fmt_not_defined_n 个分类名称未定义，输出结果可能是非预期的！;
+            %end;
+        quit;
+    %end;
+
+    /*创建宏变量，用于输出数据集的变量标签*/
+    proc sql noprint;
+        select quote(strip(group_level))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(频率格式化)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
+        select count(distinct group_level)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
+    quit;
 
 
     /*OUTDATA*/
@@ -435,6 +482,7 @@ Version Date: 2023-12-26 0.1
         proc datasets noprint nowarn;
             delete tmp_qualify_m_indata
                    tmp_qualify_m_outdata
+                   tmp_qualify_m_groupby_fmt
                    tmp_qualify_m_groupby_sorted
                    tmp_qualify_m_res_sum
                    %do i = 1 %to &group_level_n;

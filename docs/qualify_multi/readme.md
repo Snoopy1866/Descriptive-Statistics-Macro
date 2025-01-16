@@ -70,26 +70,37 @@ GROUP = ARM("试验组", "对照组")
 
 ### GROUPBY
 
-**Syntax** : _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
+**Syntax** :
 
-指定分组变量的排序变量及排序方向。
+- _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
+- _format_<(ASC\<ENDING\> | DESC\<ENDING\>)>
+
+指定各分组在输出数据集中的排列顺序依据。
 
 **Default** : #AUTO
 
 默认情况下，各个分组的输出结果根据分组水平名称在当前语言环境下的默认排列顺序排序（例如：gbk 环境下，按照水平名称的汉语拼音顺序）
 
-> [!WARNING]
+> [!IMPORTANT]
 >
-> - 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-
-> [!NOTE]
+> - 若参数 `GROUPBY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
+> - 当指定一个输出格式作为排序依据时，该输出格式应当使用 `VALUE` 语句生成，例如：
 >
-> - 参数 `GROUP` 若指定了分组变量的各水平名称，则各水平分组的统计结果将按照参数 `GROUP` 中各水平名称指定的顺序显示在输出数据集中，此时参数 `GROUPBY` 无效。
+>   ```sas
+>   proc format;
+>       value armn
+>           1 = "试验组"
+>           2 = "对照组";
+>   run;
+>   ```
+>
+>   宏程序将根据格式化之前的数值对各分类进行排序。
 
 **Usage** :
 
 ```sas
-GROUPBY = ARMN
+GROUPBY = ARMN(desc)
+GROUPBY = ARMN.
 ```
 
 [**Example**](#指定分组变量的排序变量)
