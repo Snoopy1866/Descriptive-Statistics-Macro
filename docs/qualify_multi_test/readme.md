@@ -122,6 +122,60 @@
 
 ---
 
+### CHISQ_NOTE
+
+**Syntax** : _string_
+
+指定输出结果中卡方检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用卡方检验时生效。
+
+**Default** : `"卡方检验"`
+
+**Usage** :
+
+```sas
+CHISQ_NOTE = "χ\super 2 \nosupersub 检验"
+```
+
+### FISHER_NOTE
+
+**Syntax** : _string_
+
+指定输出结果中 Fisher 精确检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用 Fisher 精确检验时生效。
+
+**Default** : `"Fisher精确检验"`
+
+**Usage** :
+
+```sas
+FISHER_NOTE = "Fisher"
+```
+
+### FISHER_STAT_PH
+
+**Syntax** : _string_
+
+指定输出结果中 Fisher 精确检验统计量显示的占位字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用 Fisher 精确检验时生效。
+
+**Default** : `""`
+
+**Usage** :
+
+```sas
+FISHER_STAT_PH = "-"
+```
+
 ### PROCHTTP_PROXY
 
 用法同 [PROCHTTP_PROXY](../qualify_multi/readme.md#prochttp_proxy)。

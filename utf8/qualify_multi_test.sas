@@ -18,6 +18,7 @@ Version Date: 2024-01-08 0.1
               2025-01-08 0.13
               2025-01-14 0.14
               2025-01-15 0.15
+              2025-01-17 0.16
 ===================================
 */
 
@@ -36,6 +37,9 @@ Version Date: 2024-01-08 0.1
                           LABEL            = #AUTO,
                           INDENT           = #AUTO,
                           SUFFIX           = #AUTO,
+                          CHISQ_NOTE       = "卡方检验",
+                          FISHER_NOTE      = "Fisher精确检验",
+                          FISHER_STAT_PH   = "",
                           TOTAL            = FALSE,
                           PROCHTTP_PROXY   = 127.0.0.1:7890,
                           DEL_TEMP_DATA    = TRUE)
@@ -251,6 +255,51 @@ Version Date: 2024-01-08 0.1
         %end;
     %end;
 
+    /*CHISQ_NOTE*/
+    %if %superq(chisq_note) = %bquote() %then %do;
+        %let chisq_note_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_chisq_note_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_chisq_note_id, %superq(chisq_note))) %then %do;
+            %let chisq_note_sql_expr = %superq(chisq_note);
+        %end;
+        %else %do;
+            %put ERROR: 参数 CHISQ_NOTE 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
+    /*FISHER_NOTE*/
+    %if %superq(fisher_note) = %bquote() %then %do;
+        %let fisher_note_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_fisher_note_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_fisher_note_id, %superq(fisher_note))) %then %do;
+            %let fisher_note_sql_expr = %superq(fisher_note);
+        %end;
+        %else %do;
+            %put ERROR: 参数 FISHER_NOTE 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
+    /*FISHER_STAT_PH*/
+    %if %superq(fisher_stat_ph) = %bquote() %then %do;
+        %let fisher_stat_ph_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_fisher_stat_ph_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_fisher_stat_ph_id, %superq(fisher_stat_ph))) %then %do;
+            %let fisher_stat_ph_sql_expr = %superq(fisher_stat_ph);
+        %end;
+        %else %do;
+            %put ERROR: 参数 FISHER_STAT_PH 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
 
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 复制数据*/
@@ -300,6 +349,9 @@ Version Date: 2024-01-08 0.1
     /*定义宏变量，存储说明文字*/
     %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
     %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
+    %let note_chisq   = %unquote(%superq(chisq_note_sql_expr));
+    %let note_fisher  = %unquote(%superq(fisher_note_sql_expr));
+    %let placeholder_fisher = %unquote(%superq(fisher_stat_ph_sql_expr));
 
     proc sql noprint;
         select count(distinct &var_name) into :var_nonmissing_level_n from tmp_qmt_indata_unique_var where not missing(&var_name);
@@ -326,11 +378,11 @@ Version Date: 2024-01-08 0.1
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
                     select
-                        1                 as idt,
-                        &desc_seq_max + 1 as seq,
-                        &note_stat        as item,
-                        "Fisher精确检验"  as value_1,
-                        "-"               as value_2
+                        1                   as idt,
+                        &desc_seq_max + 1   as seq,
+                        &note_stat          as item,
+                        &note_fisher        as value_1,
+                        &placeholder_fisher as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
@@ -350,7 +402,7 @@ Version Date: 2024-01-08 0.1
                         1                              as idt,
                         &desc_seq_max + 1              as seq,
                         &note_stat                     as item,
-                        "卡方检验"                     as value_1,
+                        &note_chisq                    as value_1,
                         strip(put(_PCHI_, &ts_format)) as value_2
                     from tmp_qmt_chisq
                     outer union corr
