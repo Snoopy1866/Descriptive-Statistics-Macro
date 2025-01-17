@@ -24,6 +24,9 @@
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
+- [CHISQ_NOTE](#chisq_note)
+- [FISHER_NOTE](#fisher_note)
+- [FISHER_STAT_PH](#fisher_stat_ph)
 - [PROCHTTP_PROXY](#prochttp_proxy)
 
 ### 调试参数
