@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===================================
 Macro Name: qualify_multi
 Macro Label:多组别定性指标分析
