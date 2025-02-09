@@ -33,6 +33,7 @@ Version Date: 2023-03-08 1.0.1
               2025-01-14 1.1.0
               2025-01-15 1.1.1
               2025-01-16 1.1.2
+              2025-02-09 1.1.3
 ===================================
 */
 
@@ -143,10 +144,6 @@ Version Date: 2023-03-08 1.0.1
         %end;
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
-
-    data tmp_qualify_indata;
-        set &libname_in..&memname_in(&dataset_options_in);
-    run;
 
 
     /*VAR*/
@@ -292,7 +289,7 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 group by var_level
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
@@ -315,7 +312,7 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
@@ -343,7 +340,7 @@ Version Date: 2023-03-08 1.0.1
                                                           as var_level_by_criteria,
                     ifc(missing(b.label), 'Y', '')
                                                           as var_level_fmt_not_defined
-                from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                from %bquote(&indata) as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
@@ -482,6 +479,16 @@ Version Date: 2023-03-08 1.0.1
             %put NOTE: 数据集中没有任何分类！;
         %end;
     quit;
+
+    data tmp_qualify_indata;
+        set &libname_in..&memname_in(&dataset_options_in);
+        %if &var_level_n > 0 %then %do;
+            if &var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;);
+        %end;
+        %else %do;
+            delete;
+        %end;
+    run;
 
 
     /*PATTERN*/
@@ -734,15 +741,13 @@ Version Date: 2023-03-08 1.0.1
                 %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
                     /*频数*/
-                    coalesce(sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)), 0)
-                                                                                           as FREQ,
+                    coalesce(count(*), 0)                                                  as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
                     /*频数-兼容旧版本*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
-                    coalesce((select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata), 0)
-                                                                                           as TIMES,
+                    coalesce((select count(*) from tmp_qualify_indata), 0)                 as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*频率*/
                     ifn(&total_n = 0, ., 1)                                                as RATE,
