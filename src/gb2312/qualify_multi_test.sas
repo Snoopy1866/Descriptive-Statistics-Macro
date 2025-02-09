@@ -131,14 +131,6 @@ Version Date: 2024-01-08 0.1
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
                 %goto exit_with_error;
             %end;
-
-            proc sql noprint;
-                select count(*) into : nobs from &indata;
-            quit;
-            %if &nobs = 0 %then %do;
-                %put ERROR: 分析数据集 &indata 为空！;
-                %goto exit_with_error;
-            %end;
         %end;
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
@@ -359,11 +351,22 @@ Version Date: 2024-01-08 0.1
     quit;
 
     %if &var_nonmissing_level_n < 2 or &group_nonmissing_level_n < 2 %then %do;
-        /*行或列的非缺失观测少于2，无法计算统计量，输出空数据集*/
+        /*行或列的非缺失观测少于2，无法计算统计量*/
         %put NOTE: 行或列的非缺失观测少于2，无法计算统计量，将输出空数据集！;
         proc sql noprint;
             create table tmp_qmt_stat
                     (idt num, seq num, item char(10), value_1 char(10), value_2 char(10));
+            insert into tmp_qmt_stat
+                set idt     = 1,
+                    seq     = &desc_seq_max + 1,
+                    item    = &note_stat,
+                    value_1 = "-",
+                    value_2 = "-";
+            insert into tmp_qmt_stat
+                set idt     = 1,
+                    seq     = &desc_seq_max + 2,
+                    item    = &note_pvalue,
+                    value_1 = "-";
         quit;
     %end;
     %else %do;
