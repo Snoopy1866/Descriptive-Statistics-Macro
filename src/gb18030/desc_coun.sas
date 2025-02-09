@@ -1,7 +1,7 @@
 /*
 ===================================
 Macro Name: desc_coun
-Macro Label:å®šæ€§èµ„æ–™æè¿°æ€§åˆ†æ
+Macro Label:¶¨ĞÔ×ÊÁÏÃèÊöĞÔ·ÖÎö
 Author: wtwang
 Version Date: 2023-02-09 V1.11
               2024-03-18 V1.12
@@ -13,40 +13,40 @@ Version Date: 2023-02-09 V1.11
                  INDENT = %bquote(    ), LABEL = #AUTO, IS_LABEL_INDENT = FALSE, IS_LABEL_DISPLAY = TRUE,
                  OUTDATA = #AUTO, DEL_TEMP_DATA = TRUE, DEL_DUP_BY_VAR = #NULL,
                  SKIP_PARAM_CHECK = FALSE, SKIP_MAIN_PROG = FALSE, PARAM_VALID_FLAG_VAR = #NULL,
-                 PARAM_LIST_BUFFER = #NULL) /des = "å®šæ€§èµ„æ–™æè¿°åˆ†æ" parmbuff;
+                 PARAM_LIST_BUFFER = #NULL) /des = "¶¨ĞÔ×ÊÁÏÃèÊö·ÖÎö" parmbuff;
 /*
 ----Required Argument----
-INDATA               å¾…åˆ†ææ•°æ®é›†
-VAR                  å¾…åˆ†æå˜é‡
+INDATA               ´ı·ÖÎöÊı¾İ¼¯
+VAR                  ´ı·ÖÎö±äÁ¿
 
 ----Optional Argument----
-FORMAT               ç™¾åˆ†æ¯”è¾“å‡ºæ ¼å¼
-BY                   æ’åºä¾æ®(ASC, DESC, VARIABLE)
-MISSING              æ˜¯å¦å°†ç¼ºå¤±å€¼è§†ä¸ºä¸€ç±»(å°†ä¼šå æ®ä¸Šä¸€å±‚çº§ä¸‹çš„ä¸€ä¸ªåˆ†ç±»)
-DENOMINATOR          è®¡ç®—ç™¾åˆ†æ¯”åŸºäºçš„å˜é‡æˆ–æ•°å€¼(#ALL, è¡¨ç¤ºåŸºäºåˆè®¡é¢‘æ•°è¿›è¡Œè®¡ç®—
-                                                #LASTï¼Œè¡¨ç¤ºåŸºäºä¸Šä¸€å±‚çº§çš„é¢‘æ•°è¿›è¡Œè®¡ç®—)
-INDENT               ç›¸é‚»å±‚çº§ä¹‹é—´çš„ç¼©è¿›å­—ç¬¦(ä¸²)
-LABEL                è¾“å‡ºæ•°æ®é›†çš„è¡¨å¤´æ ‡ç­¾(ä¾‹å¦‚: æ€§åˆ«-n(%))
-IS_LABEL_INDENT      è¡¨å¤´æ ‡ç­¾æ˜¯å¦ç¼©è¿›
-IS_LABEL_DISPLAY     è¡¨å¤´æ ‡ç­¾æ˜¯å¦å±•ç¤º(IS_LABEL_DISPLAY = FALSEæ—¶, å‚æ•°LABEL, IS_LABEL_INDENTä»ç„¶ç”Ÿæ•ˆ)
-OUTDATA              è¾“å‡ºæ•°æ®é›†åç§°
+FORMAT               °Ù·Ö±ÈÊä³ö¸ñÊ½
+BY                   ÅÅĞòÒÀ¾İ(ASC, DESC, VARIABLE)
+MISSING              ÊÇ·ñ½«È±Ê§ÖµÊÓÎªÒ»Àà(½«»áÕ¼¾İÉÏÒ»²ã¼¶ÏÂµÄÒ»¸ö·ÖÀà)
+DENOMINATOR          ¼ÆËã°Ù·Ö±È»ùÓÚµÄ±äÁ¿»òÊıÖµ(#ALL, ±íÊ¾»ùÓÚºÏ¼ÆÆµÊı½øĞĞ¼ÆËã
+                                                #LAST£¬±íÊ¾»ùÓÚÉÏÒ»²ã¼¶µÄÆµÊı½øĞĞ¼ÆËã)
+INDENT               ÏàÁÚ²ã¼¶Ö®¼äµÄËõ½ø×Ö·û(´®)
+LABEL                Êä³öÊı¾İ¼¯µÄ±íÍ·±êÇ©(ÀıÈç: ĞÔ±ğ-n(%))
+IS_LABEL_INDENT      ±íÍ·±êÇ©ÊÇ·ñËõ½ø
+IS_LABEL_DISPLAY     ±íÍ·±êÇ©ÊÇ·ñÕ¹Ê¾(IS_LABEL_DISPLAY = FALSEÊ±, ²ÎÊıLABEL, IS_LABEL_INDENTÈÔÈ»ÉúĞ§)
+OUTDATA              Êä³öÊı¾İ¼¯Ãû³Æ
 
 ----Developer Argument----
-DEL_TEMP_DATA        æ˜¯å¦åˆ é™¤ä¸­é—´æ•°æ®é›†
-DEL_DUP_BY_VAR       åˆ é™¤é‡å¤è§‚æµ‹åŸºäºçš„å˜é‡ï¼ˆä¾‹å¦‚ï¼šç»Ÿè®¡æŸä¸ªSOCä¸‹çš„AEä¾‹æ•°æ—¶ï¼Œéœ€æŒ‡å®š DEL_DUP_BY_VAR = USUBJIDï¼‰
-SKIP_PARAM_CHECK     æ˜¯å¦è·³è¿‡å‚æ•°æ£€æŸ¥
-SKIP_MAIN_PROG       æ˜¯å¦è·³è¿‡ä¸»ç¨‹åº
-PARAM_VALID_FLAG_VAR å‚æ•°åˆæ³•æ€§æ ‡è¯†å˜é‡
-PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
+DEL_TEMP_DATA        ÊÇ·ñÉ¾³ıÖĞ¼äÊı¾İ¼¯
+DEL_DUP_BY_VAR       É¾³ıÖØ¸´¹Û²â»ùÓÚµÄ±äÁ¿£¨ÀıÈç£ºÍ³¼ÆÄ³¸öSOCÏÂµÄAEÀıÊıÊ±£¬ĞèÖ¸¶¨ DEL_DUP_BY_VAR = USUBJID£©
+SKIP_PARAM_CHECK     ÊÇ·ñÌø¹ı²ÎÊı¼ì²é
+SKIP_MAIN_PROG       ÊÇ·ñÌø¹ıÖ÷³ÌĞò
+PARAM_VALID_FLAG_VAR ²ÎÊıºÏ·¨ĞÔ±êÊ¶±äÁ¿
+PARAM_LIST_BUFFER    ²ÎÊıÁĞ±í»º³å³Ø
 */
 
-    /*æ‰“å¼€å¸®åŠ©æ–‡æ¡£*/
+    /*´ò¿ª°ïÖúÎÄµµ*/
     %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/desc_coun/readme.md";
         %goto exit;
     %end;
 
-    /*ç»Ÿä¸€å‚æ•°å¤§å°å†™*/
+    /*Í³Ò»²ÎÊı´óĞ¡Ğ´*/
     %let indata               = %sysfunc(strip(%bquote(&indata)));
     %let var                  = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&var)))))));
     %let format               = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&format)))))));
@@ -65,59 +65,59 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
     %let param_list_buffer    = %upcase(%sysfunc(strip(%bquote(&param_list_buffer))));
 
 
-    /*å£°æ˜å±€éƒ¨å˜é‡*/
+    /*ÉùÃ÷¾Ö²¿±äÁ¿*/
     %local i j;
 
     
 
-    /*----------------------------------------------å‚æ•°æ£€æŸ¥----------------------------------------------*/
+    /*----------------------------------------------²ÎÊı¼ì²é----------------------------------------------*/
     /*SKIP_PARAM_CHECK*/
     %if %bquote(&SKIP_PARAM_CHECK) ^= TRUE and %bquote(&SKIP_PARAM_CHECK) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° SKIP_PARAM_CHECK å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı SKIP_PARAM_CHECK ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit;
     %end;
     %else %if %bquote(&SKIP_PARAM_CHECK) = TRUE %then %do;
-        %put NOTE: è°ƒç”¨å®ç¨‹åº %nrstr(%%desc_coun) æ—¶ä½¿ç”¨å‚æ•° SKIP_PARAM_CHECK = TRUE è·³è¿‡äº†å‚æ•°æ£€æŸ¥æ­¥éª¤ï¼;
+        %put NOTE: µ÷ÓÃºê³ÌĞò %nrstr(%%desc_coun) Ê±Ê¹ÓÃ²ÎÊı SKIP_PARAM_CHECK = TRUE Ìø¹ıÁË²ÎÊı¼ì²é²½Öè£¡;
         %goto prog;
     %end;
 
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ææ•°æ®é›†ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎöÊı¾İ¼¯£¡;
         %goto exit_err;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, &indata)) = 0 %then %do;
-            %put ERROR: å‚æ•° INDATA = &indata æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı INDATA = &indata ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, &indata)));
             %let memname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 2, &indata)));
             %let dataset_options_in = %sysfunc(prxposn(&reg_indata_id, 3, &indata));
-            %if &libname_in = %bquote() %then %let libname_in = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_in = %bquote() %then %let libname_in = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_in é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_in Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_err;
             %end;
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in é€»è¾‘åº“ä¸­æ²¡æœ‰æ‰¾åˆ° &memname_in æ•°æ®é›†ï¼;
+                %put ERROR: ÔÚ &libname_in Âß¼­¿âÖĞÃ»ÓĞÕÒµ½ &memname_in Êı¾İ¼¯£¡;
                 %goto exit_err;
             %end;
         %end;
     %end;
-    %put NOTE: åˆ†ææ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_in..&memname_in;
+    %put NOTE: ·ÖÎöÊı¾İ¼¯±»Ö¸¶¨Îª &libname_in..&memname_in;
 
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†æå˜é‡ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎö±äÁ¿£¡;
         %goto exit_err;
     %end;
     %else %do;
@@ -130,32 +130,32 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
         %let reg_var_id = %sysfunc(prxparse(&reg_var_expr));
         %if %sysfunc(prxmatch(&reg_var_id, &var)) = 0 %then %do;
-            %put ERROR: å‚æ•° VAR = &var æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı VAR = &var ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
             %let IS_VALID_VAR = TRUE;
-            /*åˆ¤æ–­åˆ†æå˜é‡æ˜¯å¦é‡å¤*/
+            /*ÅĞ¶Ï·ÖÎö±äÁ¿ÊÇ·ñÖØ¸´*/
             %do i = 1 %to &var_n;
                 %let VAR_&i = %sysfunc(prxposn(&reg_var_id, &i, &var));
                 %if &i < &var_n %then %do;
                     %do j = %eval(&i + 1) %to &var_n;
                         %let VAR_&j = %sysfunc(prxposn(&reg_var_id, &j, &var));
                         %if %bquote(&&VAR_&i) = %bquote(&&VAR_&j) %then %do;
-                            %put ERROR: ä¸å…è®¸é‡å¤æŒ‡å®šåˆ†æå˜é‡ &&VAR_&i ï¼;
+                            %put ERROR: ²»ÔÊĞíÖØ¸´Ö¸¶¨·ÖÎö±äÁ¿ &&VAR_&i £¡;
                             %goto exit_err;
                         %end;
                     %end;
                 %end;
             %end;
-            /*åˆ¤æ–­åˆ†æå˜é‡æ˜¯å¦å­˜åœ¨*/
+            /*ÅĞ¶Ï·ÖÎö±äÁ¿ÊÇ·ñ´æÔÚ*/
             %do i = 1 %to &var_n;
                 %let VAR_&i = %sysfunc(prxposn(&reg_var_id, &i, &var));
                 proc sql noprint;
                     select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&&VAR_&i";
                 quit;
                 %if &SQLOBS = 0 %then %do;
-                    %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°åˆ†æå˜é‡ &&VAR_&i;
+                    %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½·ÖÎö±äÁ¿ &&VAR_&i;
                     %let IS_VALID_VAR = FALSE;
                 %end;
             %end;
@@ -165,19 +165,19 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
 
     /*FORMAT*/
     %if %bquote(&format) = %bquote() %then %do;
-        %put ERROR: å‚æ•° FORMAT ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı FORMAT Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %do;
         %let format_n = %eval(%sysfunc(count(&format, %bquote( ))) + 1);
-        %if &format_n < &var_n %then %do; /*æ ¼å¼æ•°å°‘äºå˜é‡ä¸ªæ•°*/
+        %if &format_n < &var_n %then %do; /*¸ñÊ½ÊıÉÙÓÚ±äÁ¿¸öÊı*/
             %if &format_n = 1 %then %do;
-                %put NOTE: æŒ‡å®šè¾“å‡ºæ ¼å¼ç»Ÿä¸€ä¸º &format ï¼;
+                %put NOTE: Ö¸¶¨Êä³ö¸ñÊ½Í³Ò»Îª &format £¡;
                 %let format = %bquote(&format%sysfunc(repeat(%bquote( &format), %eval(&var_n - 2))));
             %end;
             %else %do;
                 %let format = %bquote(&format%sysfunc(repeat(%bquote( %scan(&format, -1, %bquote( ))), %eval(&var_n - &format_n - 1))));
-                %put WARNING: æŒ‡å®šçš„è¾“å‡ºæ ¼å¼æ•°é‡å°‘äºå˜é‡ä¸ªæ•°ï¼ŒæœªåŒ¹é…çš„å˜é‡å°†ä½¿ç”¨å‚æ•° FORMAT çš„æœ€åä¸€ä¸ªè¾“å‡ºæ ¼å¼ï¼;
+                %put WARNING: Ö¸¶¨µÄÊä³ö¸ñÊ½ÊıÁ¿ÉÙÓÚ±äÁ¿¸öÊı£¬Î´Æ¥ÅäµÄ±äÁ¿½«Ê¹ÓÃ²ÎÊı FORMAT µÄ×îºóÒ»¸öÊä³ö¸ñÊ½£¡;
             %end;
         %end;
         %else %if &format_n > &var_n %then %do;
@@ -188,7 +188,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                 %end;
             %end;
             %let format = &temp_format;
-            %put WARNING: æŒ‡å®šçš„è¾“å‡ºæ ¼å¼æ•°é‡å¤šäºå˜é‡ä¸ªæ•°ï¼Œå¤šä½™çš„è¾“å‡ºæ ¼å¼å°†è¢«å¿½ç•¥ï¼;
+            %put WARNING: Ö¸¶¨µÄÊä³ö¸ñÊ½ÊıÁ¿¶àÓÚ±äÁ¿¸öÊı£¬¶àÓàµÄÊä³ö¸ñÊ½½«±»ºöÂÔ£¡;
         %end;
 
         %let format_n = %eval(%sysfunc(count(&format, %bquote( ))) + 1);
@@ -200,7 +200,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
         %let reg_format_id = %sysfunc(prxparse(&reg_format_expr));
         %if %sysfunc(prxmatch(&reg_format_id, &format)) = 0 %then %do;
-            %put ERROR: å‚æ•° FORMAT = &format æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı FORMAT = &format ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
@@ -208,12 +208,12 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
             %do i = 1 %to &format_n;
                 %let FORMAT_&i = %sysfunc(prxposn(&reg_format_id, %eval(2 * &i - 1), &format));
                 %let FORMAT_BASE_&i = %sysfunc(prxposn(&reg_format_id, %eval(2 * &i), &format));
-                %if %bquote(&&FORMAT_BASE_&i) ^= %bquote() %then %do; /*è¾“å‡ºæ ¼å¼å«æœ‰åç§°*/
+                %if %bquote(&&FORMAT_BASE_&i) ^= %bquote() %then %do; /*Êä³ö¸ñÊ½º¬ÓĞÃû³Æ*/
                     proc sql noprint;
                         select * from DICTIONARY.FORMATS where fmtname = "&&FORMAT_BASE_&i" and fmttype = "F";
                     quit;
                     %if &SQLOBS = 0 %then %do;
-                        %put ERROR: è¾“å‡ºæ ¼å¼ &&FORMAT_&i ä¸å­˜åœ¨ï¼;
+                        %put ERROR: Êä³ö¸ñÊ½ &&FORMAT_&i ²»´æÔÚ£¡;
                         %let IS_VALID_FORMAT = FALSE;
                     %end;
                 %end;
@@ -224,18 +224,18 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
 
     /*BY*/
     %if %bquote(&by) = %bquote() %then %do;
-        %put ERROR: å‚æ•° BY ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı BY Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %do;
         %let by_n = %eval(%sysfunc(count(&by, %bquote( ))) + 1);
-        %if &by_n < &var_n %then %do; /*æ’åºå‡†åˆ™æ•°å°‘äºå˜é‡ä¸ªæ•°*/
+        %if &by_n < &var_n %then %do; /*ÅÅĞò×¼ÔòÊıÉÙÓÚ±äÁ¿¸öÊı*/
             %if %bquote(&by) = #FREQ_MIN %then %do;
-                %put NOTE: æŒ‡å®šæ’åºå‡†åˆ™ç»Ÿä¸€ä¸º &by (ä»å°åˆ°å¤§æ’åˆ—)ï¼;
+                %put NOTE: Ö¸¶¨ÅÅĞò×¼ÔòÍ³Ò»Îª &by (´ÓĞ¡µ½´óÅÅÁĞ)£¡;
                 %let by = %bquote(&by%sysfunc(repeat(%bquote( &by), %eval(&var_n - 2))));
             %end;
             %else %if %bquote(&by) = #FREQ_MAX %then %do;
-                %put NOTE: æŒ‡å®šæ’åºå‡†åˆ™ç»Ÿä¸€ä¸º &by (ä»å¤§åˆ°å°æ’åˆ—)ï¼;
+                %put NOTE: Ö¸¶¨ÅÅĞò×¼ÔòÍ³Ò»Îª &by (´Ó´óµ½Ğ¡ÅÅÁĞ)£¡;
                 %let by = %bquote(&by%sysfunc(repeat(%bquote( &by), %eval(&var_n - 2))));
             %end;
             %else %do;
@@ -245,10 +245,10 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                                                                 %end;
                                                             )
                                                      );
-                %put NOTE: æŒ‡å®šçš„æ’åºå˜é‡(å‡†åˆ™)ä¸ªæ•°å°‘äºåˆ†æå˜é‡ä¸ªæ•°ï¼ŒæœªåŒ¹é…çš„å˜é‡å°†åŸºäºè‡ªèº«çš„å€¼è¿›è¡Œæ’åºï¼;
+                %put NOTE: Ö¸¶¨µÄÅÅĞò±äÁ¿(×¼Ôò)¸öÊıÉÙÓÚ·ÖÎö±äÁ¿¸öÊı£¬Î´Æ¥ÅäµÄ±äÁ¿½«»ùÓÚ×ÔÉíµÄÖµ½øĞĞÅÅĞò£¡;
             %end;
         %end;
-        %else %if &by_n > &var_n %then %do; /*æ’åºå‡†åˆ™æ•°å¤šäºå˜é‡ä¸ªæ•°*/
+        %else %if &by_n > &var_n %then %do; /*ÅÅĞò×¼ÔòÊı¶àÓÚ±äÁ¿¸öÊı*/
             %let temp_by = %scan(&by, 1, %bquote( ));
             %if &var_n > 1 %then %do;
                 %do i = 2 %to &var_n;
@@ -256,7 +256,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                 %end;
             %end;
             %let by = &temp_by;
-            %put WARNING: æŒ‡å®šçš„æ’åºå˜é‡(å‡†åˆ™)ä¸ªæ•°å¤šäºåˆ†æå˜é‡ä¸ªæ•°ï¼Œå¤šä½™çš„æ’åºå˜é‡(å‡†åˆ™)å°†è¢«å¿½ç•¥ï¼;
+            %put WARNING: Ö¸¶¨µÄÅÅĞò±äÁ¿(×¼Ôò)¸öÊı¶àÓÚ·ÖÎö±äÁ¿¸öÊı£¬¶àÓàµÄÅÅĞò±äÁ¿(×¼Ôò)½«±»ºöÂÔ£¡;
         %end;
 
         %let by_n = %eval(%sysfunc(count(&by, %bquote( ))) + 1);
@@ -268,22 +268,22 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
         %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
         %if %sysfunc(prxmatch(&reg_by_id, &by)) = 0 %then %do;
-            %put ERROR: å‚æ•° BY = &by æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı BY = &by ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
             %let IS_VALID_BY = TRUE;
-            %do i = 1 %to &by_n; /*é€ä¸ªæ’åºä¾æ®çš„è§£æï¼ŒåŒ…æ‹¬æ’åºä½¿ç”¨çš„å˜é‡ä¸æ’åºçš„æ–¹å‘*/
+            %do i = 1 %to &by_n; /*Öğ¸öÅÅĞòÒÀ¾İµÄ½âÎö£¬°üÀ¨ÅÅĞòÊ¹ÓÃµÄ±äÁ¿ÓëÅÅĞòµÄ·½Ïò*/
                 %let BY_&i = %sysfunc(prxposn(&reg_by_id, &i, &by));
                 %if %bquote(&&BY_&i) ^= #FREQ_MIN and %bquote(&&BY_&i) ^= #FREQ_MAX %then %do;
                     %let reg_by_var_expr = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((?:(DESC(?:ENDING)?|ASC(?:ENDING)?))?\))?$/);
                     %let reg_by_var_expr_id = %sysfunc(prxparse(&reg_by_var_expr));
                     %if %sysfunc(prxmatch(&reg_by_var_expr_id, &&BY_&i)) %then %do;
-                        %let SCEND_BASE_&i = %sysfunc(prxposn(&reg_by_var_expr_id, 1, &&BY_&i)); /*æ’åºä¾æ®çš„å˜é‡*/
-                        %let SCEND_DIRECTION_&i = %sysfunc(prxposn(&reg_by_var_expr_id, 2, &&BY_&i)); /*æ’åºæ–¹å‘*/
+                        %let SCEND_BASE_&i = %sysfunc(prxposn(&reg_by_var_expr_id, 1, &&BY_&i)); /*ÅÅĞòÒÀ¾İµÄ±äÁ¿*/
+                        %let SCEND_DIRECTION_&i = %sysfunc(prxposn(&reg_by_var_expr_id, 2, &&BY_&i)); /*ÅÅĞò·½Ïò*/
                         
                         %if %bquote(&&SCEND_DIRECTION_&i) = %bquote() %then %do;
-                            %put NOTE: æœªæŒ‡å®šæ’åºå˜é‡ &&SCEND_BASE_&i çš„æ’åºæ–¹å‘ï¼Œé»˜è®¤å‡åºæ’åˆ—ï¼;
+                            %put NOTE: Î´Ö¸¶¨ÅÅĞò±äÁ¿ &&SCEND_BASE_&i µÄÅÅĞò·½Ïò£¬Ä¬ÈÏÉıĞòÅÅÁĞ£¡;
                             %let SCEND_DIRECTION_&i = ASC;
                         %end;
                         %else %if %bquote(&&SCEND_DIRECTION_&i) = DESCENDING %then %let SCEND_DIRECTION_&i = DESC;
@@ -301,29 +301,29 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
             %end;
             
             %do i = 1 %to &by_n;
-                /*åˆ¤æ–­æ’åºå˜é‡æ˜¯å¦é‡å¤*/
+                /*ÅĞ¶ÏÅÅĞò±äÁ¿ÊÇ·ñÖØ¸´*/
                 %if &i < &by_n %then %do;
                     %do j = %eval(&i + 1) %to &by_n;
                         %if %bquote(&&SCEND_BASE_&i) ^= #FREQ and %bquote(&&SCEND_BASE_&j) ^= #FREQ and %bquote(&&SCEND_BASE_&i) = %bquote(&&SCEND_BASE_&j) %then %do;
-                            %put ERROR: ä¸å…è®¸é‡å¤æŒ‡å®šæ’åºå˜é‡ &&SCEND_BASE_&i ï¼;
+                            %put ERROR: ²»ÔÊĞíÖØ¸´Ö¸¶¨ÅÅĞò±äÁ¿ &&SCEND_BASE_&i £¡;
                             %let IS_VALID_BY = FALSE;
                         %end;
                     %end;
                 %end;
                 
                 %if %bquote(&&SCEND_BASE_&i) ^= #FREQ %then %do;
-                    /*åˆ¤æ–­æ’åºå˜é‡æ˜¯å¦ä¸åˆ†æå˜é‡å†²çª*/
+                    /*ÅĞ¶ÏÅÅĞò±äÁ¿ÊÇ·ñÓë·ÖÎö±äÁ¿³åÍ»*/
                     %if %sysfunc(whichc(&&SCEND_BASE_&i, %unquote(%sysfunc(transtrn(&VAR, %bquote( ), %bquote(,)))))) and &&SCEND_BASE_&i ^= &&VAR_&i %then %do;
-                        %put ERROR: ä¸å…è®¸å¯¹åˆ†æå˜é‡ &&VAR_&i æŒ‡å®šå¦ä¸€ä¸ªåˆ†æå˜é‡ &&SCEND_BASE_&i ä½œä¸ºæ’åºå˜é‡ï¼;
+                        %put ERROR: ²»ÔÊĞí¶Ô·ÖÎö±äÁ¿ &&VAR_&i Ö¸¶¨ÁíÒ»¸ö·ÖÎö±äÁ¿ &&SCEND_BASE_&i ×÷ÎªÅÅĞò±äÁ¿£¡;
                         %let IS_VALID_BY = FALSE;
                     %end;
                     %else %do;
-                        /*åˆ¤æ–­æ’åºå˜é‡æ˜¯å¦å­˜åœ¨*/
+                        /*ÅĞ¶ÏÅÅĞò±äÁ¿ÊÇ·ñ´æÔÚ*/
                         proc sql noprint;
                             select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&&SCEND_BASE_&i";
                         quit;
                         %if &SQLOBS = 0 %then %do;
-                            %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°æ’åºå˜é‡ &&SCEND_BASE_&i;
+                            %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½ÅÅĞò±äÁ¿ &&SCEND_BASE_&i;
                             %let IS_VALID_BY = FALSE;
                         %end;
                     %end;
@@ -335,22 +335,22 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
 
     /*MISSING*/
     %if %bquote(&missing) = %bquote() %then %do;
-        %put ERROR: å‚æ•° MISSING ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı MISSING Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %do;
         %let missing_n = %eval(%sysfunc(count(&missing, %bquote( ))) + 1);
-        %if &missing_n < &var_n %then %do; /*æŒ‡å®šçš„â€œæ˜¯å¦å°†ç¼ºå¤±å€¼è€ƒè™‘ä¸ºä¸€ç±»è¿›è¡Œç»Ÿè®¡â€æ ‡è¯†æ•°é‡å°‘äºå˜é‡ä¸ªæ•°*/
+        %if &missing_n < &var_n %then %do; /*Ö¸¶¨µÄ¡°ÊÇ·ñ½«È±Ê§Öµ¿¼ÂÇÎªÒ»Àà½øĞĞÍ³¼Æ¡±±êÊ¶ÊıÁ¿ÉÙÓÚ±äÁ¿¸öÊı*/
             %if &missing_n = 1 %then %do;
-                %put NOTE: æŒ‡å®šâ€œæ˜¯å¦å°†ç¼ºå¤±å€¼è€ƒè™‘ä¸ºä¸€ç±»è¿›è¡Œç»Ÿè®¡â€æ ‡è¯†ç»Ÿä¸€ä¸º &missing ï¼;
+                %put NOTE: Ö¸¶¨¡°ÊÇ·ñ½«È±Ê§Öµ¿¼ÂÇÎªÒ»Àà½øĞĞÍ³¼Æ¡±±êÊ¶Í³Ò»Îª &missing £¡;
                 %let missing = %bquote(&missing%sysfunc(repeat(%bquote( &missing), %eval(&var_n - 2))));
             %end;
             %else %do;
                 %let missing = %bquote(&missing%sysfunc(repeat(%bquote( %scan(&missing, -1, %bquote( ))), %eval(&var_n - &missing_n - 1))));
-                %put WARNING: æŒ‡å®šçš„â€œæ˜¯å¦å°†ç¼ºå¤±å€¼è€ƒè™‘ä¸ºä¸€ç±»è¿›è¡Œç»Ÿè®¡â€æ ‡è¯†æ•°é‡å°‘äºåˆ†æå˜é‡ä¸ªæ•°ï¼ŒæœªåŒ¹é…çš„å˜é‡å°†ä½¿ç”¨å‚æ•° MISSING çš„æœ€åä¸€ä¸ªæ ‡è¯†çš„å€¼ï¼;
+                %put WARNING: Ö¸¶¨µÄ¡°ÊÇ·ñ½«È±Ê§Öµ¿¼ÂÇÎªÒ»Àà½øĞĞÍ³¼Æ¡±±êÊ¶ÊıÁ¿ÉÙÓÚ·ÖÎö±äÁ¿¸öÊı£¬Î´Æ¥ÅäµÄ±äÁ¿½«Ê¹ÓÃ²ÎÊı MISSING µÄ×îºóÒ»¸ö±êÊ¶µÄÖµ£¡;
             %end;
         %end;
-        %else %if &missing_n > &var_n %then %do; /*æŒ‡å®šçš„â€œæ˜¯å¦å°†ç¼ºå¤±å€¼è€ƒè™‘ä¸ºä¸€ç±»è¿›è¡Œç»Ÿè®¡â€æ ‡è¯†æ•°é‡å¤šäºå˜é‡ä¸ªæ•°*/
+        %else %if &missing_n > &var_n %then %do; /*Ö¸¶¨µÄ¡°ÊÇ·ñ½«È±Ê§Öµ¿¼ÂÇÎªÒ»Àà½øĞĞÍ³¼Æ¡±±êÊ¶ÊıÁ¿¶àÓÚ±äÁ¿¸öÊı*/
             %let temp_missing = %scan(&missing, 1, %bquote( ));
             %if &var_n > 1 %then %do;
                 %do i = 2 %to &var_n;
@@ -358,7 +358,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                 %end;
             %end;
             %let missing = &temp_missing;
-            %put WARNING: æŒ‡å®šçš„â€œæ˜¯å¦å°†ç¼ºå¤±å€¼è€ƒè™‘ä¸ºä¸€ç±»è¿›è¡Œç»Ÿè®¡â€æ ‡è¯†æ•°é‡å¤šäºåˆ†æå˜é‡ä¸ªæ•°ï¼Œå¤šä½™çš„æ ‡è¯†å°†è¢«å¿½ç•¥ï¼;
+            %put WARNING: Ö¸¶¨µÄ¡°ÊÇ·ñ½«È±Ê§Öµ¿¼ÂÇÎªÒ»Àà½øĞĞÍ³¼Æ¡±±êÊ¶ÊıÁ¿¶àÓÚ·ÖÎö±äÁ¿¸öÊı£¬¶àÓàµÄ±êÊ¶½«±»ºöÂÔ£¡;
         %end;
 
         %let missing_n = %eval(%sysfunc(count(&missing, %bquote( ))) + 1);
@@ -370,7 +370,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
         %let reg_missing_id = %sysfunc(prxparse(&reg_missing_expr));
         %if %sysfunc(prxmatch(&reg_missing_id, &missing)) = 0 %then %do;
-            %put ERROR: å‚æ•° MISSING = &missing æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı MISSING = &missing ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
@@ -396,7 +396,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
             %let denominator = #ALL;
         %end;
         %else %do;
-            %put ERROR: å‚æ•° DENOMINATOR ä¸ºç©ºï¼;
+            %put ERROR: ²ÎÊı DENOMINATOR Îª¿Õ£¡;
             %goto exit_err;
         %end;
     %end;
@@ -407,25 +407,25 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %else %do;
             %let denominator_n = %eval(%sysfunc(count(&denominator, %bquote( ))) + 1);
         %end;
-        %if %sysfunc(prxmatch(%bquote(/^\d*(?:\.\d+)?$/), &denominator)) %then %do; /*å‚æ•° DENOMINATOR è¢«æŒ‡å®šä¸ºä¸€ä¸ªæ•°å€¼ï¼Œä»…ä¾›æ„å»ºå…¶ä»–ç¨‹åºæ—¶ä½¿ç”¨*/
+        %if %sysfunc(prxmatch(%bquote(/^\d*(?:\.\d+)?$/), &denominator)) %then %do; /*²ÎÊı DENOMINATOR ±»Ö¸¶¨ÎªÒ»¸öÊıÖµ£¬½ö¹©¹¹½¨ÆäËû³ÌĞòÊ±Ê¹ÓÃ*/
             %let denominator = %sysfunc(strip(%sysfunc(repeat(%bquote( &denominator), %eval(&var_n - 1)))));
-            %put NOTE: æŒ‡å®šè®¡ç®—é¢‘ç‡çš„åˆ†æ¯ç»Ÿä¸€ä¸ºæ•°å€¼ï¼;
+            %put NOTE: Ö¸¶¨¼ÆËãÆµÂÊµÄ·ÖÄ¸Í³Ò»ÎªÊıÖµ£¡;
         %end;
-        %else %if %eval(&denominator_n + 1) < &var_n %then %do; /*å‚æ•° DENOMINATOR æŒ‡å®šçš„å€¼çš„æ•°é‡+1å°‘äºå˜é‡ä¸ªæ•°*/
+        %else %if %eval(&denominator_n + 1) < &var_n %then %do; /*²ÎÊı DENOMINATOR Ö¸¶¨µÄÖµµÄÊıÁ¿+1ÉÙÓÚ±äÁ¿¸öÊı*/
             %if &denominator = #ALL %then %do;
                 %let denominator = %bquote(&denominator%sysfunc(repeat(%bquote( &denominator), %eval(&var_n - 2))));
-                %put NOTE: æŒ‡å®šè®¡ç®—é¢‘ç‡çš„åˆ†æ¯ç»Ÿä¸€ä¸ºåˆè®¡é¢‘æ•°ï¼;
+                %put NOTE: Ö¸¶¨¼ÆËãÆµÂÊµÄ·ÖÄ¸Í³Ò»ÎªºÏ¼ÆÆµÊı£¡;
             %end;
             %else %if &denominator = #LAST %then %do;
                 %let denominator = %bquote(#ALL%sysfunc(repeat(%bquote( &denominator), %eval(&var_n - 2))));
-                %put NOTE: æŒ‡å®šé™¤é¦–å±‚åˆ†æå˜é‡ä¹‹å¤–ï¼Œå…¶ä½™åˆ†æå˜é‡ç”¨äºè®¡ç®—é¢‘ç‡çš„åˆ†æ¯ç»Ÿä¸€ä¸ºä¸Šä¸€å±‚åˆ†æå˜é‡çš„é¢‘æ•°ï¼;
+                %put NOTE: Ö¸¶¨³ıÊ×²ã·ÖÎö±äÁ¿Ö®Íâ£¬ÆäÓà·ÖÎö±äÁ¿ÓÃÓÚ¼ÆËãÆµÂÊµÄ·ÖÄ¸Í³Ò»ÎªÉÏÒ»²ã·ÖÎö±äÁ¿µÄÆµÊı£¡;
             %end;
             %else %do;
                 %let denominator = %bquote(#ALL &denominator%sysfunc(repeat(%bquote( #ALL), %eval(&var_n - &denominator_n - 2))));
-                %put NOTE: æŒ‡å®šçš„ç”¨äºè®¡ç®—é¢‘ç‡çš„åˆ†æ¯çš„å˜é‡(ä¾æ®)ä¸ªæ•°å°‘äºéæœ€é¡¶å±‚åˆ†æå˜é‡ä¸ªæ•°ï¼ŒæœªåŒ¹é…çš„åˆ†æå˜é‡å°†ä½¿ç”¨åˆè®¡é¢‘æ•°ä½œä¸ºé¢‘ç‡è®¡ç®—çš„åˆ†æ¯ï¼;
+                %put NOTE: Ö¸¶¨µÄÓÃÓÚ¼ÆËãÆµÂÊµÄ·ÖÄ¸µÄ±äÁ¿(ÒÀ¾İ)¸öÊıÉÙÓÚ·Ç×î¶¥²ã·ÖÎö±äÁ¿¸öÊı£¬Î´Æ¥ÅäµÄ·ÖÎö±äÁ¿½«Ê¹ÓÃºÏ¼ÆÆµÊı×÷ÎªÆµÂÊ¼ÆËãµÄ·ÖÄ¸£¡;
             %end;
         %end;
-        %else %if %eval(&denominator_n + 1) > &var_n %then %do; /*å‚æ•° DENOMINATOR æŒ‡å®šçš„å€¼çš„æ•°é‡+1å¤šäºå˜é‡ä¸ªæ•°*/
+        %else %if %eval(&denominator_n + 1) > &var_n %then %do; /*²ÎÊı DENOMINATOR Ö¸¶¨µÄÖµµÄÊıÁ¿+1¶àÓÚ±äÁ¿¸öÊı*/
             %let temp_denominator = #ALL;
             %if &var_n > 1 %then %do;
                 %do i = 2 %to &var_n;
@@ -433,9 +433,9 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                 %end;
             %end;
             %let denominator = &temp_denominator;
-            %put WARNING: æŒ‡å®šçš„ç”¨äºè®¡ç®—é¢‘ç‡çš„åˆ†æ¯çš„å˜é‡(ä¾æ®)ä¸ªæ•°å¤šäºéæœ€é¡¶å±‚åˆ†æå˜é‡ä¸ªæ•°ï¼Œå¤šä½™çš„å˜é‡å°†è¢«å¿½ç•¥ï¼;
+            %put WARNING: Ö¸¶¨µÄÓÃÓÚ¼ÆËãÆµÂÊµÄ·ÖÄ¸µÄ±äÁ¿(ÒÀ¾İ)¸öÊı¶àÓÚ·Ç×î¶¥²ã·ÖÎö±äÁ¿¸öÊı£¬¶àÓàµÄ±äÁ¿½«±»ºöÂÔ£¡;
         %end;
-        %else %do; /*å‚æ•° DENOMINATOR æŒ‡å®šçš„å€¼çš„æ•°é‡+1ç­‰äºå˜é‡ä¸ªæ•°*/
+        %else %do; /*²ÎÊı DENOMINATOR Ö¸¶¨µÄÖµµÄÊıÁ¿+1µÈÓÚ±äÁ¿¸öÊı*/
             %let denominator = %sysfunc(strip(%bquote(#ALL &denominator)));
         %end;
     %end;
@@ -449,7 +449,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
     %end;
     %let reg_denominator_id = %sysfunc(prxparse(&reg_denominator_expr));
     %if %sysfunc(prxmatch(&reg_denominator_id, &denominator)) = 0 %then %do;
-        %put ERROR: å‚æ•° DENOMINATOR = &denominator æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı DENOMINATOR = &denominator ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit_err;
     %end;
     %else %do;
@@ -457,22 +457,22 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %do i = 1 %to &denominator_n;
             %let DENOMINATOR_&i = %sysfunc(prxposn(&reg_denominator_id, %eval(2 * &i - 1), &denominator));
             %let DENOMINATOR_NUM_&i = %sysfunc(prxposn(&reg_denominator_id, %eval(2 * &i), &denominator));
-            %if %bquote(&&DENOMINATOR_NUM_&i) ^= %bquote() %then %do; /*æŒ‡å®šç”¨ä½œåˆ†æ¯çš„æ˜¯ä¸€ä¸ªæ•°å€¼*/
+            %if %bquote(&&DENOMINATOR_NUM_&i) ^= %bquote() %then %do; /*Ö¸¶¨ÓÃ×÷·ÖÄ¸µÄÊÇÒ»¸öÊıÖµ*/
                 %let DENOMINATOR_&i = #NUM;
             %end;
-            %else %if &&DENOMINATOR_&i ^= #ALL and &&DENOMINATOR_&i ^= #LAST %then %do; /*æŒ‡å®šç”¨ä½œåˆ†æ¯çš„æ˜¯ä¸€ä¸ªå˜é‡*/
+            %else %if &&DENOMINATOR_&i ^= #ALL and &&DENOMINATOR_&i ^= #LAST %then %do; /*Ö¸¶¨ÓÃ×÷·ÖÄ¸µÄÊÇÒ»¸ö±äÁ¿*/
                 %if %sysfunc(count(&var, &&DENOMINATOR_&i)) = 0 %then %do;
-                    %put ERROR: ä¸å…è®¸æŒ‡å®šåˆ†æå˜é‡ &var ä¹‹å¤–çš„å˜é‡ &&DENOMINATOR_&i ä½œä¸ºè®¡ç®—åˆ†æå˜é‡ &&VAR_&i çš„é¢‘ç‡çš„åˆ†æ¯ï¼;
+                    %put ERROR: ²»ÔÊĞíÖ¸¶¨·ÖÎö±äÁ¿ &var Ö®ÍâµÄ±äÁ¿ &&DENOMINATOR_&i ×÷Îª¼ÆËã·ÖÎö±äÁ¿ &&VAR_&i µÄÆµÂÊµÄ·ÖÄ¸£¡;
                     %let IS_VALID_DENOMINATOR = FALSE;
                 %end;
                 %else %do;
-                    %let DENOMINATOR_LEVEL = %sysfunc(whichc(&&DENOMINATOR_&i, %unquote(%sysfunc(transtrn(&var, %bquote( ), %bquote(,)))))); /*æŒ‡å®šçš„ç”¨ä½œåˆ†æ¯çš„å˜é‡åœ¨å‚æ•° VAR çš„ä½ç½®*/
+                    %let DENOMINATOR_LEVEL = %sysfunc(whichc(&&DENOMINATOR_&i, %unquote(%sysfunc(transtrn(&var, %bquote( ), %bquote(,)))))); /*Ö¸¶¨µÄÓÃ×÷·ÖÄ¸µÄ±äÁ¿ÔÚ²ÎÊı VAR µÄÎ»ÖÃ*/
                     %if &DENOMINATOR_LEVEL > &i %then %do;
-                        %put ERROR: ä¸å…è®¸æŒ‡å®šè¾ƒä½å±‚çº§çš„åˆ†æå˜é‡ &&DENOMINATOR_&i ä½œä¸ºè®¡ç®—è¾ƒé«˜å±‚çº§çš„åˆ†æå˜é‡ &&VAR_&i çš„é¢‘ç‡çš„åˆ†æ¯ï¼;
+                        %put ERROR: ²»ÔÊĞíÖ¸¶¨½ÏµÍ²ã¼¶µÄ·ÖÎö±äÁ¿ &&DENOMINATOR_&i ×÷Îª¼ÆËã½Ï¸ß²ã¼¶µÄ·ÖÎö±äÁ¿ &&VAR_&i µÄÆµÂÊµÄ·ÖÄ¸£¡;
                         %let IS_VALID_DENOMINATOR = FALSE;
                     %end;
                     %else %if &DENOMINATOR_LEVEL = &i %then %do;
-                        %put ERROR: ä¸å…è®¸æŒ‡å®šåˆ†æå˜é‡ &&DENOMINATOR_&i è‡ªèº«ä½œä¸ºè®¡ç®—åˆ†æå˜é‡ &&VAR_&i çš„é¢‘ç‡çš„åˆ†æ¯ï¼;
+                        %put ERROR: ²»ÔÊĞíÖ¸¶¨·ÖÎö±äÁ¿ &&DENOMINATOR_&i ×ÔÉí×÷Îª¼ÆËã·ÖÎö±äÁ¿ &&VAR_&i µÄÆµÂÊµÄ·ÖÄ¸£¡;
                         %let IS_VALID_DENOMINATOR = FALSE;
                     %end;
                 %end;
@@ -486,7 +486,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
 
     /*LABEL*/
     %if %bquote(&label) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° LABEL ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı LABEL Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %if %nrbquote(%upcase(&label)) = #AUTO %then %do;
@@ -500,23 +500,23 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
     
     /*IS_LABEL_INDENT*/
     %if %bquote(&IS_LABEL_INDENT) ^= TRUE and %bquote(&IS_LABEL_INDENT) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° IS_LABEL_INDENT å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı IS_LABEL_INDENT ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit_err;
     %end;
 
     /*IS_LABEL_DISPLAY*/
     %if %bquote(&IS_LABEL_DISPLAY) ^= TRUE and %bquote(&IS_LABEL_DISPLAY) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° IS_LABEL_DISPLAY å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı IS_LABEL_DISPLAY ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit_err;
     %end;
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®š OUTDATA ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨ OUTDATA Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %if %bquote(&outdata) = #NULL %then %do;
-        %put NOTE: å‚æ•° OUTDATA è¢«æŒ‡å®šä¸º #NULLï¼Œç»“æœå°†ä¸ä¼šè¢«è¾“å‡ºï¼;
+        %put NOTE: ²ÎÊı OUTDATA ±»Ö¸¶¨Îª #NULL£¬½á¹û½«²»»á±»Êä³ö£¡;
     %end;
     %else %do;
         %if %bquote(&outdata) = #AUTO %then %do;
@@ -525,36 +525,36 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
 
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, &outdata)) = 0 %then %do;
-            %put ERROR: å‚æ•° OUTDATA = &outdata æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı OUTDATA = &outdata ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_err;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
             %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
             %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-            %if &libname_out = %bquote() %then %let libname_out = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_out = %bquote() %then %let libname_out = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_out";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_out é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_out Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_err;
             %end;
         %end;
-        %put NOTE: è¾“å‡ºæ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_out..&memname_out;
+        %put NOTE: Êä³öÊı¾İ¼¯±»Ö¸¶¨Îª &libname_out..&memname_out;
     %end;
 
 
     /*DEL_TEMP_DATA*/
     %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° DEL_TEMP_DATA å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı DEL_TEMP_DATA ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit_err;
     %end;
 
 
     /*DEL_DUP_BY_VAR*/
     %if %bquote(&DEL_DUP_BY_VAR) = %bquote() %then %do;
-        %put ERROR: å‚æ•° DEL_DUP_BY_VAR ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı DEL_DUP_BY_VAR Îª¿Õ£¡;
         %goto exit_err;
     %end;
     %else %if %bquote(&DEL_DUP_BY_VAR) ^= #NULL %then %do;
@@ -563,21 +563,21 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                 select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&DEL_DUP_BY_VAR";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ &DEL_DUP_BY_VAR;
+                %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±äÁ¿ &DEL_DUP_BY_VAR;
                 %goto exit_err;
             %end;
             %else %if %sysfunc(count(&var, &DEL_DUP_BY_VAR)) > 0 %then %do;
-                %put ERROR: ä¸å…è®¸æŒ‡å®šåˆ†æå˜é‡ &DEL_DUP_BY_VAR ä½œä¸ºè¾…åŠ©å»é‡çš„å˜é‡ï¼;
+                %put ERROR: ²»ÔÊĞíÖ¸¶¨·ÖÎö±äÁ¿ &DEL_DUP_BY_VAR ×÷Îª¸¨ÖúÈ¥ÖØµÄ±äÁ¿£¡;
                 %goto exit_err;
             %end;
         %end;
         %else %do;
-            %put ERROR: å‚æ•° DEL_DUP_BY_VAR å¿…é¡»æ˜¯ä¸€ä¸ªå˜é‡åï¼;
+            %put ERROR: ²ÎÊı DEL_DUP_BY_VAR ±ØĞëÊÇÒ»¸ö±äÁ¿Ãû£¡;
             %goto exit_err;
         %end;
     %end;
 
-    /*----------æ•è·æ‰€æœ‰å‚æ•°----------*/
+    /*----------²¶»ñËùÓĞ²ÎÊı----------*/
     %if %bquote(&PARAM_LIST_BUFFER) ^= #NULL %then %do;
         %if %symexist(&PARAM_LIST_BUFFER) %then %do;
             %unquote(%nrstr(%%let)) &PARAM_LIST_BUFFER =
@@ -600,31 +600,31 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                                                         ;
         %end;
         %else %do;
-            %put ERROR: æœªå®šä¹‰ç”¨äºæ¥æ”¶å¤„ç†ä¹‹åçš„å‚æ•°åˆ—è¡¨çš„å®å˜é‡ï¼;
+            %put ERROR: Î´¶¨ÒåÓÃÓÚ½ÓÊÕ´¦ÀíÖ®ºóµÄ²ÎÊıÁĞ±íµÄºê±äÁ¿£¡;
             %goto exit_err;
         %end;
     %end;
                            
 
-    /*ä¸»ç¨‹åºå‰å¤„ç†*/
+    /*Ö÷³ÌĞòÇ°´¦Àí*/
     %prog:
     /*SKIP_MAIN_PROG*/
     %if %bquote(&SKIP_MAIN_PROG) ^= TRUE and %bquote(&SKIP_MAIN_PROG) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° SKIP_MAIN_PROG å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı SKIP_MAIN_PROG ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit_err;
     %end;
     %else %if %bquote(&SKIP_MAIN_PROG) = TRUE %then %do;
-        %put NOTE: è°ƒç”¨å®ç¨‹åº %nrstr(%%desc_coun) æ—¶ä½¿ç”¨å‚æ•° SKIP_MAIN_PROG = TRUE è·³è¿‡äº†ä¸»ç¨‹åºæ­¥éª¤ï¼;
+        %put NOTE: µ÷ÓÃºê³ÌĞò %nrstr(%%desc_coun) Ê±Ê¹ÓÃ²ÎÊı SKIP_MAIN_PROG = TRUE Ìø¹ıÁËÖ÷³ÌĞò²½Öè£¡;
         %goto exit;
     %end;
 
-    /*----------é‡Šæ”¾æ‰€æœ‰å‚æ•°----------*/
+    /*----------ÊÍ·ÅËùÓĞ²ÎÊı----------*/
     %if %bquote(&PARAM_LIST_BUFFER) ^= #NULL %then %do;
         %unquote(&&&PARAM_LIST_BUFFER)
     %end;
 
-    /*----------------------------------------------ä¸»ç¨‹åº----------------------------------------------*/
-    /*0.é‡å¤å€¼å‰”é™¤*/
+    /*----------------------------------------------Ö÷³ÌĞò----------------------------------------------*/
+    /*0.ÖØ¸´ÖµÌŞ³ı*/
     %if &DEL_DUP_BY_VAR ^= #NULL %then %do;
         %do i = 1 %to &var_n;
             proc sort data = &libname_in..&memname_in%if %bquote(&dataset_options_in) ^= %bquote() %then %do;(&dataset_options_in)%end;
@@ -635,16 +635,16 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
     %end;
 
 
-    /*1.ç”Ÿæˆå„å±‚çº§çš„é¢‘æ•°è¡¨*/
+    /*1.Éú³É¸÷²ã¼¶µÄÆµÊı±í*/
     proc sql noprint;
         %do i = 1 %to &var_n;
-            %unquote(%nrstr(%%let MISSING_STRATA_CAT =)) %sysfunc(catx(%bquote( ) %unquote(%do j = 1 %to &i; %bquote(,)%bquote(&&MISSING_&j) %end;))); /*å‰iä¸ªMISSINGçš„å€¼*/
+            %unquote(%nrstr(%%let MISSING_STRATA_CAT =)) %sysfunc(catx(%bquote( ) %unquote(%do j = 1 %to &i; %bquote(,)%bquote(&&MISSING_&j) %end;))); /*Ç°i¸öMISSINGµÄÖµ*/
             create table temp_strata_freq_&&VAR_&i as
                 select
                     distinct
-                    &i as STRATA label = "å±‚çº§", /*è¯¥å˜é‡ç”¨äºç¼©è¿›*/
+                    &i as STRATA label = "²ã¼¶", /*¸Ã±äÁ¿ÓÃÓÚËõ½ø*/
                     %do j = 1 %to &i;
-                        (case when &j = &i then 1 else 0 end) as &&VAR_&j.._LV label = "&&VAR_&j.._LV", /*è¯¥å˜é‡ç”¨äºæ’åºï¼Œç¡®ä¿å„å±‚çš„åˆè®¡ç»“æœæ’åœ¨ç»†åˆ†å­ç±»çš„å‰é¢*/
+                        (case when &j = &i then 1 else 0 end) as &&VAR_&j.._LV label = "&&VAR_&j.._LV", /*¸Ã±äÁ¿ÓÃÓÚÅÅĞò£¬È·±£¸÷²ãµÄºÏ¼Æ½á¹ûÅÅÔÚÏ¸·Ö×ÓÀàµÄÇ°Ãæ*/
                     %end;
                     %sysfunc(catx(%bquote(, ) %unquote(%do j = 1 %to &i; %bquote(, &&VAR_&j) %end;))),
                     %do j = 1 %to &i;
@@ -652,7 +652,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                             %bquote(&&SCEND_BASE_&j,)
                         %end;
                     %end;
-                    count(*)    as FREQ    label = "é¢‘æ•°"
+                    count(*)    as FREQ    label = "ÆµÊı"
                 from %if &DEL_DUP_BY_VAR = #NULL %then %do;
                          &libname_in..&memname_in%if %bquote(&dataset_options_in) ^= %bquote() %then %do;(&dataset_options_in)%end;
                      %end;
@@ -676,39 +676,39 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
     quit;
 
-    /*2. è®¡ç®—å„å±‚çº§çš„é¢‘ç‡ï¼Œåº”ç”¨format*/
+    /*2. ¼ÆËã¸÷²ã¼¶µÄÆµÂÊ£¬Ó¦ÓÃformat*/
     proc sql noprint;
-        select sum(FREQ) into: GRN_ALL from temp_strata_freq_&VAR_1; /*é¢‘æ•°åˆè®¡*/
+        select sum(FREQ) into: GRN_ALL from temp_strata_freq_&VAR_1; /*ÆµÊıºÏ¼Æ*/
         %do i = 1 %to &var_n;
             %if &&DENOMINATOR_&i ^= #ALL and &&DENOMINATOR_&i ^= #NUM %then %do;
                 %if &&DENOMINATOR_&i = #LAST %then %do;
-                    %let DENOMINATOR_SRTATA_N = %eval(&i - 1); /*åŸºäºçš„åˆ†æ¯çš„å±‚æ•°*/
+                    %let DENOMINATOR_SRTATA_N = %eval(&i - 1); /*»ùÓÚµÄ·ÖÄ¸µÄ²ãÊı*/
                 %end;
                 %else %do;
-                    %let DENOMINATOR_SRTATA_N = %sysfunc(whichc(&&DENOMINATOR_&i, %unquote(%sysfunc(transtrn(&VAR, %bquote( ), %bquote(,)))))); /*åŸºäºçš„åˆ†æ¯çš„å±‚æ•°*/
+                    %let DENOMINATOR_SRTATA_N = %sysfunc(whichc(&&DENOMINATOR_&i, %unquote(%sysfunc(transtrn(&VAR, %bquote( ), %bquote(,)))))); /*»ùÓÚµÄ·ÖÄ¸µÄ²ãÊı*/
                 %end;
                 %do j = 1 %to &DENOMINATOR_SRTATA_N;
-                    %let DENOMINATOR_SRTATA_&j = &&VAR_&j; /*åŸºäºçš„åˆ†æ¯çš„å±‚çº§*/
+                    %let DENOMINATOR_SRTATA_&j = &&VAR_&j; /*»ùÓÚµÄ·ÖÄ¸µÄ²ã¼¶*/
                 %end;
             %end;
             create table temp_strata_pct_&&VAR_&i as
                 select
                     a.*,
                     %if &&DENOMINATOR_&i = #ALL %then %do;
-                        a.FREQ/&GRN_ALL as FREQPCT label = "ç™¾åˆ†æ¯”",
-                        put(a.FREQ/&GRN_ALL, &&FORMAT_&i) as FREQPCTC label = "ç™¾åˆ†æ¯”ï¼ˆCï¼‰"
+                        a.FREQ/&GRN_ALL as FREQPCT label = "°Ù·Ö±È",
+                        put(a.FREQ/&GRN_ALL, &&FORMAT_&i) as FREQPCTC label = "°Ù·Ö±È£¨C£©"
                     %end;
                     %else %if &&DENOMINATOR_&i = #NUM %then %do;
-                        a.FREQ/&&DENOMINATOR_NUM_&i as FREQPCT label = "ç™¾åˆ†æ¯”",
-                        put(a.FREQ/&&DENOMINATOR_NUM_&i, &&FORMAT_&i) as FREQPCTC label = "ç™¾åˆ†æ¯”ï¼ˆCï¼‰"
+                        a.FREQ/&&DENOMINATOR_NUM_&i as FREQPCT label = "°Ù·Ö±È",
+                        put(a.FREQ/&&DENOMINATOR_NUM_&i, &&FORMAT_&i) as FREQPCTC label = "°Ù·Ö±È£¨C£©"
                     %end;
                     %else %if &&DENOMINATOR_&i = #LAST %then %do;
-                        a.FREQ/b.FREQ as FREQPCT label = "ç™¾åˆ†æ¯”",
-                        put(a.FREQ/b.FREQ, &&FORMAT_&i) as FREQPCTC label = "ç™¾åˆ†æ¯”ï¼ˆCï¼‰"
+                        a.FREQ/b.FREQ as FREQPCT label = "°Ù·Ö±È",
+                        put(a.FREQ/b.FREQ, &&FORMAT_&i) as FREQPCTC label = "°Ù·Ö±È£¨C£©"
                     %end;
                     %else %do;
-                        a.FREQ/b.FREQ as FREQPCT label = "ç™¾åˆ†æ¯”",
-                        put(a.FREQ/b.FREQ, &&FORMAT_&i) as FREQPCTC label = "ç™¾åˆ†æ¯”ï¼ˆCï¼‰"
+                        a.FREQ/b.FREQ as FREQPCT label = "°Ù·Ö±È",
+                        put(a.FREQ/b.FREQ, &&FORMAT_&i) as FREQPCTC label = "°Ù·Ö±È£¨C£©"
                     %end;
                 from temp_strata_freq_&&VAR_&i as a %if &&DENOMINATOR_&i ^= #ALL  and &&DENOMINATOR_&i ^= #NUM %then %do;
                                                         left join %if &&DENOMINATOR_&i = #LAST %then %do;
@@ -730,7 +730,7 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         %end;
     quit;
 
-    /*3. åˆå¹¶å„å±‚çº§çš„é¢‘æ•°é¢‘ç‡è¡¨*/
+    /*3. ºÏ²¢¸÷²ã¼¶µÄÆµÊıÆµÂÊ±í*/
     proc sql noprint;
         create table temp_union as
             %sysfunc(catx(%bquote( outer union corr ) %unquote(
@@ -742,8 +742,8 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                     );
     quit;
 
-    /*4. å°†å„å±‚çº§çš„é¢‘æ•°è¡ç”Ÿå‡ºç”¨äºæ’åºçš„å•ç‹¬å˜é‡*/
-    /*ä¾‹å¦‚ï¼šå¯¹äºæŸä¸ªè§‚æµ‹çš„æŸä¸€åˆ†æå˜é‡ï¼Œå¯¹åº”çš„è¡ç”Ÿå˜é‡å€¼ä¸ºè¯¥è§‚æµ‹åœ¨è¿™ä¸€åˆ†æå˜é‡çš„æ°´å¹³ä¸Šçš„é¢‘æ•°ï¼Œæ— è®ºè¯¥è§‚æµ‹æ­¤æ—¶å¤„äºå“ªä¸€å±‚çº§ä¸­*/
+    /*4. ½«¸÷²ã¼¶µÄÆµÊıÑÜÉú³öÓÃÓÚÅÅĞòµÄµ¥¶À±äÁ¿*/
+    /*ÀıÈç£º¶ÔÓÚÄ³¸ö¹Û²âµÄÄ³Ò»·ÖÎö±äÁ¿£¬¶ÔÓ¦µÄÑÜÉú±äÁ¿ÖµÎª¸Ã¹Û²âÔÚÕâÒ»·ÖÎö±äÁ¿µÄË®Æ½ÉÏµÄÆµÊı£¬ÎŞÂÛ¸Ã¹Û²â´ËÊ±´¦ÓÚÄÄÒ»²ã¼¶ÖĞ*/
     proc sql noprint;
         create table temp_union_freq as
             select
@@ -770,30 +770,30 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
             ;
     quit;
 
-    /*5. å°†å„å±‚çº§çš„æ°´å¹³åç§°æ ¹æ®å‚æ•°INDENTåŠIS_LABEL_INDENTå¯¹é½ï¼Œæ·»åŠ ç¼©è¿›ç¬¦å·(å¦‚æœ‰)ï¼Œç»„åˆé¢‘æ•°å’Œé¢‘ç‡*/
+    /*5. ½«¸÷²ã¼¶µÄË®Æ½Ãû³Æ¸ù¾İ²ÎÊıINDENT¼°IS_LABEL_INDENT¶ÔÆë£¬Ìí¼ÓËõ½ø·ûºÅ(ÈçÓĞ)£¬×éºÏÆµÊıºÍÆµÂÊ*/
     proc sql noprint;
         create table temp_align as
             select
                 *,
                 (case
-                    %if &IS_LABEL_INDENT = TRUE %then %do; /*é¦–å±‚ç¼©è¿›*/
+                    %if &IS_LABEL_INDENT = TRUE %then %do; /*Ê×²ãËõ½ø*/
                         %do i = 1 %to &var_n;
                             when strata = &i then repeat("&INDENT", %eval(&i - 1)) || strip(&&VAR_&i)
                         %end;
                     %end;
-                    %else %do; /*é¦–å±‚ä¸ç¼©è¿›*/
+                    %else %do; /*Ê×²ã²»Ëõ½ø*/
                         when strata = 1 then strip(&VAR_1)
                         %do i = 2 %to &var_n;
                             when strata = &i then repeat("&INDENT", %eval(&i - 2)) || strip(&&VAR_&i)
                         %end;
                     %end;
-                end)                           as ITEM  label = "æŒ‡æ ‡",
-                cats(FREQ, "(", FREQPCTC, ")") as VALUE label = "æŒ‡æ ‡å€¼"
+                end)                           as ITEM  label = "Ö¸±ê",
+                cats(FREQ, "(", FREQPCTC, ")") as VALUE label = "Ö¸±êÖµ"
             from temp_union_freq;
     quit;
     
 
-    /*6. æŒ‰æŒ‡å®šé¡ºåºæ’åº*/
+    /*6. °´Ö¸¶¨Ë³ĞòÅÅĞò*/
     proc sql noprint;
         create table temp_sort as
             select * from temp_align
@@ -812,15 +812,15 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
                                  );
     quit;
 
-    /*7. æ·»åŠ æˆ–ä¸æ·»åŠ  LABEL */
-    %if &IS_LABEL_DISPLAY = TRUE %then %do; /*ä¸æ˜¾ç¤ºæ ‡ç­¾, å› æ­¤æ— éœ€ç”Ÿæˆ TEMP_LABEL æ•°æ®é›†, èŠ‚çœèµ„æº*/
+    /*7. Ìí¼Ó»ò²»Ìí¼Ó LABEL */
+    %if &IS_LABEL_DISPLAY = TRUE %then %do; /*²»ÏÔÊ¾±êÇ©, Òò´ËÎŞĞèÉú³É TEMP_LABEL Êı¾İ¼¯, ½ÚÊ¡×ÊÔ´*/
         data temp_label;
             ITEM = "&label";
         run;
     %end;
     proc sql noprint;
         create table temp_add_label as
-            %if &IS_LABEL_DISPLAY = TRUE %then %do; /*ä¸æ˜¾ç¤ºæ ‡ç­¾*/
+            %if &IS_LABEL_DISPLAY = TRUE %then %do; /*²»ÏÔÊ¾±êÇ©*/
                 select * from temp_label
                 outer union corr
             %end;
@@ -829,10 +829,10 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
             from temp_sort;
     quit;
 
-    /*8. è¾“å‡ºæ•°æ®é›†*/
+    /*8. Êä³öÊı¾İ¼¯*/
     %if %bquote(&outdata) ^= #NULL %then %do;
         %if &libname_in = &libname_out and &memname_in = &memname_out %then %do;
-            %put WARNING: æŒ‡å®šçš„è¾“å‡ºæ•°æ®é›†ä¸åˆ†ææ•°æ®é›†ä¸€è‡´ï¼Œ&libname_in..&memname_in å°†è¢«è¦†ç›–ï¼;
+            %put WARNING: Ö¸¶¨µÄÊä³öÊı¾İ¼¯Óë·ÖÎöÊı¾İ¼¯Ò»ÖÂ£¬&libname_in..&memname_in ½«±»¸²¸Ç£¡;
         %end;
         data &libname_out..&memname_out(%if %bquote(&dataset_options_out) = %bquote() %then %do;
                                             keep = item value
@@ -844,9 +844,9 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
         run;
     %end;
 
-    /*----------------------------------------------è¿è¡Œåå¤„ç†----------------------------------------------*/
+    /*----------------------------------------------ÔËĞĞºó´¦Àí----------------------------------------------*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
-        proc datasets noprint nowarn; /*åˆ é™¤ä¸´æ—¶æ•°æ®é›†*/
+        proc datasets noprint nowarn; /*É¾³ıÁÙÊ±Êı¾İ¼¯*/
             delete %do i = 1 %to &var_n;
                        temp_nodup_&&VAR_&i
                        temp_strata_freq_&&VAR_&i
@@ -864,19 +864,19 @@ PARAM_LIST_BUFFER    å‚æ•°åˆ—è¡¨ç¼“å†²æ± 
     %goto exit;
 
 
-    /*å¼‚å¸¸é€€å‡º*/
+    /*Òì³£ÍË³ö*/
     %exit_err:
     %if &PARAM_VALID_FLAG_VAR ^= #NULL %then %do;
         %if %symexist(&PARAM_VALID_FLAG_VAR) %then %do;
             %let &PARAM_VALID_FLAG_VAR = FALSE;
         %end;
         %else %do;
-            %put ERROR: æœªå®šä¹‰ç”¨äºè¡¨ç¤ºå®å‚æ•°åˆæ³•æ€§çš„å®å˜é‡ï¼;
+            %put ERROR: Î´¶¨ÒåÓÃÓÚ±íÊ¾ºê²ÎÊıºÏ·¨ĞÔµÄºê±äÁ¿£¡;
             %goto exit;
         %end;
     %end;
 
-    /*æ­£å¸¸é€€å‡º*/
+    /*Õı³£ÍË³ö*/
     %exit:
-    %put NOTE: å® desc_coun å·²ç»“æŸè¿è¡Œï¼;
+    %put NOTE: ºê desc_coun ÒÑ½áÊøÔËĞĞ£¡;
 %mend;

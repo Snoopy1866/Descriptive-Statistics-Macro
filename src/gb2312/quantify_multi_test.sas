@@ -1,7 +1,7 @@
 /*
 ===================================
 Macro Name: quantify_multi_test
-Macro Label:å¤šç»„åˆ«å®šé‡æŒ‡æ ‡æ±‡æ€»ç»Ÿè®¡
+Macro Label:¶à×é±ğ¶¨Á¿Ö¸±ê»ã×ÜÍ³¼Æ
 Author: wtwang
 Version Date: 2024-01-05 0.1
               2024-01-18 0.2
@@ -18,42 +18,42 @@ Version Date: 2024-01-05 0.1
                            GROUP,
                            GROUPBY        = #AUTO,
                            OUTDATA        = RES_&VAR,
-                           PATTERN        = %nrstr(#N(#NMISS)|#MEANÂ±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
+                           PATTERN        = %nrstr(#N(#NMISS)|#MEAN¡À#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
                            STAT_FORMAT    = #AUTO,
                            STAT_NOTE      = #AUTO,
                            LABEL          = #AUTO,
                            INDENT         = #AUTO,
                            PROCHTTP_PROXY = 127.0.0.1:7890,
                            DEL_TEMP_DATA  = TRUE)
-                           /des = "å¤šç»„åˆ«å®šé‡æŒ‡æ ‡æ±‡æ€»ç»Ÿè®¡" parmbuff;
+                           /des = "¶à×é±ğ¶¨Á¿Ö¸±ê»ã×ÜÍ³¼Æ" parmbuff;
 
-    /*æ‰“å¼€å¸®åŠ©æ–‡æ¡£*/
+    /*´ò¿ª°ïÖúÎÄµµ*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify_multi_test/readme.md";
         %goto exit;
     %end;
 
-    /*----------------------------------------------åˆå§‹åŒ–----------------------------------------------*/
-    /*ç»Ÿä¸€å‚æ•°å¤§å°å†™*/
+    /*----------------------------------------------³õÊ¼»¯----------------------------------------------*/
+    /*Í³Ò»²ÎÊı´óĞ¡Ğ´*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
 
-    /*å£°æ˜å…¨å±€å˜é‡*/
+    /*ÉùÃ÷È«¾Ö±äÁ¿*/
     %global qtmt_exit_with_error
             groupby_criteria;
     %let qtmt_exit_with_error = FALSE;
 
-    /*å£°æ˜å±€éƒ¨å˜é‡*/
+    /*ÉùÃ÷¾Ö²¿±äÁ¿*/
     %local i j
            libname_in  memname_in  dataset_options_in
            libname_out memname_out dataset_options_out;
 
-    /*æ£€æŸ¥ä¾èµ–*/
+    /*¼ì²éÒÀÀµ*/
     proc sql noprint;
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUANTIFY_MULTI";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put WARNING: å‰ç½®ä¾èµ–ç¼ºå¤±ï¼Œæ­£åœ¨å°è¯•ä»ç½‘ç»œä¸Šä¸‹è½½......;
+        %put WARNING: Ç°ÖÃÒÀÀµÈ±Ê§£¬ÕıÔÚ³¢ÊÔ´ÓÍøÂçÉÏÏÂÔØ......;
 
         %let cur_encoding = %sysfunc(getOption(ENCODING));
         %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
@@ -71,39 +71,39 @@ Version Date: 2024-01-05 0.1
                 %include predpc;
             %end;
             %else %do;
-                %put ERROR: è¿œç¨‹ä¸»æœºè¿æ¥æˆåŠŸï¼Œä½†å¹¶æœªæˆåŠŸè·å–ç›®æ ‡æ–‡ä»¶ï¼Œè¯·æ‰‹åŠ¨å¯¼å…¥å‰ç½®ä¾èµ– %nrbquote(%nrstr(%%))QUANTIFY_MULTI åå†æ¬¡å°è¯•è¿è¡Œï¼;
+                %put ERROR: Ô¶³ÌÖ÷»úÁ¬½Ó³É¹¦£¬µ«²¢Î´³É¹¦»ñÈ¡Ä¿±êÎÄ¼ş£¬ÇëÊÖ¶¯µ¼ÈëÇ°ÖÃÒÀÀµ %nrbquote(%nrstr(%%))QUANTIFY_MULTI ºóÔÙ´Î³¢ÊÔÔËĞĞ£¡;
                 %goto exit_with_error;
             %end;
         %end;
         %else %do;
-            %put ERROR: è¿œç¨‹ä¸»æœºè¿æ¥å¤±è´¥ï¼Œè¯·æ£€æŸ¥ç½‘ç»œè¿æ¥å’Œä»£ç†è®¾ç½®ï¼Œæˆ–æ‰‹åŠ¨å¯¼å…¥å‰ç½®ä¾èµ– %nrbquote(%nrstr(%%))QUANTIFY_MULTI åå†æ¬¡å°è¯•è¿è¡Œï¼;
+            %put ERROR: Ô¶³ÌÖ÷»úÁ¬½ÓÊ§°Ü£¬Çë¼ì²éÍøÂçÁ¬½ÓºÍ´úÀíÉèÖÃ£¬»òÊÖ¶¯µ¼ÈëÇ°ÖÃÒÀÀµ %nrbquote(%nrstr(%%))QUANTIFY_MULTI ºóÔÙ´Î³¢ÊÔÔËĞĞ£¡;
             %goto exit_with_error;
         %end;
     %end;
 
 
-    /*----------------------------------------------å‚æ•°æ£€æŸ¥----------------------------------------------*/
+    /*----------------------------------------------²ÎÊı¼ì²é----------------------------------------------*/
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ææ•°æ®é›†ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎöÊı¾İ¼¯£¡;
         %goto exit_with_error;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, %bquote(&indata))) = 0 %then %do;
-            %put ERROR: å‚æ•° INDATA = %bquote(&indata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı INDATA = %bquote(&indata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, %bquote(&indata))));
             %let memname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 2, %bquote(&indata))));
             %let dataset_options_in = %sysfunc(prxposn(&reg_indata_id, 3, %bquote(&indata)));
-            %if &libname_in = %bquote() %then %let libname_in = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_in = %bquote() %then %let libname_in = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_in é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_in Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
 
@@ -111,7 +111,7 @@ Version Date: 2024-01-05 0.1
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in é€»è¾‘åº“ä¸­æ²¡æœ‰æ‰¾åˆ° &memname_in æ•°æ®é›†ï¼;
+                %put ERROR: ÔÚ &libname_in Âß¼­¿âÖĞÃ»ÓĞÕÒµ½ &memname_in Êı¾İ¼¯£¡;
                 %goto exit_with_error;
             %end;
 
@@ -119,39 +119,39 @@ Version Date: 2024-01-05 0.1
                 select count(*) into : nobs from &indata;
             quit;
             %if &nobs = 0 %then %do;
-                %put ERROR: åˆ†ææ•°æ®é›† &indata ä¸ºç©ºï¼;
+                %put ERROR: ·ÖÎöÊı¾İ¼¯ &indata Îª¿Õ£¡;
                 %goto exit_with_error;
             %end;
         %end;
     %end;
-    %put NOTE: åˆ†ææ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_in..&memname_in;
+    %put NOTE: ·ÖÎöÊı¾İ¼¯±»Ö¸¶¨Îª &libname_in..&memname_in;
 
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: å‚æ•° OUTDATA ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı OUTDATA Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
     %else %do;
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
-            %put ERROR: å‚æ•° OUTDATA = %bquote(&outdata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı OUTDATA = %bquote(&outdata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
             %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
             %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-            %if &libname_out = %bquote() %then %let libname_out = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_out = %bquote() %then %let libname_out = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_out";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_out é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_out Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
         %end;
-        %put NOTE: è¾“å‡ºæ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_out..&memname_out;
+        %put NOTE: Êä³öÊı¾İ¼¯±»Ö¸¶¨Îª &libname_out..&memname_out;
     %end;
 
 
@@ -168,20 +168,20 @@ Version Date: 2024-01-05 0.1
             %let indent_sql_expr = %superq(indent);
         %end;
         %else %do;
-            %put ERROR: å‚æ•° INDENT æ ¼å¼ä¸æ­£ç¡®ï¼ŒæŒ‡å®šçš„å­—ç¬¦ä¸²å¿…é¡»ä½¿ç”¨åŒ¹é…çš„å¼•å·åŒ…å›´ï¼;
+            %put ERROR: ²ÎÊı INDENT ¸ñÊ½²»ÕıÈ·£¬Ö¸¶¨µÄ×Ö·û´®±ØĞëÊ¹ÓÃÆ¥ÅäµÄÒıºÅ°üÎ§£¡;
             %goto exit;
         %end;
     %end;
 
 
 
-    /*----------------------------------------------ä¸»ç¨‹åº----------------------------------------------*/
-    /*1. å¤åˆ¶æ•°æ®*/
+    /*----------------------------------------------Ö÷³ÌĞò----------------------------------------------*/
+    /*1. ¸´ÖÆÊı¾İ*/
     data tmp_qmt_indata;
         %unquote(set %superq(indata));
     run;
 
-    /*2. ç»Ÿè®¡æè¿°*/
+    /*2. Í³¼ÆÃèÊö*/
     %let p_format  = #AUTO;
     %let ts_format = #AUTO;
     %quantify_multi(INDATA      = tmp_qmt_indata,
@@ -195,17 +195,17 @@ Version Date: 2024-01-05 0.1
                     LABEL       = %superq(LABEL),
                     INDENT      = %superq(INDENT));
 
-    %if %bquote(&quantify_multi_exit_with_error) = TRUE %then %do; /*åˆ¤æ–­å­ç¨‹åºè°ƒç”¨æ˜¯å¦äº§ç”Ÿé”™è¯¯*/
+    %if %bquote(&quantify_multi_exit_with_error) = TRUE %then %do; /*ÅĞ¶Ï×Ó³ÌĞòµ÷ÓÃÊÇ·ñ²úÉú´íÎó*/
         %goto exit_with_error;
     %end;
 
     proc sql noprint;
-        select max(seq) into :desc_seq_max from tmp_qmt_outdata; /*è·å–æè¿°æ€§ç»Ÿè®¡ç»“æœçš„æœ€å¤§ seq å€¼*/
+        select max(seq) into :desc_seq_max from tmp_qmt_outdata; /*»ñÈ¡ÃèÊöĞÔÍ³¼Æ½á¹ûµÄ×î´ó seq Öµ*/
     quit;
 
-    /*3. ç»Ÿè®¡æ¨æ–­*/
+    /*3. Í³¼ÆÍÆ¶Ï*/
     %if %superq(p_format) = #AUTO %then %do;
-        /*På€¼è¾“å‡ºæ ¼å¼*/
+        /*PÖµÊä³ö¸ñÊ½*/
         proc format;
             picture qtmt_pvalue(round  max = 7)
                     low - < 0.0001 = "<0.0001"(noedit)
@@ -214,7 +214,7 @@ Version Date: 2024-01-05 0.1
         %let p_format = qtmt_pvalue.;
     %end;
 
-    /*æ­£æ€æ€§æ£€éªŒ*/
+    /*ÕıÌ¬ĞÔ¼ìÑé*/
     proc univariate data = tmp_qmt_indata normaltest noprint;
         var %superq(VAR);
         class &groupby_criteria;
@@ -226,11 +226,11 @@ Version Date: 2024-01-05 0.1
         select sum(0 <= probn < 0.05)  into : nrmtest_reject from tmp_qmt_nrmtest;
     quit;
 
-    /*å®šä¹‰å®å˜é‡ï¼Œå­˜å‚¨è¯´æ˜æ–‡å­—*/
-    %let note_stat    = %unquote(%superq(indent_sql_expr)) || "ç»Ÿè®¡é‡";
-    %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "På€¼";
+    /*¶¨Òåºê±äÁ¿£¬´æ´¢ËµÃ÷ÎÄ×Ö*/
+    %let note_stat    = %unquote(%superq(indent_sql_expr)) || "Í³¼ÆÁ¿";
+    %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "PÖµ";
     
-    %if &nrmtest_valid = 0 %then %do; /*ä¸¤ç»„å‡ä¸ºå•ç‚¹åˆ†å¸ƒï¼Œæ— æ³•æ£€éªŒæ­£æ€æ€§ï¼Œä¸è®¡ç®—ç»Ÿè®¡é‡*/
+    %if &nrmtest_valid = 0 %then %do; /*Á½×é¾ùÎªµ¥µã·Ö²¼£¬ÎŞ·¨¼ìÑéÕıÌ¬ĞÔ£¬²»¼ÆËãÍ³¼ÆÁ¿*/
         proc sql noprint;
             insert into tmp_qmt_outdata
                 set seq     = &desc_seq_max + 1,
@@ -243,8 +243,8 @@ Version Date: 2024-01-05 0.1
                     value_1 = "-";
         quit;
     %end;
-    %else %if &nrmtest_reject > 0 %then %do; /*è‡³å°‘ä¸€ä¸ªç»„åˆ«ä¸ç¬¦åˆæ­£æ€æ€§ï¼Œä½¿ç”¨ Wilcoxon æ£€éªŒ*/
-        %put NOTE: è‡³å°‘ä¸€ä¸ªç»„åˆ«ä¸ç¬¦åˆæ­£æ€æ€§ï¼Œä½¿ç”¨ Wilcoxon æ£€éªŒï¼;
+    %else %if &nrmtest_reject > 0 %then %do; /*ÖÁÉÙÒ»¸ö×é±ğ²»·ûºÏÕıÌ¬ĞÔ£¬Ê¹ÓÃ Wilcoxon ¼ìÑé*/
+        %put NOTE: ÖÁÉÙÒ»¸ö×é±ğ²»·ûºÏÕıÌ¬ĞÔ£¬Ê¹ÓÃ Wilcoxon ¼ìÑé£¡;
         proc npar1way data = tmp_qmt_indata wilcoxon noprint;
             var %superq(VAR);
             class &groupby_criteria;
@@ -252,13 +252,13 @@ Version Date: 2024-01-05 0.1
         run;
         proc sql noprint;
             %if %superq(ts_format) = #AUTO %then %do;
-                select max(ceil(log10(abs(Z_WIL))), 1) + 6 into : ts_fmt_width from tmp_qmt_wcxtest; /*è®¡ç®—è¾“å‡ºæ ¼å¼çš„å®½åº¦*/
+                select max(ceil(log10(abs(Z_WIL))), 1) + 6 into : ts_fmt_width from tmp_qmt_wcxtest; /*¼ÆËãÊä³ö¸ñÊ½µÄ¿í¶È*/
                 %let ts_format = &ts_fmt_width..4;
             %end;
             insert into tmp_qmt_outdata
                 set seq     = &desc_seq_max + 1,
                     item    = &note_stat,
-                    value_1 = "Wilcoxonç§©å’Œæ£€éªŒ",
+                    value_1 = "WilcoxonÖÈºÍ¼ìÑé",
                     value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &ts_format));
             insert into tmp_qmt_outdata
                 set seq     = &desc_seq_max + 2,
@@ -275,51 +275,51 @@ Version Date: 2024-01-05 0.1
         run;
         ods html;
 
-        /*æ–¹å·®é½æ€§æ£€éªŒ*/
+        /*·½²îÆëĞÔ¼ìÑé*/
         proc sql noprint;
             select sum(ProbF < 0.05) into : homovar_reject from tmp_qmt_equality;
         quit;
 
-        /*æ–¹å·®ä¸é½ï¼Œä½¿ç”¨ Satterthwaite t æ£€éªŒ*/
+        /*·½²î²»Æë£¬Ê¹ÓÃ Satterthwaite t ¼ìÑé*/
         %if &homovar_reject > 0 %then %do;
-            %put NOTE: æ–¹å·®ä¸é½ï¼Œä½¿ç”¨ Satterthwaite t æ£€éªŒï¼;
+            %put NOTE: ·½²î²»Æë£¬Ê¹ÓÃ Satterthwaite t ¼ìÑé£¡;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "ä¸ç­‰äº"; /*è®¡ç®—è¾“å‡ºæ ¼å¼çš„å®½åº¦*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "²»µÈÓÚ"; /*¼ÆËãÊä³ö¸ñÊ½µÄ¿í¶È*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
-                        value_1 = "tæ£€éªŒ",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "ä¸ç­‰äº"), &ts_format));
+                        value_1 = "t¼ìÑé",
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "²»µÈÓÚ"), &ts_format));
                 insert into tmp_qmt_outdata
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
-                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "ä¸ç­‰äº"), &p_format));
+                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "²»µÈÓÚ"), &p_format));
             quit;
         %end;
         %else %do;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "ç­‰äº"; /*è®¡ç®—è¾“å‡ºæ ¼å¼çš„å®½åº¦*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "µÈÓÚ"; /*¼ÆËãÊä³ö¸ñÊ½µÄ¿í¶È*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
-                        value_1 = "tæ£€éªŒ",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "ç­‰äº"), &ts_format));
+                        value_1 = "t¼ìÑé",
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "µÈÓÚ"), &ts_format));
                 insert into tmp_qmt_outdata
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
-                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "ç­‰äº"), &p_format));
+                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "µÈÓÚ"), &p_format));
             quit;
         %end;
     %end;
     
 
-    /*5. è¾“å‡ºæ•°æ®é›†*/
+    /*5. Êä³öÊı¾İ¼¯*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                     %end;
                                     %else %do;
@@ -328,8 +328,8 @@ Version Date: 2024-01-05 0.1
         set tmp_qmt_outdata;
     run;
 
-    /*----------------------------------------------è¿è¡Œåå¤„ç†----------------------------------------------*/
-    /*åˆ é™¤ä¸­é—´æ•°æ®é›†*/
+    /*----------------------------------------------ÔËĞĞºó´¦Àí----------------------------------------------*/
+    /*É¾³ıÖĞ¼äÊı¾İ¼¯*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
@@ -343,11 +343,11 @@ Version Date: 2024-01-05 0.1
     %end;
     %goto exit;
 
-    /*å¼‚å¸¸é€€å‡º*/
+    /*Òì³£ÍË³ö*/
     %exit_with_error:
     %let qtmt_exit_with_error = TRUE;
 
-    /*æ­£å¸¸é€€å‡º*/
+    /*Õı³£ÍË³ö*/
     %exit:
-    %put NOTE: å® quantify_multi_test å·²ç»“æŸè¿è¡Œï¼;
+    %put NOTE: ºê quantify_multi_test ÒÑ½áÊøÔËĞĞ£¡;
 %mend;
