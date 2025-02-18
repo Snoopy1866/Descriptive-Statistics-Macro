@@ -4,7 +4,7 @@
 
 支持以下编码环境：
 
-- [gb2312](src/gbk/)
+- [gb2312](src/gb2312/)
 - [gb18030](src/gb18030/)
 - [gbk](src/gbk/)
 - [utf8](src/utf8/)
