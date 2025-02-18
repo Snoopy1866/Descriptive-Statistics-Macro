@@ -9,10 +9,10 @@
 - [INDATA](#indata)
 - [VAR](#var)
 - [GROUP](#group)
-- [GROUPBY](#groupby)
 
 ### 可选参数
 
+- [GROUPBY](#groupby)
 - [BY](#by)
 - [UID](#uid)
 - [PATTERN](#pattern)
@@ -24,6 +24,9 @@
 - [LABEL](#label)
 - [INDENT](#indent)
 - [SUFFIX](#suffix)
+- [CHISQ_NOTE](#chisq_note)
+- [FISHER_NOTE](#fisher_note)
+- [FISHER_STAT_PH](#fisher_stat_ph)
 - [PROCHTTP_PROXY](#prochttp_proxy)
 
 ### 调试参数
@@ -46,42 +49,13 @@
 
 ### GROUP
 
-**Syntax** : _variable_
-
-指定分组变量。
-
-> [!WARNING]
->
-> - 参数 `GROUP` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-> - 参数 `GROUP` 不允许指定数值型变量；
-
-**Usage** :
-
-```sas
-GROUP = ARM
-```
-
-[**Example**](#一般用法)
+用法同 [GROUP](../qualify_multi/readme.md#group)
 
 ---
 
 ### GROUPBY
 
-**Syntax** : _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
-
-指定分组变量的排序变量及排序方向。
-
-> [!WARNING]
->
-> - 参数 `GROUPBY` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-
-**Usage** :
-
-```sas
-GROUPBY = ARMN
-```
-
-[**Example**](#一般用法)
+用法同 [GROUPBY](../qualify_multi/readme.md#groupby)
 
 ---
 
@@ -150,6 +124,60 @@ GROUPBY = ARMN
 用法同 [SUFFIX](../qualify/readme.md#suffix)。
 
 ---
+
+### CHISQ_NOTE
+
+**Syntax** : _string_
+
+指定输出结果中卡方检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用卡方检验时生效。
+
+**Default** : `"卡方检验"`
+
+**Usage** :
+
+```sas
+CHISQ_NOTE = "χ\super 2 \nosupersub 检验"
+```
+
+### FISHER_NOTE
+
+**Syntax** : _string_
+
+指定输出结果中 Fisher 精确检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用 Fisher 精确检验时生效。
+
+**Default** : `"Fisher精确检验"`
+
+**Usage** :
+
+```sas
+FISHER_NOTE = "Fisher"
+```
+
+### FISHER_STAT_PH
+
+**Syntax** : _string_
+
+指定输出结果中 Fisher 精确检验统计量显示的占位字符串，该字符串必须使用匹配的单（双）引号包围。
+
+> [!NOTE]
+>
+> 该选项仅在使用 Fisher 精确检验时生效。
+
+**Default** : `""`
+
+**Usage** :
+
+```sas
+FISHER_STAT_PH = "-"
+```
 
 ### PROCHTTP_PROXY
 

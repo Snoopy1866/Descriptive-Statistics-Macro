@@ -98,21 +98,20 @@ VAR = SEX
 
 默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。
 
-当指定一个输出格式作为排序依据时，该输出格式应当使用 `VALUE` 语句生成，例如：
-
-```sas
-proc format;
-    value sexn
-        1 = "男"
-        2 = "女";
-run;
-```
-
-宏程序将根据格式化之前的数值对各分类进行排序。
-
 > [!IMPORTANT]
 >
 > - 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
+> - 当指定一个输出格式作为排序依据时，该输出格式应当使用 `VALUE` 语句生成，例如：
+>
+>   ```sas
+>   proc format;
+>       value sexn
+>           1 = "男"
+>           2 = "女";
+>   run;
+>   ```
+>
+>   宏程序将根据格式化之前的数值对各分类进行排序。
 
 **Usage** :
 
@@ -128,13 +127,27 @@ BY = SEXN.(descending)
 
 ### UID
 
-**Syntax** : _variable_
+**Syntax** : _variable_ <_variable_, ...>
 
-指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量，对分析数据集统计频数和频次，`UID` 的值通常是能够标识观测所属试验对象的变量，例如：`USUBJID`。
+指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量对数据集进行去重，使用去重后的数据集统计频数，去重前的数据集统计频次。
+
+`UID` 的值通常是能够标识观测所属 `频数统计对象` 的变量。
+
+对 `频数统计对象` 的详细解释如下：
+
+- 若数据集 `adsl` 的主键是 `USUBJID`，需要统计性别 `sex` 的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，与主键相同，此时可以指定 `UID = USUBJID`，也可以不指定 `UID`
+- 若数据集 `adlb` 的主键是 `USUBJID PARCAT PARAM VISIT`，需要统计实验室检查的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，无法构成主键，需要指定 `UID = USUBJID`
+- 若数据集 `adlb` 的主键是 `USUBJID PARCAT PARAM VISIT`，需要统计实验室检查-检查项目的频数和频次，此时的 `频数统计对象` 是 `USUBJID PARCAT PARAM`，无法构成主键，需要指定 `UID = USUBJID PARCAT PARAM`
+
+> [!NOTE]
+>
+> - 在 `ADSL` 数据集中，`UID` 的值一般是 ` `（空值）
+> - 在 `OCCDS` 数据集中，`UID` 的值一般是 `USUBJID`
+> - 在 `BDS` 数据集中，`UID` 的值一般是 `USUBJID PARCAT PARAM ...`
 
 **Default** : #NULL
 
-默认情况下，宏程序将分析数据集中的每一条观测都视为不同试验对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
+默认情况下，宏程序将分析数据集中的每一条观测都视为不同统计对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
 
 > [!IMPORTANT]
 >
@@ -144,6 +157,8 @@ BY = SEXN.(descending)
 
 ```sas
 UID = USUBJID
+UID = USUBJID PARAM
+UID = USUBJID PARAM VISIT
 ```
 
 [**Example**](#指定唯一标识符变量)
@@ -260,6 +275,7 @@ MISSING_POSITION = FIRST
 
 | 变量名                                   | 含义                                          |
 | ---------------------------------------- | --------------------------------------------- |
+| IDT                                      | 缩进标识（_indent identifier_）               |
 | SEQ                                      | 行号                                          |
 | ITEM                                     | 分类名称（展示名称）                          |
 | VALUE                                    | 统计量在 [PATTERN](#pattern) 指定的模式下的值 |
@@ -329,7 +345,7 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 >
 > - <sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
 >
->   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 7)$， $s$ 表示检验统计量的值
+>   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 1) + 6$， $s$ 表示检验统计量的值
 >   - _d_ = 4
 >
 > - <sup>4</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：

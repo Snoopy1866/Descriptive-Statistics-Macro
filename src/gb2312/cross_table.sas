@@ -1,7 +1,7 @@
-ï»¿/*
+/*
 ===================================
 Macro Name: cross_table
-Macro Label:åŸºæœ¬åˆ—è”è¡¨
+Macro Label:»ù±¾ÁĞÁª±í
 Author: wtwang
 Version Date: 2022-09-21 V1.1
               2024-05-28 V1.2
@@ -21,16 +21,16 @@ Version Date: 2022-09-21 V1.1
                    ADD_CAT_ALL     = TRUE TRUE,
                    PCT_OUT         = FALSE,
                    FORMAT          = PERCENTN9.2,
-                   DEL_TEMP_DATA   = TRUE) /des = "åŸºæœ¬åˆ—è”è¡¨" parmbuff;
+                   DEL_TEMP_DATA   = TRUE) /des = "»ù±¾ÁĞÁª±í" parmbuff;
 
-    /*æ‰“å¼€å¸®åŠ©æ–‡æ¡£*/
+    /*´ò¿ª°ïÖúÎÄµµ*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/cross_table/readme.md";
         %goto exit;
     %end;
 
 
-    /*ç»Ÿä¸€å‚æ•°å¤§å°å†™*/
+    /*Í³Ò»²ÎÊı´óĞ¡Ğ´*/
     %let indata          = %sysfunc(strip(%bquote(&indata)));
     %let rowcat          = %sysfunc(strip(%bquote(&rowcat)));
     %let colcat          = %sysfunc(strip(%bquote(&colcat)));
@@ -45,50 +45,50 @@ Version Date: 2022-09-21 V1.1
     %let format          = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&format)))))));
     %let del_temp_data   = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
-    /*å£°æ˜å±€éƒ¨å˜é‡*/
+    /*ÉùÃ÷¾Ö²¿±äÁ¿*/
     %local i j;
 
 
 
-    /*-------------------------------------------å‚æ•°æ£€æŸ¥-------------------------------------------*/
+    /*-------------------------------------------²ÎÊı¼ì²é-------------------------------------------*/
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ææ•°æ®é›†ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎöÊı¾İ¼¯£¡;
         %goto exit;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, &indata)) = 0 %then %do;
-            %put ERROR: å‚æ•° INDATA = &indata æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı INDATA = &indata ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, &indata)));
             %let memname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 2, &indata)));
             %let dataset_options_in = %sysfunc(prxposn(&reg_indata_id, 3, &indata));
-            %if &libname_in = %bquote() %then %let libname_in = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_in = %bquote() %then %let libname_in = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_in é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_in Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit;
             %end;
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in é€»è¾‘åº“ä¸­æ²¡æœ‰æ‰¾åˆ° &memname_in æ•°æ®é›†ï¼;
+                %put ERROR: ÔÚ &libname_in Âß¼­¿âÖĞÃ»ÓĞÕÒµ½ &memname_in Êı¾İ¼¯£¡;
                 %goto exit;
             %end;
         %end;
     %end;
-    %put NOTE: åˆ†ææ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_in..&memname_in;
+    %put NOTE: ·ÖÎöÊı¾İ¼¯±»Ö¸¶¨Îª &libname_in..&memname_in;
 
 
     /*ROWCAT*/
     %if %bquote(&rowcat) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šæ„å»ºåˆ—è”è¡¨çš„è¡Œå˜é‡åï¼;
+        %put ERROR: Î´Ö¸¶¨¹¹½¨ÁĞÁª±íµÄĞĞ±äÁ¿Ãû£¡;
         %goto exit;
     %end;
 
@@ -96,26 +96,26 @@ Version Date: 2022-09-21 V1.1
     %let reg_rowcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:[\s,]+".*")*\s*)?\))?$/);
     %let reg_rowcat_id = %sysfunc(prxparse(&reg_rowcat));
     %if %sysfunc(prxmatch(&reg_rowcat_id, &rowcat)) = 0 %then %do;
-        %put ERROR: å‚æ•° ROWCAT = &rowcat æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı ROWCAT = &rowcat ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
-        %let row_var = %upcase(%sysfunc(prxposn(&reg_rowcat_id, 1, &rowcat))); /*è¡Œå˜é‡*/
-        %let row_val = %sysfunc(prxposn(&reg_rowcat_id, 2, &rowcat)); /*è¡Œåˆ†ç±»*/
+        %let row_var = %upcase(%sysfunc(prxposn(&reg_rowcat_id, 1, &rowcat))); /*ĞĞ±äÁ¿*/
+        %let row_val = %sysfunc(prxposn(&reg_rowcat_id, 2, &rowcat)); /*ĞĞ·ÖÀà*/
         proc sql noprint;
             select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&row_var";
         quit;
-        %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-            %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ %upcase(&row_var);
+        %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+            %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±äÁ¿ %upcase(&row_var);
             %goto exit;
         %end;
         %else %do;
-            %if %bquote(&row_val) = %bquote() %then %do; /*æœªæŒ‡å®šåˆ†ç±»çš„å€¼*/
+            %if %bquote(&row_val) = %bquote() %then %do; /*Î´Ö¸¶¨·ÖÀàµÄÖµ*/
                 proc sql noprint;
                     select distinct cats("""", &row_var, """") into :row_val separated by "," from &indata where not missing(&row_var);
                 quit;
             %end;
-            %else %do; /*æŒ‡å®šäº†åˆ†ç±»çš„å€¼*/
+            %else %do; /*Ö¸¶¨ÁË·ÖÀàµÄÖµ*/
                 %let IS_ROW_CAT_SPECIFIED = TRUE;
             %end;
         %end;
@@ -125,7 +125,7 @@ Version Date: 2022-09-21 V1.1
 
     /*COLCAT*/
     %if %bquote(&colcat) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šæ„å»ºåˆ—è”è¡¨çš„åˆ—å˜é‡åï¼;
+        %put ERROR: Î´Ö¸¶¨¹¹½¨ÁĞÁª±íµÄÁĞ±äÁ¿Ãû£¡;
         %goto exit;
     %end;
 
@@ -133,29 +133,29 @@ Version Date: 2022-09-21 V1.1
     %let reg_colcat = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\((\s*".*"(?:[\s,]+".*")*\s*)?\))?$/);
     %let reg_colcat_id = %sysfunc(prxparse(&reg_colcat));
     %if %sysfunc(prxmatch(&reg_colcat_id, &colcat)) = 0 %then %do;
-        %put ERROR: å‚æ•° COLCAT = &colcat æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı COLCAT = &colcat ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
-        %let col_var = %upcase(%sysfunc(prxposn(&reg_colcat_id, 1, &colcat))); /*åˆ—å˜é‡*/
-        %let col_val = %sysfunc(prxposn(&reg_colcat_id, 2, &colcat)); /*åˆ—åˆ†ç±»*/
+        %let col_var = %upcase(%sysfunc(prxposn(&reg_colcat_id, 1, &colcat))); /*ÁĞ±äÁ¿*/
+        %let col_val = %sysfunc(prxposn(&reg_colcat_id, 2, &colcat)); /*ÁĞ·ÖÀà*/
         %if &row_var = &col_var %then %do;
-            %put WARNING: åˆ—è”è¡¨çš„è¡Œåˆ—å˜é‡ç›¸åŒï¼Œè¾“å‡ºç»“æœå¯èƒ½æ˜¯éé¢„æœŸçš„ï¼;
+            %put WARNING: ÁĞÁª±íµÄĞĞÁĞ±äÁ¿ÏàÍ¬£¬Êä³ö½á¹û¿ÉÄÜÊÇ·ÇÔ¤ÆÚµÄ£¡;
         %end;
         proc sql noprint;
             select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&col_var";
         quit;
-        %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-            %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ %upcase(&col_var);
+        %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+            %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±äÁ¿ %upcase(&col_var);
             %goto exit;
         %end;
         %else %do;
-            %if %bquote(&col_val) = %bquote() %then %do; /*æœªæŒ‡å®šåˆ†ç±»çš„å€¼*/
+            %if %bquote(&col_val) = %bquote() %then %do; /*Î´Ö¸¶¨·ÖÀàµÄÖµ*/
                 proc sql noprint;
                     select distinct cats("""", &col_var, """") into :col_val separated by "," from &indata where not missing(&col_var);
                 quit;
             %end;
-            %else %do; /*æŒ‡å®šäº†åˆ†ç±»çš„å€¼*/
+            %else %do; /*Ö¸¶¨ÁË·ÖÀàµÄÖµ*/
                 %let IS_COL_CAT_SPECIFIED = TRUE;
             %end;
         %end;
@@ -164,7 +164,7 @@ Version Date: 2022-09-21 V1.1
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®š OUTDATA ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨ OUTDATA Îª¿Õ£¡;
         %goto exit;
     %end;
     %else %if %bquote(&outdata) = #AUTO %then %do;
@@ -173,61 +173,61 @@ Version Date: 2022-09-21 V1.1
 
     %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
     %if %sysfunc(prxmatch(&reg_outdata_id, &outdata)) = 0 %then %do;
-        %put ERROR: å‚æ•° OUTDATA = &outdata æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı OUTDATA = &outdata ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
         %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
         %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
         %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-        %if &libname_out = %bquote() %then %let libname_out = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+        %if &libname_out = %bquote() %then %let libname_out = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
         proc sql noprint;
             select * from DICTIONARY.MEMBERS where libname = "&libname_out";
         quit;
         %if &SQLOBS = 0 %then %do;
-            %put ERROR: &libname_out é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+            %put ERROR: &libname_out Âß¼­¿â²»´æÔÚ£¡;
             %goto exit;
         %end;
     %end;
-    %put NOTE: è¾“å‡ºæ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_out..&memname_out;
+    %put NOTE: Êä³öÊı¾İ¼¯±»Ö¸¶¨Îª &libname_out..&memname_out;
 
 
     /*ROWCAT_BY*/
-    %if &IS_ROW_CAT_SPECIFIED = TRUE %then %do; /*å‚æ•°å†²çªåˆ¤å®š*/
+    %if &IS_ROW_CAT_SPECIFIED = TRUE %then %do; /*²ÎÊı³åÍ»ÅĞ¶¨*/
         %if %bquote(&rowcat_by) ^= #AUTO %then %do;
-            %put WARNING: å·²é€šè¿‡å‚æ•° ROWCAT æŒ‡å®šäº†è¡Œåˆ†ç±»çš„å‡ºç°é¡ºåºï¼Œå‚æ•° ROWCAT_BY çš„å€¼å·²è¢«å¿½ç•¥ï¼;
+            %put WARNING: ÒÑÍ¨¹ı²ÎÊı ROWCAT Ö¸¶¨ÁËĞĞ·ÖÀàµÄ³öÏÖË³Ğò£¬²ÎÊı ROWCAT_BY µÄÖµÒÑ±»ºöÂÔ£¡;
         %end;
     %end;
     %else %do;
-        %if %bquote(&rowcat_by) = %bquote() %then %do; /*ç©ºå€¼åˆ¤å®š*/
-            %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° ROWCAT_BY ä¸ºç©ºï¼;
+        %if %bquote(&rowcat_by) = %bquote() %then %do; /*¿ÕÖµÅĞ¶¨*/
+            %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı ROWCAT_BY Îª¿Õ£¡;
             %goto exit;
         %end;
         %else %if %bquote(&rowcat_by) ^= #AUTO %then %do;
             %let reg_rowcat_by = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:ASC|DESC)(?:ENDING)?)?\))?$/);
             %let reg_rowcat_by_id = %sysfunc(prxparse(&reg_rowcat_by));
-            %if %sysfunc(prxmatch(&reg_rowcat_by_id, &rowcat_by)) = 0 %then %do; /*è¯­æ³•æ ¼å¼åˆ¤å®š*/
-                %put ERROR: å‚æ•° ROWCAT_BY æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %if %sysfunc(prxmatch(&reg_rowcat_by_id, &rowcat_by)) = 0 %then %do; /*Óï·¨¸ñÊ½ÅĞ¶¨*/
+                %put ERROR: ²ÎÊı ROWCAT_BY ¸ñÊ½²»ÕıÈ·£¡;
                 %goto exit;
             %end;
             %else %do;
                 %let rowcat_by_var = %sysfunc(prxposn(&reg_rowcat_by_id, 1, &rowcat_by));
                 %let rowcat_by_direction = %sysfunc(prxposn(&reg_rowcat_by_id, 2, &rowcat_by));
                 
-                %if &rowcat_by_var = &row_var %then %do; /*è¡Œå˜é‡è‡ªèº«ä½œä¸ºæ’åºå˜é‡ï¼Œå‘å‡ºwarning*/
-                    %put WARNING: ä¸ºè¡Œå˜é‡ &row_var æŒ‡å®šäº†è‡ªèº«ä½œä¸ºåˆ†ç±»æ’åºçš„å˜é‡ï¼;
+                %if &rowcat_by_var = &row_var %then %do; /*ĞĞ±äÁ¿×ÔÉí×÷ÎªÅÅĞò±äÁ¿£¬·¢³öwarning*/
+                    %put WARNING: ÎªĞĞ±äÁ¿ &row_var Ö¸¶¨ÁË×ÔÉí×÷Îª·ÖÀàÅÅĞòµÄ±äÁ¿£¡;
                 %end;
                 %else %do;
                     proc sql noprint;
                         select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&rowcat_by_var";
                     quit;
-                    %if &SQLOBS = 0 %then %do; /*å˜é‡å­˜åœ¨æ€§åˆ¤å®š*/
-                        %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°ç”¨äºå¯¹è¡Œåˆ†ç±»æ’åºçš„å˜é‡ &rowcat_by_var;
+                    %if &SQLOBS = 0 %then %do; /*±äÁ¿´æÔÚĞÔÅĞ¶¨*/
+                        %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½ÓÃÓÚ¶ÔĞĞ·ÖÀàÅÅĞòµÄ±äÁ¿ &rowcat_by_var;
                         %goto exit;
                     %end;
                     %else %do;
                         %if &rowcat_by_direction = %bquote() %then %do;
-                            %put NOTE: æœªæŒ‡å®šè¡Œåˆ†ç±»çš„æ’åºæ–¹å‘ï¼Œé»˜è®¤å‡åºæ’åˆ—ï¼;
+                            %put NOTE: Î´Ö¸¶¨ĞĞ·ÖÀàµÄÅÅĞò·½Ïò£¬Ä¬ÈÏÉıĞòÅÅÁĞ£¡;
                             %let rowcat_by_direction = ASC;
                         %end;
                         %else %if &rowcat_by_direction = ASCENDING %then %do;
@@ -245,41 +245,41 @@ Version Date: 2022-09-21 V1.1
 
 
     /*COLCAT_BY*/
-    %if &IS_COL_CAT_SPECIFIED = TRUE %then %do; /*å‚æ•°å†²çªåˆ¤å®š*/
+    %if &IS_COL_CAT_SPECIFIED = TRUE %then %do; /*²ÎÊı³åÍ»ÅĞ¶¨*/
         %if %bquote(&colcat_by) ^= #AUTO %then %do;
-            %put WARNING: å·²é€šè¿‡å‚æ•° COLCAT æŒ‡å®šäº†è¡Œåˆ†ç±»çš„å‡ºç°é¡ºåºï¼Œå‚æ•° COLCAT_BY çš„å€¼å·²è¢«å¿½ç•¥ï¼;
+            %put WARNING: ÒÑÍ¨¹ı²ÎÊı COLCAT Ö¸¶¨ÁËĞĞ·ÖÀàµÄ³öÏÖË³Ğò£¬²ÎÊı COLCAT_BY µÄÖµÒÑ±»ºöÂÔ£¡;
         %end;
     %end;
     %else %do;
-        %if %bquote(&colcat_by) = %bquote() %then %do; /*ç©ºå€¼åˆ¤å®š*/
-            %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° COLCAT_BY ä¸ºç©ºï¼;
+        %if %bquote(&colcat_by) = %bquote() %then %do; /*¿ÕÖµÅĞ¶¨*/
+            %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı COLCAT_BY Îª¿Õ£¡;
             %goto exit;
         %end;
         %else %if %bquote(&colcat_by) ^= #AUTO %then %do;
             %let reg_colcat_by = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:ASC|DESC)(?:ENDING)?)?\))?$/);
             %let reg_colcat_by_id = %sysfunc(prxparse(&reg_colcat_by));
-            %if %sysfunc(prxmatch(&reg_colcat_by_id, &colcat_by)) = 0 %then %do; /*è¯­æ³•æ ¼å¼åˆ¤å®š*/
-                %put ERROR: å‚æ•° COLCAT_BY æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %if %sysfunc(prxmatch(&reg_colcat_by_id, &colcat_by)) = 0 %then %do; /*Óï·¨¸ñÊ½ÅĞ¶¨*/
+                %put ERROR: ²ÎÊı COLCAT_BY ¸ñÊ½²»ÕıÈ·£¡;
                 %goto exit;
             %end;
             %else %do;
                 %let colcat_by_var = %sysfunc(prxposn(&reg_colcat_by_id, 1, &colcat_by));
                 %let colcat_by_direction = %sysfunc(prxposn(&reg_colcat_by_id, 2, &colcat_by));
                 
-                %if &colcat_by_var = &col_var %then %do; /*è¡Œå˜é‡è‡ªèº«ä½œä¸ºæ’åºå˜é‡ï¼Œå‘å‡ºwarning*/
-                    %put WARNING: ä¸ºè¡Œå˜é‡ &col_var æŒ‡å®šäº†è‡ªèº«ä½œä¸ºåˆ†ç±»æ’åºçš„å˜é‡ï¼;
+                %if &colcat_by_var = &col_var %then %do; /*ĞĞ±äÁ¿×ÔÉí×÷ÎªÅÅĞò±äÁ¿£¬·¢³öwarning*/
+                    %put WARNING: ÎªĞĞ±äÁ¿ &col_var Ö¸¶¨ÁË×ÔÉí×÷Îª·ÖÀàÅÅĞòµÄ±äÁ¿£¡;
                 %end;
                 %else %do;
                     proc sql noprint;
                         select * from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&colcat_by_var";
                     quit;
-                    %if &SQLOBS = 0 %then %do; /*å˜é‡å­˜åœ¨æ€§åˆ¤å®š*/
-                        %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°ç”¨äºå¯¹åˆ—åˆ†ç±»æ’åºçš„å˜é‡ &colcat_by_var;
+                    %if &SQLOBS = 0 %then %do; /*±äÁ¿´æÔÚĞÔÅĞ¶¨*/
+                        %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½ÓÃÓÚ¶ÔÁĞ·ÖÀàÅÅĞòµÄ±äÁ¿ &colcat_by_var;
                         %goto exit;
                     %end;
                     %else %do;
                         %if &colcat_by_direction = %bquote() %then %do;
-                            %put NOTE: æœªæŒ‡å®šåˆ—åˆ†ç±»çš„æ’åºæ–¹å‘ï¼Œé»˜è®¤å‡åºæ’åˆ—ï¼;
+                            %put NOTE: Î´Ö¸¶¨ÁĞ·ÖÀàµÄÅÅĞò·½Ïò£¬Ä¬ÈÏÉıĞòÅÅÁĞ£¡;
                             %let colcat_by_direction = ASC;
                         %end;
                         %else %if &colcat_by_direction = ASCENDING %then %do;
@@ -298,14 +298,14 @@ Version Date: 2022-09-21 V1.1
 
     /*ADD_CAT_MISSING*/
     %if %bquote(&add_cat_missing) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° ADD_CAT_MISSING ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı ADD_CAT_MISSING Îª¿Õ£¡;
         %goto exit;
     %end;
 
     %let reg_add_cat_missing = %bquote(/^(TRUE|FALSE)(?:\s(TRUE|FALSE))?$/);
     %let reg_add_cat_missing_id = %sysfunc(prxparse(&reg_add_cat_missing));
     %if %sysfunc(prxmatch(&reg_add_cat_missing_id, &add_cat_missing)) = 0 %then %do;
-        %put ERROR: å‚æ•° ADD_CAT_MISSING æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı ADD_CAT_MISSING ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
@@ -314,21 +314,21 @@ Version Date: 2022-09-21 V1.1
 
         %if %bquote(&add_cat_missing_col) = %bquote() %then %do;
             %let add_cat_missing_col = &add_cat_missing_row;
-            %put NOTE: å‚æ•° ADD_CAT_MISSING æœªæŒ‡å®šåˆ—å˜é‡æ˜¯å¦è®¡ç®—â€œç¼ºå¤±â€åˆ†ç±»ï¼Œé»˜è®¤ä¸è¡Œå˜é‡ä¸€è‡´ï¼;
+            %put NOTE: ²ÎÊı ADD_CAT_MISSING Î´Ö¸¶¨ÁĞ±äÁ¿ÊÇ·ñ¼ÆËã¡°È±Ê§¡±·ÖÀà£¬Ä¬ÈÏÓëĞĞ±äÁ¿Ò»ÖÂ£¡;
         %end;
     %end;
 
 
     /*ADD_CAT_OTHER*/
     %if %bquote(&add_cat_other) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° ADD_CAT_OTHER ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı ADD_CAT_OTHER Îª¿Õ£¡;
         %goto exit;
     %end;
 
     %let reg_add_cat_other = %bquote(/^(TRUE(?:\((?:\s?TYPE\s?=\s?([12])\s?)?\))?|FALSE)(?:\s(TRUE(?:\((?:\s?TYPE\s?=\s?([12])\s?)?\))?|FALSE))?$/);
     %let reg_add_cat_other_id = %sysfunc(prxparse(&reg_add_cat_other));
     %if %sysfunc(prxmatch(&reg_add_cat_other_id, &add_cat_other)) = 0 %then %do;
-        %put ERROR: å‚æ•° ADD_CAT_OTHER æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı ADD_CAT_OTHER ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
@@ -346,32 +346,32 @@ Version Date: 2022-09-21 V1.1
 
         %if %bquote(&add_cat_other_row) = TRUE and %bquote(&add_cat_other_row_type) = %bquote() %then %do;
             %let add_cat_other_row_type = 1;
-            %put NOTE: å‚æ•° ADD_CAT_OTHER æœªæŒ‡å®šè¡Œå˜é‡è®¡ç®—â€œå…¶ä»–â€åˆ†ç±»çš„å…·ä½“ç±»å‹ï¼Œé»˜è®¤æŒ‡å®š TYPE = 1ï¼Œç¼ºå¤±å€¼ä¸è®¡å…¥è¡Œå˜é‡çš„â€œå…¶ä»–â€åˆ†ç±»ï¼;
+            %put NOTE: ²ÎÊı ADD_CAT_OTHER Î´Ö¸¶¨ĞĞ±äÁ¿¼ÆËã¡°ÆäËû¡±·ÖÀàµÄ¾ßÌåÀàĞÍ£¬Ä¬ÈÏÖ¸¶¨ TYPE = 1£¬È±Ê§Öµ²»¼ÆÈëĞĞ±äÁ¿µÄ¡°ÆäËû¡±·ÖÀà£¡;
         %end;
 
         %if %bquote(&add_cat_other_col) = %bquote() %then %do;
             %let add_cat_other_col = &add_cat_other_row;
             %let add_cat_other_col_type = &add_cat_other_row_type;
-            %put NOTE: å‚æ•° ADD_CAT_OTHER æœªæŒ‡å®šåˆ—å˜é‡æ˜¯å¦è®¡ç®—â€œå…¶ä»–â€åˆ†ç±»åŠå…·ä½“ç±»å‹ï¼Œé»˜è®¤ä¸è¡Œå˜é‡ä¸€è‡´ï¼;
+            %put NOTE: ²ÎÊı ADD_CAT_OTHER Î´Ö¸¶¨ÁĞ±äÁ¿ÊÇ·ñ¼ÆËã¡°ÆäËû¡±·ÖÀà¼°¾ßÌåÀàĞÍ£¬Ä¬ÈÏÓëĞĞ±äÁ¿Ò»ÖÂ£¡;
         %end;
 
         %if %bquote(&add_cat_other_col) = TRUE and %bquote(&add_cat_other_col_type) = %bquote() %then %do;
             %let add_cat_other_col_type = 1;
-            %put NOTE: å‚æ•° ADD_CAT_OTHER æœªæŒ‡å®šåˆ—å˜é‡è®¡ç®—â€œå…¶ä»–â€åˆ†ç±»çš„å…·ä½“ç±»å‹ï¼Œé»˜è®¤æŒ‡å®š TYPE = 1ï¼Œç¼ºå¤±å€¼ä¸è®¡å…¥åˆ—å˜é‡çš„â€œå…¶ä»–â€åˆ†ç±»ï¼;
+            %put NOTE: ²ÎÊı ADD_CAT_OTHER Î´Ö¸¶¨ÁĞ±äÁ¿¼ÆËã¡°ÆäËû¡±·ÖÀàµÄ¾ßÌåÀàĞÍ£¬Ä¬ÈÏÖ¸¶¨ TYPE = 1£¬È±Ê§Öµ²»¼ÆÈëÁĞ±äÁ¿µÄ¡°ÆäËû¡±·ÖÀà£¡;
         %end;
     %end;
 
 
     /*ADD_CAT_ALL*/
     %if %bquote(&add_cat_all) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° ADD_CAT_ALL ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı ADD_CAT_ALL Îª¿Õ£¡;
         %goto exit;
     %end;
 
     %let reg_add_cat_all = %bquote(/^(TRUE|FALSE)(?:\s(TRUE|FALSE))?$/);
     %let reg_add_cat_all_id = %sysfunc(prxparse(&reg_add_cat_all));
     %if %sysfunc(prxmatch(&reg_add_cat_all_id, &add_cat_all)) = 0 %then %do;
-        %put ERROR: å‚æ•° ADD_CAT_ALL æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı ADD_CAT_ALL ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit;
     %end;
     %else %do;
@@ -380,7 +380,7 @@ Version Date: 2022-09-21 V1.1
 
         %if %bquote(&add_cat_all_col) = %bquote() %then %do;
             %let add_cat_all_col = &add_cat_all_row;
-            %put NOTE: å‚æ•° ADD_CAT_ALL æœªæŒ‡å®šåˆ—å˜é‡æ˜¯å¦è®¡ç®—â€œåˆè®¡â€åˆ†ç±»ï¼Œé»˜è®¤ä¸è¡Œå˜é‡ä¸€è‡´ï¼;
+            %put NOTE: ²ÎÊı ADD_CAT_ALL Î´Ö¸¶¨ÁĞ±äÁ¿ÊÇ·ñ¼ÆËã¡°ºÏ¼Æ¡±·ÖÀà£¬Ä¬ÈÏÓëĞĞ±äÁ¿Ò»ÖÂ£¡;
         %end;
     %end;
 
@@ -392,35 +392,35 @@ Version Date: 2022-09-21 V1.1
         %if &add_cat_missing_row = FALSE and &add_cat_missing_col = FALSE %then %do;
             where not (missing(&row_var) and missing(&col_var))
         %end;
-        ; /*è§‚æµ‹æ•°*/
+        ; /*¹Û²âÊı*/
     quit;
     %if %bquote(&n) = #AUTO %then %do;
         %let n = &n_obs;
     %end;
     %else %do;
         %if %bquote(&n) = %bquote() %then %do;
-            %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° N ä¸ºç©ºï¼;
+            %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı N Îª¿Õ£¡;
             %goto exit;
         %end;
         %else %do;
             %let reg_n = %bquote(/^(?:\d*\.?\d*|-(?:\d+(?:\.\d*)?|\.\d*))$/);
             %let reg_n_id = %sysfunc(prxparse(&reg_n));
             %if %sysfunc(prxmatch(&reg_n_id, &n)) = 0 %then %do;
-                %put ERROR: å‚æ•° N æ ¼å¼ä¸æ­£ç¡®ï¼;
+                %put ERROR: ²ÎÊı N ¸ñÊ½²»ÕıÈ·£¡;
                 %goto exit;
             %end;
             %else %do;
                 %if %sysevalf(&n < 0) %then %do;
-                    %put WARNING: å‚æ•° N æŒ‡å®šäº†ä¸€ä¸ªè´Ÿæ•°ä½œä¸ºåˆè®¡é¢‘æ•°ï¼;
+                    %put WARNING: ²ÎÊı N Ö¸¶¨ÁËÒ»¸ö¸ºÊı×÷ÎªºÏ¼ÆÆµÊı£¡;
                 %end;
                 %else %if %sysevalf(&n = 0) %then %do;
-                    %put WARNING: å‚æ•° N æŒ‡å®šæ•°å€¼ 0 ä½œä¸ºåˆè®¡é¢‘æ•°ï¼;
+                    %put WARNING: ²ÎÊı N Ö¸¶¨ÊıÖµ 0 ×÷ÎªºÏ¼ÆÆµÊı£¡;
                 %end;
                 %else %if %sysevalf(%sysfunc(mod(&n, 1)) ^= 0) %then %do;
-                    %put WARNING: å‚æ•° N æŒ‡å®šäº†ä¸€ä¸ªæµ®ç‚¹æ•°ä½œä¸ºåˆè®¡é¢‘æ•°ï¼;
+                    %put WARNING: ²ÎÊı N Ö¸¶¨ÁËÒ»¸ö¸¡µãÊı×÷ÎªºÏ¼ÆÆµÊı£¡;
                 %end;
                 %else %if %sysevalf(&n < &n_obs) %then %do;
-                    %put WARNING: å‚æ•° N æŒ‡å®šçš„åˆè®¡é¢‘æ•°å°äºæ•°æ®é›† &libname_in..&memname_in çš„è§‚æµ‹æ•°ï¼;
+                    %put WARNING: ²ÎÊı N Ö¸¶¨µÄºÏ¼ÆÆµÊıĞ¡ÓÚÊı¾İ¼¯ &libname_in..&memname_in µÄ¹Û²âÊı£¡;
                 %end;
             %end;
         %end;
@@ -429,11 +429,11 @@ Version Date: 2022-09-21 V1.1
 
     /*PCT_OUT*/
     %if %bquote(&pct_out) = %bquote() %then %do;
-        %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° PCT_OUT ä¸ºç©ºï¼;
+        %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı PCT_OUT Îª¿Õ£¡;
         %goto exit;
     %end;
     %else %if %bquote(&pct_out) ^= TRUE and %bquote(&pct_out) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° PCT_OUT å¿…é¡»æ˜¯ TRUE å’Œ FALSE å…¶ä¸­ä¹‹ä¸€ï¼;
+        %put ERROR: ²ÎÊı PCT_OUT ±ØĞëÊÇ TRUE ºÍ FALSE ÆäÖĞÖ®Ò»£¡;
         %goto exit;
     %end;
 
@@ -443,19 +443,19 @@ Version Date: 2022-09-21 V1.1
     /*FORMAT*/
     %if %bquote(&pct_out) = FALSE %then %do;
         %if %bquote(&format) ^= PERCENTN9.2 %then %do;
-            %put WARNING: å‚æ•° PCT_OUT å·²è¢«æŒ‡å®šä¸º FALSE, å‚æ•° FORMAT çš„å€¼å°†è¢«å¿½ç•¥ï¼;
+            %put WARNING: ²ÎÊı PCT_OUT ÒÑ±»Ö¸¶¨Îª FALSE, ²ÎÊı FORMAT µÄÖµ½«±»ºöÂÔ£¡;
         %end;
     %end;
     %else %do;
         %if %bquote(&format) = %bquote() %then %do;
-            %put ERROR: è¯•å›¾æŒ‡å®šå‚æ•° FORMAT ä¸ºç©ºï¼;
+            %put ERROR: ÊÔÍ¼Ö¸¶¨²ÎÊı FORMAT Îª¿Õ£¡;
             %goto exit;
         %end;
         %else %do;
             %let reg_format = %bquote(/^((\$?[A-Za-z_]+(?:\d+[A-Za-z_]+)?)(?:\.|\d+\.\d*)|\$\d+\.|\d+\.\d*)$/);
             %let reg_format_id = %sysfunc(prxparse(&reg_format));
             %if %sysfunc(prxmatch(&reg_format_id, &format)) = 0 %then %do;
-                %put ERROR: å‚æ•° FORMAT æ ¼å¼ä¸æ­£ç¡®ï¼;
+                %put ERROR: ²ÎÊı FORMAT ¸ñÊ½²»ÕıÈ·£¡;
                 %goto exit;
             %end;
             %else %do;
@@ -465,7 +465,7 @@ Version Date: 2022-09-21 V1.1
                         select * from DICTIONARY.FORMATS where fmtname = "&format_base" and fmttype = "F";
                     quit;
                     %if &SQLOBS = 0 %then %do;
-                        %put ERROR: è¾“å‡ºæ ¼å¼ &format ä¸å­˜åœ¨ï¼;
+                        %put ERROR: Êä³ö¸ñÊ½ &format ²»´æÔÚ£¡;
                         %goto exit;
                     %end;
                 %end;
@@ -476,15 +476,15 @@ Version Date: 2022-09-21 V1.1
     
     /*DEL_TEMP_DATA*/
     %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° DEL_TEMP_DATA å¿…é¡»æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı DEL_TEMP_DATA ±ØĞëÊÇ TRUE »ò FALSE£¡;
         %goto exit;
     %end;
 
-    /*-------------------------------------------ä¸»ç¨‹åº-------------------------------------------*/
+    /*-------------------------------------------Ö÷³ÌĞò-------------------------------------------*/
     
-    /*1. è¡Œåˆ†ç±»çš„ç”Ÿæˆä¸æ’åº*/
+    /*1. ĞĞ·ÖÀàµÄÉú³ÉÓëÅÅĞò*/
     %if &IS_ROW_CAT_SPECIFIED = FALSE and %bquote(&rowcat_by) ^= #AUTO %then %do;
-        /*æŒ‡å®šäº†æ’åºå˜é‡ï¼Œè¡Œåˆ†ç±»çš„é¡ºåºè°ƒæ•´*/
+        /*Ö¸¶¨ÁËÅÅĞò±äÁ¿£¬ĞĞ·ÖÀàµÄË³Ğòµ÷Õû*/
         proc sql noprint;
             create table temp_rowcat as
                 select
@@ -501,14 +501,14 @@ Version Date: 2022-09-21 V1.1
         quit;
     %end;
     %else %do;
-        /*ç›´æ¥æŒ‡å®šåˆ†ç±»å€¼ï¼Œæ‹†åˆ†rowvalçš„åˆ†ç±»*/
+        /*Ö±½ÓÖ¸¶¨·ÖÀàÖµ£¬²ğ·ÖrowvalµÄ·ÖÀà*/
         %let row_cat_n = %sysfunc(kcountw(%bquote(&row_val), %bquote(,), qs));
         %do i = 1 %to &row_cat_n;
             %let row_&i = %sysfunc(kscanx(%bquote(&row_val), &i, %bquote(,), qs));
         %end;
     %end;
     
-    /*row_cat_n:è¡Œç±»åˆ«æ•°é‡ï¼Œrow_n:è¾“å‡ºåˆ—è”è¡¨è¡Œæ•°*/
+    /*row_cat_n:ĞĞÀà±ğÊıÁ¿£¬row_n:Êä³öÁĞÁª±íĞĞÊı*/
     %let row_n = &row_cat_n;
     %if &add_cat_missing_row = TRUE %then %do;
         %let row_n = %eval(&row_n + 1);
@@ -529,9 +529,9 @@ Version Date: 2022-09-21 V1.1
     %end;
 
 
-    /*2. åˆ—åˆ†ç±»çš„ç”Ÿæˆä¸æ’åº*/
+    /*2. ÁĞ·ÖÀàµÄÉú³ÉÓëÅÅĞò*/
     %if &IS_COL_CAT_SPECIFIED = FALSE and %bquote(&colcat_by) ^= #AUTO %then %do;
-        /*æŒ‡å®šäº†æ’åºå˜é‡ï¼Œåˆ—åˆ†ç±»çš„é¡ºåºè°ƒæ•´*/
+        /*Ö¸¶¨ÁËÅÅĞò±äÁ¿£¬ÁĞ·ÖÀàµÄË³Ğòµ÷Õû*/
         proc sql noprint;
             create table temp_colcat as
                 select
@@ -548,14 +548,14 @@ Version Date: 2022-09-21 V1.1
         quit;
     %end;
     %else %do;
-        /*ç›´æ¥æŒ‡å®šåˆ†ç±»å€¼ï¼Œæ‹†åˆ†colvalçš„åˆ†ç±»*/
+        /*Ö±½ÓÖ¸¶¨·ÖÀàÖµ£¬²ğ·ÖcolvalµÄ·ÖÀà*/
         %let col_cat_n = %sysfunc(kcountw(%bquote(&col_val), %bquote(,), qs));
         %do i = 1 %to &col_cat_n;
             %let col_&i = %sysfunc(kscanx(%bquote(&col_val), &i, %bquote(,), qs));
         %end;
     %end;
 
-    /*col_cat_n:è¡Œç±»åˆ«æ•°é‡ï¼Œcol_n:è¾“å‡ºåˆ—è”è¡¨è¡Œæ•°*/
+    /*col_cat_n:ĞĞÀà±ğÊıÁ¿£¬col_n:Êä³öÁĞÁª±íĞĞÊı*/
     %let col_n = &col_cat_n;
     %if &add_cat_missing_col = TRUE %then %do;
         %let col_n = %eval(&col_n + 1);
@@ -576,116 +576,116 @@ Version Date: 2022-09-21 V1.1
     %end;
 
 
-    /*3. æ„å»ºåˆ—è”è¡¨*/
+    /*3. ¹¹½¨ÁĞÁª±í*/
     %if &pct_out = TRUE %then %do;
         proc sql noprint;
             create table temp_crosstable as
                 %do i = 1 %to &row_n;
                     select
-                        /*ç¬¬1åˆ—*/
+                        /*µÚ1ÁĞ*/
                         %if &i <= &row_cat_n %then %do;
                             &&row_&i
                         %end;
                         %else %do;
                             %if &&row_&i = #MISSING %then %do;
-                                "ç¼ºå¤±"
+                                "È±Ê§"
                             %end;
                             %else %if &&row_&i = #OTHER#1 or &&row_&i = #OTHER#2 %then %do;
-                                "å…¶ä»–"
+                                "ÆäËû"
                             %end;
                             %else %if &&row_&i = #ALL %then %do;
-                                "åˆè®¡"
+                                "ºÏ¼Æ"
                             %end;
                         %end;
-                            as COL_0 label = "è¡Œåˆ†ç±»",
+                            as COL_0 label = "ĞĞ·ÖÀà",
 
-                        /*ç¬¬2~åˆ—*/
+                        /*µÚ2~ÁĞ*/
                         %do j = 1 %to &col_n;
-                            /*%put NOTE: %bquote(ç¬¬ &i è¡Œï¼Œç¬¬ &j åˆ—ï¼š&row_var = &&row_&i and &col_var = &&col_&j);*/
-                            %if &i <= &row_cat_n and &j <= &col_cat_n %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—<=åˆ†ç±»æ•°*/
+                            /*%put NOTE: %bquote(µÚ &i ĞĞ£¬µÚ &j ÁĞ£º&row_var = &&row_&i and &col_var = &&col_&j);*/
+                            %if &i <= &row_cat_n and &j <= &col_cat_n %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ<=·ÖÀàÊı*/
                                 cats(sum(&row_var = &&row_&i and &col_var = &&col_&j), "(", put(sum(&row_var = &&row_&i and &col_var = &&col_&j)/&N, &format), ")") as COL_&j label = &&col_&j
                             %end;
                             %else %do;
                                 %if &i <= &row_cat_n %then %do;
-                                    %if &&col_&j = #MISSING %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=ç¼ºå¤±*/
-                                        cats(sum(&row_var = &&row_&i and missing(&col_var)), "(", put(sum(&row_var = &&row_&i and missing(&col_var))/&N, &format), ")") as COL_MISSING label = "ç¼ºå¤±"
+                                    %if &&col_&j = #MISSING %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=È±Ê§*/
+                                        cats(sum(&row_var = &&row_&i and missing(&col_var)), "(", put(sum(&row_var = &&row_&i and missing(&col_var))/&N, &format), ")") as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        cats(sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        cats(sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        cats(sum(&row_var = &&row_&i and &col_var not in (&col_val)), "(", put(sum(&row_var = &&row_&i and &col_var not in (&col_val))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        cats(sum(&row_var = &&row_&i and &col_var not in (&col_val)), "(", put(sum(&row_var = &&row_&i and &col_var not in (&col_val))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=åˆè®¡*/
-                                        cats(sum(&row_var = &&row_&i), "(", put(sum(&row_var = &&row_&i)/&N, &format), ")") as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ºÏ¼Æ*/
+                                        cats(sum(&row_var = &&row_&i), "(", put(sum(&row_var = &&row_&i)/&N, &format), ")") as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #MISSING %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=È±Ê§, ÁĞ<=·ÖÀàÊı*/
                                         cats(sum(missing(&row_var) and &col_var = &&col_&j), "(", put(sum(missing(&row_var) and &col_var = &&col_&j)/&N, &format), ")") as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=ç¼ºå¤±*/
-                                        cats(&N - sum(not (missing(&row_var) and missing(&col_var))), "(", put((&N - sum(not (missing(&row_var) and missing(&col_var))))/&N, &format), ")") as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=È±Ê§, ÁĞ=È±Ê§*/
+                                        cats(&N - sum(not (missing(&row_var) and missing(&col_var))), "(", put((&N - sum(not (missing(&row_var) and missing(&col_var))))/&N, &format), ")") as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        cats(sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=È±Ê§, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        cats(sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        cats(&N - sum(not (missing(&row_var) and &col_var not in (&col_val))), "(", put((&N - sum(not (missing(&row_var) and &col_var not in (&col_val))))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=È±Ê§, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        cats(&N - sum(not (missing(&row_var) and &col_var not in (&col_val))), "(", put((&N - sum(not (missing(&row_var) and &col_var not in (&col_val))))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=åˆè®¡*/
-                                        cats(&N - sum(not missing(&row_var)), "(", put((&N - sum(not missing(&row_var)))/&N, &format), ")") as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=È±Ê§, ÁĞ=ºÏ¼Æ*/
+                                        cats(&N - sum(not missing(&row_var)), "(", put((&N - sum(not missing(&row_var)))/&N, &format), ")") as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #OTHER#1 %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ<=·ÖÀàÊı*/
                                         cats(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var = &&col_&j), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var = &&col_&j)/&N, &format), ")") as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=ç¼ºå¤±*/
-                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var))/&N, &format), ")") as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=È±Ê§*/
+                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var))/&N, &format), ")") as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=åˆè®¡*/
-                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var))/&N, &format), ")") as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ºÏ¼Æ*/
+                                        cats(sum(&row_var not in (&row_val) and not missing(&row_var)), "(", put(sum(&row_var not in (&row_val) and not missing(&row_var))/&N, &format), ")") as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #OTHER#2 %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ<=·ÖÀàÊı*/
                                         cats(sum(&row_var not in (&row_val) and &col_var = &&col_&j), "(", put(sum(&row_var not in (&row_val) and &col_var = &&col_&j)/&N, &format), ")") as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=ç¼ºå¤±*/
-                                        cats(&N - sum(not (&row_var not in (&row_val) and missing(&col_var))), "(", put((&N - sum(not (&row_var not in (&row_val) and missing(&col_var))))/&N, &format), ")") as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=È±Ê§*/
+                                        cats(&N - sum(not (&row_var not in (&row_val) and missing(&col_var))), "(", put((&N - sum(not (&row_var not in (&row_val) and missing(&col_var))))/&N, &format), ")") as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        cats(sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        cats(sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var)), "(", put(sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        cats(&N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))), "(", put((&N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        cats(&N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))), "(", put((&N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=åˆè®¡*/
-                                        cats(&N - sum(&row_var in (&row_val)), "(", put((&N - sum(&row_var in (&row_val)))/&N, &format), ")") as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ºÏ¼Æ*/
+                                        cats(&N - sum(&row_var in (&row_val)), "(", put((&N - sum(&row_var in (&row_val)))/&N, &format), ")") as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #ALL %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=åˆè®¡, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ<=·ÖÀàÊı*/
                                         cats(sum(&col_var = &&col_&j), "(", put(sum(&col_var = &&col_&j)/&N, &format), ")") as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=åˆè®¡, åˆ—=ç¼ºå¤±*/
-                                        cats(&N - sum(not missing(&col_var)), "(", put((&N - sum(not missing(&col_var)))/&N, &format), ")") as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=È±Ê§*/
+                                        cats(&N - sum(not missing(&col_var)), "(", put((&N - sum(not missing(&col_var)))/&N, &format), ")") as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=åˆè®¡, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        cats(sum(&col_var not in (&col_val) and not missing(&col_var)), "(", put((sum(&col_var not in (&col_val) and not missing(&col_var)))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        cats(sum(&col_var not in (&col_val) and not missing(&col_var)), "(", put((sum(&col_var not in (&col_val) and not missing(&col_var)))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=åˆè®¡, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        cats(&N - sum(&col_var in (&col_val)), "(", put((&N - sum(&col_var in (&col_val)))/&N, &format), ")") as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        cats(&N - sum(&col_var in (&col_val)), "(", put((&N - sum(&col_var in (&col_val)))/&N, &format), ")") as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=åˆè®¡, åˆ—=åˆè®¡*/
-                                        cats(&N, "(", put(1, &format), ")") as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ºÏ¼Æ*/
+                                        cats(&N, "(", put(1, &format), ")") as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                             %end;
@@ -704,110 +704,110 @@ Version Date: 2022-09-21 V1.1
             create table temp_crosstable as
                 %do i = 1 %to &row_n;
                     select
-                        /*ç¬¬1åˆ—*/
+                        /*µÚ1ÁĞ*/
                         %if &i <= &row_cat_n %then %do;
                             &&row_&i
                         %end;
                         %else %do;
                             %if &&row_&i = #MISSING %then %do;
-                                "ç¼ºå¤±"
+                                "È±Ê§"
                             %end;
                             %else %if &&row_&i = #OTHER#1 or &&row_&i = #OTHER#2 %then %do;
-                                "å…¶ä»–"
+                                "ÆäËû"
                             %end;
                             %else %if &&row_&i = #ALL %then %do;
-                                "åˆè®¡"
+                                "ºÏ¼Æ"
                             %end;
                         %end;
-                            as COL_0 label = "è¡Œåˆ†ç±»",
+                            as COL_0 label = "ĞĞ·ÖÀà",
 
-                        /*ç¬¬2~åˆ—*/
+                        /*µÚ2~ÁĞ*/
                         %do j = 1 %to &col_n;
-                            /*%put NOTE: %bquote(ç¬¬ &i è¡Œï¼Œç¬¬ &j åˆ—ï¼š&row_var = &&row_&i and &col_var = &&col_&j);*/
-                            %if &i <= &row_cat_n and &j <= &col_cat_n %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—<=åˆ†ç±»æ•°*/
+                            /*%put NOTE: %bquote(µÚ &i ĞĞ£¬µÚ &j ÁĞ£º&row_var = &&row_&i and &col_var = &&col_&j);*/
+                            %if &i <= &row_cat_n and &j <= &col_cat_n %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ<=·ÖÀàÊı*/
                                 sum(&row_var = &&row_&i and &col_var = &&col_&j) as COL_&j label = &&col_&j
                             %end;
                             %else %do;
                                 %if &i <= &row_cat_n %then %do;
-                                    %if &&col_&j = #MISSING %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=ç¼ºå¤±*/
-                                        sum(&row_var = &&row_&i and missing(&col_var)) as COL_MISSING label = "ç¼ºå¤±"
+                                    %if &&col_&j = #MISSING %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=È±Ê§*/
+                                        sum(&row_var = &&row_&i and missing(&col_var)) as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        sum(&row_var = &&row_&i and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        sum(&row_var = &&row_&i and &col_var not in (&col_val)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        sum(&row_var = &&row_&i and &col_var not in (&col_val)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ<=åˆ†ç±»æ•°, åˆ—=åˆè®¡*/
-                                        sum(&row_var = &&row_&i) as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ<=·ÖÀàÊı, ÁĞ=ºÏ¼Æ*/
+                                        sum(&row_var = &&row_&i) as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #MISSING %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=È±Ê§, ÁĞ<=·ÖÀàÊı*/
                                         sum(missing(&row_var) and &col_var = &&col_&j) as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=ç¼ºå¤±*/
-                                        &N - sum(not (missing(&row_var) and missing(&col_var))) as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=È±Ê§, ÁĞ=È±Ê§*/
+                                        &N - sum(not (missing(&row_var) and missing(&col_var))) as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=È±Ê§, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        sum(missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        &N - sum(not (missing(&row_var) and &col_var not in (&col_val))) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=È±Ê§, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        &N - sum(not (missing(&row_var) and &col_var not in (&col_val))) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=ç¼ºå¤±, åˆ—=åˆè®¡*/
-                                        &N - sum(not missing(&row_var)) as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=È±Ê§, ÁĞ=ºÏ¼Æ*/
+                                        &N - sum(not missing(&row_var)) as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #OTHER#1 %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ<=·ÖÀàÊı*/
                                         sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var = &&col_&j) as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=ç¼ºå¤±*/
-                                        sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var)) as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=È±Ê§*/
+                                        sum(&row_var not in (&row_val) and not missing(&row_var) and missing(&col_var)) as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        sum(&row_var not in (&row_val) and not missing(&row_var) and &col_var not in (&col_val)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹1, åˆ—=åˆè®¡*/
-                                        sum(&row_var not in (&row_val) and not missing(&row_var)) as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ1, ÁĞ=ºÏ¼Æ*/
+                                        sum(&row_var not in (&row_val) and not missing(&row_var)) as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #OTHER#2 %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ<=·ÖÀàÊı*/
                                         sum(&row_var not in (&row_val) and &col_var = &&col_&j) as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=ç¼ºå¤±*/
-                                        &N - sum(not (&row_var not in (&row_val) and missing(&col_var))) as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=È±Ê§*/
+                                        &N - sum(not (&row_var not in (&row_val) and missing(&col_var))) as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        sum(&row_var not in (&row_val) and &col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        &N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        &N - sum(not (&row_var not in (&row_val) and &col_var not in (&col_val))) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=å…¶ä»–, ç±»å‹2, åˆ—=åˆè®¡*/
-                                        &N - sum(&row_var in (&row_val)) as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ÆäËû, ÀàĞÍ2, ÁĞ=ºÏ¼Æ*/
+                                        &N - sum(&row_var in (&row_val)) as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                                 %else %if &&row_&i = #ALL %then %do;
-                                    %if &j <= &col_cat_n %then %do; /*è¡Œ=åˆè®¡, åˆ—<=åˆ†ç±»æ•°*/
+                                    %if &j <= &col_cat_n %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ<=·ÖÀàÊı*/
                                         sum(&col_var = &&col_&j) as COL_&j label = &&col_&j
                                     %end;
-                                    %else %if &&col_&j = #MISSING %then %do; /*è¡Œ=åˆè®¡, åˆ—=ç¼ºå¤±*/
-                                        &N - sum(not missing(&col_var)) as COL_MISSING label = "ç¼ºå¤±"
+                                    %else %if &&col_&j = #MISSING %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=È±Ê§*/
+                                        &N - sum(not missing(&col_var)) as COL_MISSING label = "È±Ê§"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#1 %then %do; /*è¡Œ=åˆè®¡, åˆ—=å…¶ä»–, ç±»å‹1*/
-                                        sum(&col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#1 %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ÆäËû, ÀàĞÍ1*/
+                                        sum(&col_var not in (&col_val) and not missing(&col_var)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #OTHER#2 %then %do; /*è¡Œ=åˆè®¡, åˆ—=å…¶ä»–, ç±»å‹2*/
-                                        &N - sum(&col_var in (&col_val)) as COL_OTHER label = "å…¶ä»–"
+                                    %else %if &&col_&j = #OTHER#2 %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ÆäËû, ÀàĞÍ2*/
+                                        &N - sum(&col_var in (&col_val)) as COL_OTHER label = "ÆäËû"
                                     %end;
-                                    %else %if &&col_&j = #ALL %then %do; /*è¡Œ=åˆè®¡, åˆ—=åˆè®¡*/
-                                        &N as COL_ALL label = "åˆè®¡"
+                                    %else %if &&col_&j = #ALL %then %do; /*ĞĞ=ºÏ¼Æ, ÁĞ=ºÏ¼Æ*/
+                                        &N as COL_ALL label = "ºÏ¼Æ"
                                     %end;
                                 %end;
                             %end;
@@ -822,15 +822,15 @@ Version Date: 2022-09-21 V1.1
         quit;
     %end;
 
-    /*4. è¾“å‡ºæ•°æ®é›†*/
+    /*4. Êä³öÊı¾İ¼¯*/
     data &libname_out..&memname_out(&dataset_options_out);
         set temp_crosstable;
     run;
 
-    /*----------------------------------------------è¿è¡Œåå¤„ç†----------------------------------------------*/
+    /*----------------------------------------------ÔËĞĞºó´¦Àí----------------------------------------------*/
 
     %if &DEL_TEMP_DATA = TRUE %then %do;
-        /*åˆ é™¤ä¸­é—´æ•°æ®é›†*/
+        /*É¾³ıÖĞ¼äÊı¾İ¼¯*/
         proc datasets noprint nowarn;
             delete temp_rowcat
                    temp_colcat
@@ -839,9 +839,9 @@ Version Date: 2022-09-21 V1.1
         quit;
     %end;
 
-    /*é€€å‡ºå®ç¨‹åº*/
+    /*ÍË³öºê³ÌĞò*/
     %exit:
-    %put NOTE: å® cross_table å·²ç»“æŸè¿è¡Œï¼;
+    %put NOTE: ºê cross_table ÒÑ½áÊøÔËĞĞ£¡;
 %mend;
 
 

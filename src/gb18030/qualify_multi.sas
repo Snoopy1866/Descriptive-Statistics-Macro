@@ -1,7 +1,7 @@
-ï»¿/*
+/*
 ===================================
 Macro Name: qualify_multi
-Macro Label:å¤šç»„åˆ«å®šæ€§æŒ‡æ ‡åˆ†æ
+Macro Label:¶à×é±ğ¶¨ĞÔÖ¸±ê·ÖÎö
 Author: wtwang
 Version Date: 2023-12-26 0.1
               2024-01-19 0.2
@@ -13,6 +13,9 @@ Version Date: 2023-12-26 0.1
               2024-06-04 0.8
               2024-06-13 0.9
               2024-07-15 0.10
+              2024-11-14 0.11
+              2025-01-14 0.12
+              2025-01-15 0.13
 ===================================
 */
 
@@ -24,7 +27,7 @@ Version Date: 2023-12-26 0.1
                      UID              = #NULL,
                      PATTERN          = %nrstr(#FREQ(#RATE)),
                      MISSING          = FALSE,
-                     MISSING_NOTE     = "ç¼ºå¤±",
+                     MISSING_NOTE     = "È±Ê§",
                      MISSING_POSITION = LAST,
                      OUTDATA          = RES_&VAR,
                      STAT_FORMAT      = #AUTO,
@@ -34,35 +37,35 @@ Version Date: 2023-12-26 0.1
                      TOTAL            = FALSE,
                      PROCHTTP_PROXY   = 127.0.0.1:7890,
                      DEL_TEMP_DATA    = TRUE)
-                     /des = "å¤šç»„åˆ«å®šæ€§æŒ‡æ ‡åˆ†æ" parmbuff;
+                     /des = "¶à×é±ğ¶¨ĞÔÖ¸±ê·ÖÎö" parmbuff;
 
-    /*æ‰“å¼€å¸®åŠ©æ–‡æ¡£*/
+    /*´ò¿ª°ïÖúÎÄµµ*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify_multi/readme.md";
         %goto exit;
     %end;
 
-    /*----------------------------------------------åˆå§‹åŒ–----------------------------------------------*/
-    /*ç»Ÿä¸€å‚æ•°å¤§å°å†™*/
+    /*----------------------------------------------³õÊ¼»¯----------------------------------------------*/
+    /*Í³Ò»²ÎÊı´óĞ¡Ğ´*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
-    /*å£°æ˜å…¨å±€å˜é‡*/
+    /*ÉùÃ÷È«¾Ö±äÁ¿*/
     %global qualify_multi_exit_with_error;
     %let qualify_multi_exit_with_error = FALSE;
 
-    /*å£°æ˜å±€éƒ¨å˜é‡*/
+    /*ÉùÃ÷¾Ö²¿±äÁ¿*/
     %local i j
            libname_in memname_in dataset_options_in
            libname_out memname_out dataset_options_out;
 
-    /*æ£€æŸ¥ä¾èµ–*/
+    /*¼ì²éÒÀÀµ*/
     proc sql noprint;
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUALIFY";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put WARNING: å‰ç½®ä¾èµ–ç¼ºå¤±ï¼Œæ­£åœ¨å°è¯•ä»ç½‘ç»œä¸Šä¸‹è½½......;
+        %put WARNING: Ç°ÖÃÒÀÀµÈ±Ê§£¬ÕıÔÚ³¢ÊÔ´ÓÍøÂçÉÏÏÂÔØ......;
         
         %let cur_encoding = %sysfunc(getOption(ENCODING));
         %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
@@ -80,38 +83,38 @@ Version Date: 2023-12-26 0.1
                 %include predpc;
             %end;
             %else %do;
-                %put ERROR: è¿œç¨‹ä¸»æœºè¿æ¥æˆåŠŸï¼Œä½†å¹¶æœªæˆåŠŸè·å–ç›®æ ‡æ–‡ä»¶ï¼Œè¯·æ‰‹åŠ¨å¯¼å…¥å‰ç½®ä¾èµ– %nrbquote(%nrstr(%%))QUALIFY åå†æ¬¡å°è¯•è¿è¡Œï¼;
+                %put ERROR: Ô¶³ÌÖ÷»úÁ¬½Ó³É¹¦£¬µ«²¢Î´³É¹¦»ñÈ¡Ä¿±êÎÄ¼ş£¬ÇëÊÖ¶¯µ¼ÈëÇ°ÖÃÒÀÀµ %nrbquote(%nrstr(%%))QUALIFY ºóÔÙ´Î³¢ÊÔÔËĞĞ£¡;
                 %goto exit_with_error;
             %end;
         %end;
         %else %do;
-            %put ERROR: è¿œç¨‹ä¸»æœºè¿æ¥å¤±è´¥ï¼Œè¯·æ£€æŸ¥ç½‘ç»œè¿æ¥å’Œä»£ç†è®¾ç½®ï¼Œæˆ–æ‰‹åŠ¨å¯¼å…¥å‰ç½®ä¾èµ– %nrbquote(%nrstr(%%))QUALIFY åå†æ¬¡å°è¯•è¿è¡Œï¼;
+            %put ERROR: Ô¶³ÌÖ÷»úÁ¬½ÓÊ§°Ü£¬Çë¼ì²éÍøÂçÁ¬½ÓºÍ´úÀíÉèÖÃ£¬»òÊÖ¶¯µ¼ÈëÇ°ÖÃÒÀÀµ %nrbquote(%nrstr(%%))QUALIFY ºóÔÙ´Î³¢ÊÔÔËĞĞ£¡;
             %goto exit_with_error;
         %end;
     %end;
 
 
-    /*----------------------------------------------å‚æ•°æ£€æŸ¥----------------------------------------------*/
+    /*----------------------------------------------²ÎÊı¼ì²é----------------------------------------------*/
     %if %bquote(&indata) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ææ•°æ®é›†ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎöÊı¾İ¼¯£¡;
         %goto exit_with_error;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, %bquote(&indata))) = 0 %then %do;
-            %put ERROR: å‚æ•° INDATA = %bquote(&indata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı INDATA = %bquote(&indata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, %bquote(&indata))));
             %let memname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 2, %bquote(&indata))));
             %let dataset_options_in = %sysfunc(prxposn(&reg_indata_id, 3, %bquote(&indata)));
-            %if &libname_in = %bquote() %then %let libname_in = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_in = %bquote() %then %let libname_in = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_in é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_in Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
 
@@ -119,7 +122,7 @@ Version Date: 2023-12-26 0.1
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in é€»è¾‘åº“ä¸­æ²¡æœ‰æ‰¾åˆ° &memname_in æ•°æ®é›†ï¼;
+                %put ERROR: ÔÚ &libname_in Âß¼­¿âÖĞÃ»ÓĞÕÒµ½ &memname_in Êı¾İ¼¯£¡;
                 %goto exit_with_error;
             %end;
 
@@ -127,17 +130,16 @@ Version Date: 2023-12-26 0.1
                 select count(*) into : nobs from &indata;
             quit;
             %if &nobs = 0 %then %do;
-                %put ERROR: åˆ†ææ•°æ®é›† &indata ä¸ºç©ºï¼;
-                %goto exit_with_error;
+                %put NOTE: ·ÖÎöÊı¾İ¼¯ &indata Îª¿Õ£¡;
             %end;
         %end;
     %end;
-    %put NOTE: åˆ†ææ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_in..&memname_in;
+    %put NOTE: ·ÖÎöÊı¾İ¼¯±»Ö¸¶¨Îª &libname_in..&memname_in;
 
 
     /*GROUP*/
     %if %superq(group) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ç»„å˜é‡ï¼;
+        %put ERROR: Î´Ö¸¶¨·Ö×é±äÁ¿£¡;
         %goto exit_with_error;
     %end;
 
@@ -146,17 +148,17 @@ Version Date: 2023-12-26 0.1
         %let group_var = %upcase(%sysfunc(prxposn(&reg_group_id, 1, %superq(group))));
         %let group_level = %sysfunc(prxposn(&reg_group_id, 2, %superq(group)));
 
-        /*æ£€æŸ¥å˜é‡å­˜åœ¨æ€§*/
+        /*¼ì²é±äÁ¿´æÔÚĞÔ*/
         proc sql noprint;
             select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&group_var";
         quit;
-        %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-            %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ &group_var;
+        %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+            %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±äÁ¿ &group_var;
             %goto exit_with_error;
         %end;
-        /*æ£€æŸ¥å˜é‡ç±»å‹*/
+        /*¼ì²é±äÁ¿ÀàĞÍ*/
         %if %bquote(&type) = num %then %do;
-            %put ERROR: å‚æ•° GROUP ä¸æ”¯æŒæ•°å€¼å‹å˜é‡ï¼;
+            %put ERROR: ²ÎÊı GROUP ²»Ö§³ÖÊıÖµĞÍ±äÁ¿£¡;
             %goto exit_with_error;
         %end;
 
@@ -166,116 +168,174 @@ Version Date: 2023-12-26 0.1
         %else %do;
             %let IS_GROUP_LEVEL_SPECIFIED = TRUE;
             %let group_level_n = %sysfunc(countw(%bquote(&group_level), %bquote(,), %bquote(sq)));
+            
             %do i = 1 %to &group_level_n;
                 %let group_level_&i = %sysfunc(scan(%bquote(&group_level), &i, %bquote(,), %bquote(sq)));
+                %let group_level_unquote_&i = %sysfunc(compress(&&group_level_&i, %nrstr(%")));
+
+                %let group_level_freq_&i      = "&&group_level_unquote_&i(ÆµÊı)";
+                %let group_level_freq_fmt_&i  = "&&group_level_unquote_&i(ÆµÊı¸ñÊ½»¯)";
+                %let group_level_n_&i         = "&&group_level_unquote_&i(ÆµÊı)(¼æÈİ)";
+                %let group_level_n_fmt_&i     = "&&group_level_unquote_&i(ÆµÊı¸ñÊ½»¯)(¼æÈİ)";
+                %let group_level_times_&i     = "&&group_level_unquote_&i(Æµ´Î)";
+                %let group_level_times_fmt_&i = "&&group_level_unquote_&i(Æµ´Î¸ñÊ½»¯)";
+                %let group_level_rate_&i      = "&&group_level_unquote_&i(ÆµÂÊ)";
+                %let group_level_rate_fmt_&i  = "&&group_level_unquote_&i(ÆµÂÊ¸ñÊ½»¯)";
             %end;
         %end;
     %end;
     %else %do;
-        %put ERROR: å‚æ•° GROUP æ ¼å¼é”™è¯¯ï¼;
+        %put ERROR: ²ÎÊı GROUP ¸ñÊ½´íÎó£¡;
         %goto exit_with_error;
     %end;
 
     /*GROUPBY*/
-    %if &IS_GROUP_LEVEL_SPECIFIED = TRUE %then %do;
-        %if %superq(groupby) ^= %bquote() and %superq(groupby) ^= #AUTO %then %do;
-            %put WARNING: å·²é€šè¿‡å‚æ•° GROUP æŒ‡å®šäº†åˆ†ç»„çš„æ’åºï¼Œå‚æ•° GROUPBY å·²è¢«å¿½ç•¥ï¼;
-        %end;
+    %if %superq(groupby) = %bquote() %then %do;
+        %put ERROR: ²ÎÊı GROUPBY Îª¿Õ£¡;
+        %goto exit_with_error;
     %end;
-    %else %do;
-        %if %superq(groupby) = %bquote() %then %do;
-            %put ERROR: æœªæŒ‡å®šåˆ†ç»„æ’åºå˜é‡ï¼;
-            %goto exit_with_error;
-        %end;
-        %else %if %superq(groupby) = #AUTO %then %do;
+    %else %if %superq(groupby) = #AUTO %then %do;
+        %put NOTE: Î´Ö¸¶¨·Ö×éµÄÅÅĞò·½Ê½£¬½«°´ÕÕ·Ö×é±äÁ¿×ÔÉíµÄÖµÉıĞòÅÅÁĞ£¡;
+        %let groupby = &group_var(desc);
+    %end;
+
+    /*½âÎö²ÎÊı by, ¼ì²éºÏ·¨ĞÔ*/
+    %let reg_groupby_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/)));
+    %if %sysfunc(prxmatch(&reg_groupby_id, %superq(groupby))) %then %do;
+        %let groupby_var       = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
+        %let groupby_fmt       = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
+        %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 3, %superq(groupby)));
+
+        %if %bquote(&groupby_var) ^= %bquote() %then %do;
+            /*¼ì²éÅÅĞò±äÁ¿´æÔÚĞÔ*/
             proc sql noprint;
-                create table tmp_qualify_m_groupby_sorted as select * from %superq(indata) where not missing(&group_var);
+                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
             quit;
-        %end;
-        %else %do;
-            %let reg_groupby_id = %sysfunc(prxparse(%bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:ASC|DESC)(?:ENDING)?)\))?$/)));
-            %if %sysfunc(prxmatch(&reg_groupby_id, %superq(groupby))) %then %do;
-                %let groupby_var = %sysfunc(prxposn(&reg_groupby_id, 1, %superq(groupby)));
-                %let groupby_direction = %sysfunc(prxposn(&reg_groupby_id, 2, %superq(groupby)));
-
-                /*æ£€æŸ¥æ’åºå˜é‡å­˜åœ¨æ€§*/
-                proc sql noprint;
-                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&groupby_var";
-                quit;
-                %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-                    %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°åˆ†ç»„æ’åºå˜é‡ &groupby_var;
-                    %goto exit_with_error;
-                %end;
-
-                proc sql noprint;
-                    create table tmp_qualify_m_groupby_sorted as
-                        select
-                            distinct
-                            &group_var,
-                            &groupby_var
-                        from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
-                quit;
-            %end;
-            %else %do;
-                %put ERROR: å‚æ•° GROUPBY å¿…é¡»æŒ‡å®šä¸€ä¸ªåˆæ³•çš„å˜é‡åï¼;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½·Ö×éÅÅĞò±äÁ¿ &groupby_var;
                 %goto exit_with_error;
             %end;
         %end;
 
-        /*åˆ›å»ºå®å˜é‡ï¼Œç”¨äºè¾“å‡ºæ•°æ®é›†çš„å˜é‡æ ‡ç­¾*/
+        %if %bquote(&groupby_fmt) ^= %bquote() %then %do;
+            /*¼ì²éÅÅĞò¸ñÊ½´æÔÚĞÔ*/
+            proc sql noprint;
+                select libname, memname, source into :groupby_fmt_libname, :groupby_fmt_memname, :groupby_fmt_source from DICTIONARY.FORMATS where fmtname = "&groupby_fmt";
+            quit;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: ²ÎÊı BY Ö¸¶¨µÄÅÅĞò¸ñÊ½ &groupby_fmt.. ²»´æÔÚ£¡;
+                %goto exit_with_error;
+            %end;
+            %else %do;
+                %if &groupby_fmt_source ^= C %then %do;
+                    %put ERROR: ²ÎÊı BY Ö¸¶¨µÄÅÅĞò¸ñÊ½ &groupby_fmt.. ²»ÊÇ CATALOG-BASED£¡;
+                    %goto exit_with_error;
+                %end;
+            %end;
+        %end;
+
+        /*¼ì²éÅÅĞò·½Ïò*/
+        %if %bquote(&groupby_direction) = %bquote() %then %do;
+            %put NOTE: Î´Ö¸¶¨·Ö×éµÄÅÅĞò·½Ïò£¬Ä¬ÈÏÉıĞòÅÅÁĞ£¡;
+            %let groupby_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&groupby_direction) = ASC %then %do;
+            %let groupby_direction = ASCENDING;
+        %end;
+        %else %if %bquote(&groupby_direction) = DESC %then %do;
+            %let groupby_direction = DESCENDING;
+        %end;
+    %end;
+    %else %do;
+        %put ERROR: ²ÎÊı GROUPBY = %bquote(&groupby) ¸ñÊ½²»ÕıÈ·£¡;
+        %goto exit_with_error;
+    %end;
+
+    %if %bquote(&groupby_var) ^= %bquote() %then %do;
         proc sql noprint;
-            select quote(strip(&group_var))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ•°)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ•°æ ¼å¼åŒ–)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ•°)(å…¼å®¹)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ•°æ ¼å¼åŒ–)(å…¼å®¹)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ¬¡)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘æ¬¡æ ¼å¼åŒ–)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘ç‡)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
-            select quote(strip(&group_var) || '(é¢‘ç‡æ ¼å¼åŒ–)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
-            select count(distinct &group_var)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
+            create table tmp_qualify_m_groupby_sorted as
+                select
+                    distinct
+                    &group_var                       as group_level,
+                    &groupby_var                     as group_level_by_criteria
+                from %superq(indata) where not missing(&group_var) order by &groupby_var &groupby_direction, &group_var;
         quit;
     %end;
+    %else %if %bquote(&groupby_fmt) ^= %bquote() %then %do;
+        proc format library = &groupby_fmt_libname..&groupby_fmt_memname cntlout = tmp_qualify_m_groupby_fmt;
+            select &groupby_fmt;
+        run;
+        proc sql noprint;
+            create table tmp_qualify_m_groupby_sorted(where = (not missing(group_level))) as
+                select
+                    distinct
+                    coalescec(a.&group_var, b.label) as group_level,
+                    ifn(not missing(b.label), input(strip(b.start), 8.), constant('BIG'))
+                                                     as group_level_by_criteria,
+                    ifc(missing(b.label), 'Y', '')   as group_level_fmt_not_defined
+                from %superq(indata) as a full join tmp_qualify_m_groupby_fmt as b on a.&group_var = b.label
+                order by group_level_by_criteria &groupby_direction, group_level ascending;
+
+            select sum(group_level_fmt_not_defined = "Y") into : groupby_fmt_not_defined_n trimmed from tmp_qualify_m_groupby_sorted where not missing(group_level);
+            %if &groupby_fmt_not_defined_n > 0 %then %do;
+                %put WARNING: Ö¸¶¨ÓÃÓÚ·Ö×éÅÅĞòµÄÊä³ö¸ñÊ½ÖĞ£¬´æÔÚ &groupby_fmt_not_defined_n ¸ö·ÖÀàÃû³ÆÎ´¶¨Òå£¬Êä³ö½á¹û¿ÉÄÜÊÇ·ÇÔ¤ÆÚµÄ£¡;
+            %end;
+        quit;
+    %end;
+
+    /*´´½¨ºê±äÁ¿£¬ÓÃÓÚÊä³öÊı¾İ¼¯µÄ±äÁ¿±êÇ©*/
+    proc sql noprint;
+        select quote(strip(group_level))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÊı)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÊı¸ñÊ½»¯)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÊı)(¼æÈİ)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÊı¸ñÊ½»¯)(¼æÈİ)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(Æµ´Î)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(Æµ´Î¸ñÊ½»¯)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÂÊ)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
+        select quote(strip(group_level) || '(ÆµÂÊ¸ñÊ½»¯)')       into : group_level_rate_fmt_1-  from tmp_qualify_m_groupby_sorted;
+        select count(distinct group_level)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
+    quit;
 
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: å‚æ•° OUTDATA ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı OUTDATA Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
     %else %do;
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
-            %put ERROR: å‚æ•° OUTDATA = %bquote(&outdata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı OUTDATA = %bquote(&outdata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
             %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
             %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-            %if &libname_out = %bquote() %then %let libname_out = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_out = %bquote() %then %let libname_out = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_out";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_out é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_out Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
         %end;
-        %put NOTE: è¾“å‡ºæ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_out..&memname_out;
+        %put NOTE: Êä³öÊı¾İ¼¯±»Ö¸¶¨Îª &libname_out..&memname_out;
     %end;
 
 
 
 
-    /*----------------------------------------------ä¸»ç¨‹åº----------------------------------------------*/
-    /*1. å¤åˆ¶æ•°æ®*/
+    /*----------------------------------------------Ö÷³ÌĞò----------------------------------------------*/
+    /*1. ¸´ÖÆÊı¾İ*/
     data tmp_qualify_m_indata;
         %unquote(set %superq(indata));
     run;
 
-    /*2. æ•´ä½“ç»Ÿè®¡*/
-    %put NOTE: ===================================åˆè®¡===================================;
+    /*2. ÕûÌåÍ³¼Æ*/
+    %put NOTE: ===================================ºÏ¼Æ===================================;
     %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
                                                                             &&group_level_&i %bquote(,)
                                                                         %end;))),
@@ -301,18 +361,18 @@ Version Date: 2023-12-26 0.1
              SUFFIX           = %superq(SUFFIX),
              TOTAL            = %superq(TOTAL));
 
-    %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*åˆ¤æ–­å­ç¨‹åºè°ƒç”¨æ˜¯å¦äº§ç”Ÿé”™è¯¯*/
+    %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*ÅĞ¶Ï×Ó³ÌĞòµ÷ÓÃÊÇ·ñ²úÉú´íÎó*/
         %goto exit_with_error;
     %end;
 
-    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI_TEST %then %do; /*å¦‚æœè¢« %qualify_multi_test è°ƒç”¨ï¼Œåˆ™ä¿ç•™æ•°æ®é›† tmp_qualify_indata_unique_var*/
+    %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI_TEST %then %do; /*Èç¹û±» %qualify_multi_test µ÷ÓÃ£¬Ôò±£ÁôÊı¾İ¼¯ tmp_qualify_indata_unique_var*/
         proc datasets library = work noprint nowarn;
             delete tmp_qmt_indata_unique_var;
             change tmp_qualify_indata_unique_var = tmp_qmt_indata_unique_var;
         quit;
     %end;
 
-    /*3. åˆ†ç»„åˆ«ç»Ÿè®¡*/
+    /*3. ·Ö×é±ğÍ³¼Æ*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
         %qualify(INDATA           = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
@@ -338,17 +398,18 @@ Version Date: 2023-12-26 0.1
                  SUFFIX           = %superq(SUFFIX),
                  TOTAL            = %superq(TOTAL));
 
-        %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*åˆ¤æ–­å­ç¨‹åºè°ƒç”¨æ˜¯å¦äº§ç”Ÿé”™è¯¯*/
+        %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*ÅĞ¶Ï×Ó³ÌĞòµ÷ÓÃÊÇ·ñ²úÉú´íÎó*/
             %goto exit_with_error;
         %end;
     %end;
 
-    /*4. åˆå¹¶ä¸Šè¿°ç»“æœ*/
+    /*4. ºÏ²¢ÉÏÊö½á¹û*/
     proc sql noprint;
         create table tmp_qualify_m_outdata as
             select
+                sum.idt,
                 sum.seq,
-                sum.item                 label = "åˆ†ç±»",
+                sum.item                 label = "·ÖÀà",
                 %do i = 1 %to &group_level_n;
                     sub&i..value_&i      label = &&group_level_&i,
                     sub&i..freq_&i       label = &&group_level_freq_&i,
@@ -360,15 +421,15 @@ Version Date: 2023-12-26 0.1
                     sub&i..rate_&i       label = &&group_level_rate_&i,
                     sub&i..rate_&i._fmt  label = &&group_level_rate_fmt_&i,
                 %end;
-                sum.value_sum            label = "åˆè®¡",
-                sum.freq_sum             label = "åˆè®¡(é¢‘æ•°)",
-                sum.freq_sum_fmt         label = "åˆè®¡(é¢‘æ•°)",
-                sum.n_sum                label = "åˆè®¡(é¢‘æ•°)(å…¼å®¹)",
-                sum.n_sum_fmt            label = "åˆè®¡(é¢‘æ•°æ ¼å¼åŒ–)(å…¼å®¹)",
-                sum.times_sum            label = "åˆè®¡(é¢‘æ¬¡)",
-                sum.times_sum_fmt        label = "åˆè®¡(é¢‘æ¬¡æ ¼å¼åŒ–)",
-                sum.rate_sum             label = "åˆè®¡(é¢‘ç‡)",
-                sum.rate_sum_fmt         label = "åˆè®¡(é¢‘ç‡æ ¼å¼åŒ–)"
+                sum.value_sum            label = "ºÏ¼Æ",
+                sum.freq_sum             label = "ºÏ¼Æ(ÆµÊı)",
+                sum.freq_sum_fmt         label = "ºÏ¼Æ(ÆµÊı)",
+                sum.n_sum                label = "ºÏ¼Æ(ÆµÊı)(¼æÈİ)",
+                sum.n_sum_fmt            label = "ºÏ¼Æ(ÆµÊı¸ñÊ½»¯)(¼æÈİ)",
+                sum.times_sum            label = "ºÏ¼Æ(Æµ´Î)",
+                sum.times_sum_fmt        label = "ºÏ¼Æ(Æµ´Î¸ñÊ½»¯)",
+                sum.rate_sum             label = "ºÏ¼Æ(ÆµÂÊ)",
+                sum.rate_sum_fmt         label = "ºÏ¼Æ(ÆµÂÊ¸ñÊ½»¯)"
             from tmp_qualify_m_res_sum as sum %do i = 1 %to &group_level_n;
                                                   left join tmp_qualify_m_res_group_&i as sub&i on sum.item = sub&i..item
                                               %end;
@@ -389,7 +450,7 @@ Version Date: 2023-12-26 0.1
         %end;
     quit;
 
-    /*5. è¾“å‡ºæ•°æ®é›†*/
+    /*5. Êä³öÊı¾İ¼¯*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
                                         keep = item %if &uid ^= #NULL %then %do;
                                                         %do i = 1 %to &group_level_n;
@@ -415,12 +476,13 @@ Version Date: 2023-12-26 0.1
         set tmp_qualify_m_outdata;
     run;
 
-    /*----------------------------------------------è¿è¡Œåå¤„ç†----------------------------------------------*/
-    /*åˆ é™¤ä¸­é—´æ•°æ®é›†*/
+    /*----------------------------------------------ÔËĞĞºó´¦Àí----------------------------------------------*/
+    /*É¾³ıÖĞ¼äÊı¾İ¼¯*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_m_indata
                    tmp_qualify_m_outdata
+                   tmp_qualify_m_groupby_fmt
                    tmp_qualify_m_groupby_sorted
                    tmp_qualify_m_res_sum
                    %do i = 1 %to &group_level_n;
@@ -431,11 +493,11 @@ Version Date: 2023-12-26 0.1
     %end;
     %goto exit;
 
-    /*å¼‚å¸¸é€€å‡º*/
+    /*Òì³£ÍË³ö*/
     %exit_with_error:
     %let qualify_multi_exit_with_error = TRUE;
 
-    /*æ­£å¸¸é€€å‡º*/
+    /*Õı³£ÍË³ö*/
     %exit:
-    %put NOTE: å® qualify_multi å·²ç»“æŸè¿è¡Œï¼;
+    %put NOTE: ºê qualify_multi ÒÑ½áÊøÔËĞĞ£¡;
 %mend;

@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===================================
 Macro Name: quantify_multi_test
 Macro Label:多组别定量指标汇总统计
@@ -8,13 +8,15 @@ Version Date: 2024-01-05 0.1
               2024-01-23 0.3
               2024-05-29 0.4
               2024-06-14 0.5
+              2024-11-14 0.6
+              2025-01-08 0.7
 ===================================
 */
 
 %macro quantify_multi_test(INDATA,
                            VAR,
                            GROUP,
-                           GROUPBY,
+                           GROUPBY        = #AUTO,
                            OUTDATA        = RES_&VAR,
                            PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
                            STAT_FORMAT    = #AUTO,
@@ -38,7 +40,7 @@ Version Date: 2024-01-05 0.1
 
     /*声明全局变量*/
     %global qtmt_exit_with_error
-            groupby_var;
+            groupby_criteria;
     %let qtmt_exit_with_error = FALSE;
 
     /*声明局部变量*/
@@ -197,6 +199,10 @@ Version Date: 2024-01-05 0.1
         %goto exit_with_error;
     %end;
 
+    proc sql noprint;
+        select max(seq) into :desc_seq_max from tmp_qmt_outdata; /*获取描述性统计结果的最大 seq 值*/
+    quit;
+
     /*3. 统计推断*/
     %if %superq(p_format) = #AUTO %then %do;
         /*P值输出格式*/
@@ -211,7 +217,7 @@ Version Date: 2024-01-05 0.1
     /*正态性检验*/
     proc univariate data = tmp_qmt_indata normaltest noprint;
         var %superq(VAR);
-        class &groupby_var;
+        class &groupby_criteria;
         output out = tmp_qmt_nrmtest normaltest = normaltest probn = probn;
     run;
 
@@ -227,11 +233,13 @@ Version Date: 2024-01-05 0.1
     %if &nrmtest_valid = 0 %then %do; /*两组均为单点分布，无法检验正态性，不计算统计量*/
         proc sql noprint;
             insert into tmp_qmt_outdata
-                set item = &note_stat,
+                set seq     = &desc_seq_max + 1,
+                    item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
             insert into tmp_qmt_outdata
-                set item = &note_pvalue,
+                set seq     = &desc_seq_max + 2,
+                    item    = &note_pvalue,
                     value_1 = "-";
         quit;
     %end;
@@ -239,20 +247,22 @@ Version Date: 2024-01-05 0.1
         %put NOTE: 至少一个组别不符合正态性，使用 Wilcoxon 检验！;
         proc npar1way data = tmp_qmt_indata wilcoxon noprint;
             var %superq(VAR);
-            class &groupby_var;
+            class &groupby_criteria;
             output out = tmp_qmt_wcxtest wilcoxon;
         run;
         proc sql noprint;
             %if %superq(ts_format) = #AUTO %then %do;
-                select max(ceil(log10(abs(Z_WIL))) + 6, 7) into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
+                select max(ceil(log10(abs(Z_WIL))), 1) + 6 into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
                 %let ts_format = &ts_fmt_width..4;
             %end;
             insert into tmp_qmt_outdata
-                set item = &note_stat,
+                set seq     = &desc_seq_max + 1,
+                    item    = &note_stat,
                     value_1 = "Wilcoxon秩和检验",
                     value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &ts_format));
             insert into tmp_qmt_outdata
-                set item = &note_pvalue,
+                set seq     = &desc_seq_max + 2,
+                    item    = &note_pvalue,
                     value_1 = strip(put((select P2_WIL from tmp_qmt_wcxtest), &p_format));
         quit;
     %end;
@@ -261,7 +271,7 @@ Version Date: 2024-01-05 0.1
         ods output TTests = tmp_qmt_ttests Equality = tmp_qmt_equality;
         proc ttest data = tmp_qmt_indata plots = none;
             var %superq(VAR);
-            class &groupby_var;
+            class &groupby_criteria;
         run;
         ods html;
 
@@ -275,30 +285,34 @@ Version Date: 2024-01-05 0.1
             %put NOTE: 方差不齐，使用 Satterthwaite t 检验！;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
-                    set item = &note_stat,
+                    set seq     = &desc_seq_max + 1,
+                        item    = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &ts_format));
                 insert into tmp_qmt_outdata
-                    set item = &note_pvalue,
+                    set seq     = &desc_seq_max + 2,
+                        item    = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "不等于"), &p_format));
             quit;
         %end;
         %else %do;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))) + 6, 7) into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_outdata
-                    set item = &note_stat,
+                    set seq     = &desc_seq_max + 1,
+                        item    = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &ts_format));
                 insert into tmp_qmt_outdata
-                    set item = &note_pvalue,
+                    set seq     = &desc_seq_max + 2,
+                        item    = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "等于"), &p_format));
             quit;
         %end;

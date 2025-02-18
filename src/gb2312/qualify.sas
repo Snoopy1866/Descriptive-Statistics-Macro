@@ -1,7 +1,7 @@
-ï»¿/*
+/*
 ===================================
 Macro Name: qualify
-Macro Label:å®šæ€§æŒ‡æ ‡åˆ†æ
+Macro Label:¶¨ĞÔÖ¸±ê·ÖÎö
 Author: wtwang
 Version Date: 2023-03-08 1.0.1
               2023-11-06 1.0.2
@@ -27,6 +27,13 @@ Version Date: 2023-03-08 1.0.1
               2024-07-10 1.0.22
               2024-07-19 1.0.23
               2024-09-18 1.0.24
+              2024-11-13 1.0.25
+              2024-11-14 1.0.26
+              2025-01-09 1.0.27
+              2025-01-14 1.1.0
+              2025-01-15 1.1.1
+              2025-01-16 1.1.2
+              2025-02-09 1.1.3
 ===================================
 */
 
@@ -36,7 +43,7 @@ Version Date: 2023-03-08 1.0.1
                UID              = #NULL,
                PATTERN          = %nrstr(#FREQ(#RATE)),
                MISSING          = FALSE,
-               MISSING_NOTE     = "ç¼ºå¤±",
+               MISSING_NOTE     = "È±Ê§",
                MISSING_POSITION = LAST,
                OUTDATA          = #AUTO,
                STAT_FORMAT      = #AUTO,
@@ -45,17 +52,17 @@ Version Date: 2023-03-08 1.0.1
                SUFFIX           = #AUTO,
                TOTAL            = FALSE,
                DEL_TEMP_DATA    = TRUE)
-               /des = "å®šæ€§æŒ‡æ ‡åˆ†æ" parmbuff;
+               /des = "¶¨ĞÔÖ¸±ê·ÖÎö" parmbuff;
 
 
-    /*æ‰“å¼€å¸®åŠ©æ–‡æ¡£*/
+    /*´ò¿ª°ïÖúÎÄµµ*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
         X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify/readme.md";
         %goto exit;
     %end;
 
-    /*----------------------------------------------åˆå§‹åŒ–----------------------------------------------*/
-    /*ç»Ÿä¸€å‚æ•°å¤§å°å†™*/
+    /*----------------------------------------------³õÊ¼»¯----------------------------------------------*/
+    /*Í³Ò»²ÎÊı´óĞ¡Ğ´*/
     %let indata               = %sysfunc(strip(%bquote(&indata)));
     %let var                  = %sysfunc(strip(%bquote(&var)));
     %let by                   = %upcase(%sysfunc(strip(%bquote(&by))));
@@ -67,17 +74,17 @@ Version Date: 2023-03-08 1.0.1
     %let total                = %upcase(%sysfunc(strip(%bquote(&total))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
-    /*å—æ”¯æŒçš„ç»Ÿè®¡é‡*/
+    /*ÊÜÖ§³ÖµÄÍ³¼ÆÁ¿*/
     %let stat_supported = %bquote(FREQ|RATE|TIMES|N);
 
-    /*å£°æ˜å…¨å±€å˜é‡*/
-    /*å…¨å±€è¾“å‡ºæ ¼å¼*/
+    /*ÉùÃ÷È«¾Ö±äÁ¿*/
+    /*È«¾ÖÊä³ö¸ñÊ½*/
     %global FREQ_format
             RATE_format
             TIMES_format
             N_format
             ;
-    /*å…¨å±€é›¶é¢‘æ•°è¾“å‡ºæ ¼å¼*/
+    /*È«¾ÖÁãÆµÊıÊä³ö¸ñÊ½*/
     %global FREQ_zero
             FREQ_zero_fmt
             N_zero
@@ -91,83 +98,86 @@ Version Date: 2023-03-08 1.0.1
     %global qualify_exit_with_error;
     %let qualify_exit_with_error = FALSE;
 
-    /*å£°æ˜å±€éƒ¨å˜é‡*/
+    /*ÉùÃ÷¾Ö²¿±äÁ¿*/
     %local i j
            libname_in  memname_in  dataset_options_in
            libname_out memname_out dataset_options_out;
 
-    /*----------------------------------------------å‚æ•°æ£€æŸ¥----------------------------------------------*/
+    /*----------------------------------------------²ÎÊı¼ì²é----------------------------------------------*/
     /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†ææ•°æ®é›†ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎöÊı¾İ¼¯£¡;
         %goto exit_with_error;
     %end;
     %else %do;
         %let reg_indata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_indata_id, %bquote(&indata))) = 0 %then %do;
-            %put ERROR: å‚æ•° INDATA = %bquote(&indata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı INDATA = %bquote(&indata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 1, %bquote(&indata))));
             %let memname_in = %upcase(%sysfunc(prxposn(&reg_indata_id, 2, %bquote(&indata))));
             %let dataset_options_in = %sysfunc(prxposn(&reg_indata_id, 3, %bquote(&indata)));
-            %if &libname_in = %bquote() %then %let libname_in = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_in = %bquote() %then %let libname_in = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_in é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_in Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_in" and memname = "&memname_in";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: åœ¨ &libname_in é€»è¾‘åº“ä¸­æ²¡æœ‰æ‰¾åˆ° &memname_in æ•°æ®é›†ï¼;
+                %put ERROR: ÔÚ &libname_in Âß¼­¿âÖĞÃ»ÓĞÕÒµ½ &memname_in Êı¾İ¼¯£¡;
                 %goto exit_with_error;
+            %end;
+
+            proc sql noprint;
+                select count(*) into : nobs from &indata;
+            quit;
+            %if &nobs = 0 %then %do;
+                %put NOTE: ·ÖÎöÊı¾İ¼¯ &indata Îª¿Õ£¡;
             %end;
         %end;
     %end;
-    %put NOTE: åˆ†ææ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_in..&memname_in;
-
-    data tmp_qualify_indata;
-        set &libname_in..&memname_in(&dataset_options_in);
-    run;
+    %put NOTE: ·ÖÎöÊı¾İ¼¯±»Ö¸¶¨Îª &libname_in..&memname_in;
 
 
     /*VAR*/
     %if %bquote(&var) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šåˆ†æå˜é‡ï¼;
+        %put ERROR: Î´Ö¸¶¨·ÖÎö±äÁ¿£¡;
         %goto exit_with_error;
     %end;
 
     %let reg_var = %bquote(/^([A-Za-z_][A-Za-z_\d]*)(?:\(((?:[\s,]*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*=\s*(?:\x22[^\x22]*?\x22|\x27[^\x27]*?\x27))+\s*)?\))?$/);
     %let reg_var_id = %sysfunc(prxparse(&reg_var));
     %if %sysfunc(prxmatch(&reg_var_id, %bquote(&var))) = 0 %then %do;
-        %put ERROR: å‚æ•° VAR = %bquote(&var) æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı VAR = %bquote(&var) ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit_with_error;
     %end;
     %else %do;
-        %let var_name = %upcase(%sysfunc(prxposn(&reg_var_id, 1, %bquote(&var)))); /*å˜é‡å*/
-        %let var_level = %sysfunc(prxposn(&reg_var_id, 2, %bquote(&var))); /*å˜é‡æ°´å¹³*/
+        %let var_name = %upcase(%sysfunc(prxposn(&reg_var_id, 1, %bquote(&var)))); /*±äÁ¿Ãû*/
+        %let var_level = %sysfunc(prxposn(&reg_var_id, 2, %bquote(&var))); /*±äÁ¿Ë®Æ½*/
 
-        /*æ£€æŸ¥å˜é‡å­˜åœ¨æ€§*/
+        /*¼ì²é±äÁ¿´æÔÚĞÔ*/
         proc sql noprint;
             select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&var_name";
         quit;
-        %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-            %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ &var_name;
+        %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+            %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±äÁ¿ &var_name;
             %goto exit_with_error;
         %end;
 
-        /*æ£€æŸ¥å˜é‡ç±»å‹*/
+        /*¼ì²é±äÁ¿ÀàĞÍ*/
         %if %bquote(&type) = num %then %do;
-            %put ERROR: å‚æ•° VAR ä¸æ”¯æŒæ•°å€¼å‹å˜é‡ï¼;
+            %put ERROR: ²ÎÊı VAR ²»Ö§³ÖÊıÖµĞÍ±äÁ¿£¡;
             %goto exit_with_error;
         %end;
 
-        /*æ‹†åˆ†éœ€è¦è¿›è¡Œé‡å‘½åçš„æ°´å¹³åç§°*/
+        /*²ğ·ÖĞèÒª½øĞĞÖØÃüÃûµÄË®Æ½Ãû³Æ*/
         %let var_level_rename_n = 0;
         %if %bquote(&var_level) ^= %bquote() %then %do; 
             %let reg_var_level_expr_unit = %bquote(/\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)\s*=\s*(\x22[^\x22]*?\x22|\x27[^\x27]*?\x27)/);
@@ -178,74 +188,74 @@ Version Date: 2023-03-08 1.0.1
             %let length = 1;
             %let i = 1;
             %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
-            %do %until(&position = 0); /*è¿ç»­åŒ¹é…æ­£åˆ™è¡¨è¾¾å¼*/
-                %let var_level_&i._name_pair = %substr(%bquote(&var_level), &position, &length); /*ç¬¬iä¸ªæ°´å¹³çš„æ—§åç§°å’Œæ–°åç§°*/
+            %do %until(&position = 0); /*Á¬ĞøÆ¥ÅäÕıÔò±í´ïÊ½*/
+                %let var_level_&i._name_pair = %substr(%bquote(&var_level), &position, &length); /*µÚi¸öË®Æ½µÄ¾ÉÃû³ÆºÍĞÂÃû³Æ*/
                 %if %sysfunc(prxmatch(&reg_var_level_expr_unit_id, %bquote(&&var_level_&i._name_pair))) %then %do;
-                    %let var_level_&i._name_old = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._name_pair))); /*æ‹†åˆ†ç¬¬iä¸ªæ°´å¹³çš„æ—§åç§°*/
-                    %let var_level_&i._name_new = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._name_pair))); /*æ‹†åˆ†ç¬¬iä¸ªæ°´å¹³çš„æ–°åç§°*/
+                    %let var_level_&i._name_old = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 1, %bquote(&&var_level_&i._name_pair))); /*²ğ·ÖµÚi¸öË®Æ½µÄ¾ÉÃû³Æ*/
+                    %let var_level_&i._name_new = %sysfunc(prxposn(&reg_var_level_expr_unit_id, 2, %bquote(&&var_level_&i._name_pair))); /*²ğ·ÖµÚi¸öË®Æ½µÄĞÂÃû³Æ*/
                 %end;
                 %else %do;
-                    %put ERROR: åœ¨å¯¹å‚æ•° VAR è§£æç¬¬ &i ä¸ªåˆ†ç±»çš„æ–°æ—§åç§°æ—¶å‘ç”Ÿäº†æ„æ–™ä¹‹å¤–çš„é”™è¯¯ï¼;
+                    %put ERROR: ÔÚ¶Ô²ÎÊı VAR ½âÎöµÚ &i ¸ö·ÖÀàµÄĞÂ¾ÉÃû³ÆÊ±·¢ÉúÁËÒâÁÏÖ®ÍâµÄ´íÎó£¡;
                     %goto exit_with_error;
                 %end;
                 %let i = %eval(&i + 1);
                 %syscall prxnext(reg_var_level_expr_unit_id, start, stop, var_level, position, length);
             %end;
-            %let var_level_rename_n = %eval(&i - 1); /*è®¡ç®—éœ€è¦è¿›è¡Œé‡å‘½åçš„æ°´å¹³åç§°çš„æ•°é‡*/
+            %let var_level_rename_n = %eval(&i - 1); /*¼ÆËãĞèÒª½øĞĞÖØÃüÃûµÄË®Æ½Ãû³ÆµÄÊıÁ¿*/
         %end;
     %end;
 
 
     /*BY*/
     %if %bquote(&by) = %bquote() %then %do;
-        %put ERROR: å‚æ•° BY ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı BY Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
     %else %if %bquote(&by) = #AUTO %then %do;
-        %put NOTE: æœªæŒ‡å®šå„åˆ†ç±»çš„æ’åºæ–¹å¼ï¼Œå°†æŒ‰ç…§å„åˆ†ç±»çš„é¢‘æ•°ä»å¤§åˆ°å°è¿›è¡Œæ’åºï¼;
+        %put NOTE: Î´Ö¸¶¨¸÷·ÖÀàµÄÅÅĞò·½Ê½£¬½«°´ÕÕ¸÷·ÖÀàµÄÆµÊı´Ó´óµ½Ğ¡½øĞĞÅÅĞò£¡;
         %let by = #FREQ(DESCENDING);
     %end;
 
-    /*è§£æå‚æ•° by, æ£€æŸ¥åˆæ³•æ€§*/
+    /*½âÎö²ÎÊı by, ¼ì²éºÏ·¨ĞÔ*/
     %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
     %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
     %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
-        %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*æ’åºåŸºäºçš„ç»Ÿè®¡é‡*/
-        %let by_var       = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*æ’åºåŸºäºçš„å˜é‡*/
-        %let by_fmt       = %sysfunc(prxposn(&reg_by_id, 3, %bquote(&by))); /*æ’åºåŸºäºçš„è¾“å‡ºæ ¼å¼*/
-        %let by_direction = %sysfunc(prxposn(&reg_by_id, 4, %bquote(&by))); /*æ’åºæ–¹å‘*/
+        %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*ÅÅĞò»ùÓÚµÄÍ³¼ÆÁ¿*/
+        %let by_var       = %sysfunc(prxposn(&reg_by_id, 2, %bquote(&by))); /*ÅÅĞò»ùÓÚµÄ±äÁ¿*/
+        %let by_fmt       = %sysfunc(prxposn(&reg_by_id, 3, %bquote(&by))); /*ÅÅĞò»ùÓÚµÄÊä³ö¸ñÊ½*/
+        %let by_direction = %sysfunc(prxposn(&reg_by_id, 4, %bquote(&by))); /*ÅÅĞò·½Ïò*/
 
         %if %bquote(&by_var) ^= %bquote() %then %do;
-            /*æ£€æŸ¥æ’åºå˜é‡å­˜åœ¨æ€§*/
+            /*¼ì²éÅÅĞò±äÁ¿´æÔÚĞÔ*/
             proc sql noprint;
                 select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&by_var";
             quit;
-            %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-                %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°æ’åºå˜é‡ &by_var;
+            %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+                %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½ÅÅĞò±äÁ¿ &by_var;
                 %goto exit_with_error;
             %end;
         %end;
 
         %if %bquote(&by_fmt) ^= %bquote() %then %do;
-            /*æ£€æŸ¥æ’åºæ ¼å¼å­˜åœ¨æ€§*/
+            /*¼ì²éÅÅĞò¸ñÊ½´æÔÚĞÔ*/
             proc sql noprint;
                 select libname, memname, source into : by_fmt_libname, : by_fmt_memname, : by_fmt_source from DICTIONARY.FORMATS where fmtname = "&by_fmt";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: å‚æ•° BY æŒ‡å®šçš„æ’åºæ ¼å¼ &by_fmt.. ä¸å­˜åœ¨ï¼;
+                %put ERROR: ²ÎÊı BY Ö¸¶¨µÄÅÅĞò¸ñÊ½ &by_fmt.. ²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
             %else %do;
                 %if &by_fmt_source ^= C %then %do;
-                    %put ERROR: å‚æ•° BY æŒ‡å®šçš„æ’åºæ ¼å¼ &by_fmt.. ä¸æ˜¯ CATALOG-BASEDï¼;
+                    %put ERROR: ²ÎÊı BY Ö¸¶¨µÄÅÅĞò¸ñÊ½ &by_fmt.. ²»ÊÇ CATALOG-BASED£¡;
                     %goto exit_with_error;
                 %end;
             %end;
         %end;
 
-        /*æ£€æŸ¥æ’åºæ–¹å‘*/
+        /*¼ì²éÅÅĞò·½Ïò*/
         %if %bquote(&by_direction) = %bquote() %then %do;
-            %put NOTE: æœªæŒ‡å®šæ’åºæ–¹å‘ï¼Œé»˜è®¤å‡åºæ’åˆ—ï¼;
+            %put NOTE: Î´Ö¸¶¨ÅÅĞò·½Ïò£¬Ä¬ÈÏÉıĞòÅÅÁĞ£¡;
             %let by_direction = ASCENDING;
         %end;
         %else %if %bquote(&by_direction) = ASC %then %do;
@@ -256,14 +266,14 @@ Version Date: 2023-03-08 1.0.1
         %end;
     %end;
     %else %do;
-        %put ERROR: å‚æ•° BY = %bquote(&by) æ ¼å¼ä¸æ­£ç¡®ï¼;
+        %put ERROR: ²ÎÊı BY = %bquote(&by) ¸ñÊ½²»ÕıÈ·£¡;
         %goto exit_with_error;
     %end;
 
-    /*æ ¹æ®å‚æ•° by è°ƒæ•´å„åˆ†ç±»é¡ºåºï¼Œç”Ÿæˆå®å˜é‡ä»¥ä¾›åç»­è°ƒç”¨*/
+    /*¸ù¾İ²ÎÊı by µ÷Õû¸÷·ÖÀàË³Ğò£¬Éú³Éºê±äÁ¿ÒÔ¹©ºóĞøµ÷ÓÃ*/
     %if %bquote(&by_stat) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -279,14 +289,14 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 group by var_level
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
     %else %if %bquote(&by_var) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -302,7 +312,7 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
@@ -311,7 +321,7 @@ Version Date: 2023-03-08 1.0.1
             select &by_fmt;
         run;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     coalescec(a.&var_name, b.label)       as var_level,
@@ -330,59 +340,76 @@ Version Date: 2023-03-08 1.0.1
                                                           as var_level_by_criteria,
                     ifc(missing(b.label), 'Y', '')
                                                           as var_level_fmt_not_defined
-                from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                from %bquote(&indata) as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
             %if &by_fmt_not_defined_n > 0 %then %do;
-                %put WARNING: æŒ‡å®šç”¨äºæ’åºçš„è¾“å‡ºæ ¼å¼ä¸­ï¼Œå­˜åœ¨ &by_fmt_not_defined_n ä¸ªåˆ†ç±»åç§°æœªå®šä¹‰ï¼Œè¾“å‡ºç»“æœå¯èƒ½æ˜¯éé¢„æœŸçš„ï¼;
+                %put WARNING: Ö¸¶¨ÓÃÓÚÅÅĞòµÄÊä³ö¸ñÊ½ÖĞ£¬´æÔÚ &by_fmt_not_defined_n ¸ö·ÖÀàÃû³ÆÎ´¶¨Òå£¬Êä³ö½á¹û¿ÉÄÜÊÇ·ÇÔ¤ÆÚµÄ£¡;
             %end;
         quit;
     %end;
 
-    proc sql noprint;
-        select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
-        select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
-
-        select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
-        select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
-        select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
-    quit;
-
 
     /*UID*/
     %if %bquote(&uid) = %bquote() %then %do;
-        %put ERROR: æœªæŒ‡å®šå”¯ä¸€æ ‡è¯†ç¬¦å˜é‡ï¼;
+        %put ERROR: Î´Ö¸¶¨Î¨Ò»±êÊ¶·û±äÁ¿£¡;
         %goto exit_with_error;
     %end;
 
     %if %bquote(&uid) ^= #NULL %then %do;
-        %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %let uid_n = %sysfunc(max(1, %sysfunc(kcountw(%bquote(&uid), %bquote(), s))));
+        %if &uid_n = 1 %then %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %end;
+        %else %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)%sysfunc(repeat((?:\s+([A-Za-z_][A-Za-z_\d]*)), %eval(&uid_n - 2)))$/);
+        %end;
         %let reg_uid_id = %sysfunc(prxparse(&reg_uid));
+
         %if %sysfunc(prxmatch(&reg_uid_id, %bquote(&uid))) = 0 %then %do;
-            %put ERROR: å‚æ•° UID = %bquote(&uid) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı UID = %bquote(&uid) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
-            proc sql noprint;
-                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&uid";
-            quit;
-            %if &SQLOBS = 0 %then %do; /*æ•°æ®é›†ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡*/
-                %put ERROR: åœ¨ &libname_in..&memname_in ä¸­æ²¡æœ‰æ‰¾åˆ°å˜é‡ &uid;
-                %goto exit_with_error;
+            /*ÅĞ¶ÏÊÇ·ñÖ¸¶¨ÖØ¸´µÄ±äÁ¿*/
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                %if &i < &uid_n %then %do;
+                    %do j = %eval(&i + 1) %to &uid_n;
+                        %let uid_&j = %sysfunc(prxposn(&reg_uid_id, &j, %bquote(&uid)));
+                        %if %bquote(&&uid_&i) = %bquote(&&uid_&j) %then %do;
+                            %put ERROR: ²»ÔÊĞíÖØ¸´Ö¸¶¨±êÊ¶·û±äÁ¿ %bquote(&&uid_&i)£¡;
+                            %goto exit_with_error;
+                        %end;
+                    %end;
+                %end;
             %end;
+            /*ÅĞ¶Ï±äÁ¿ÊÇ·ñ´æÔÚ*/
+            %let IS_VALID_UID = TRUE;
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                proc sql noprint;
+                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&&uid_&i";
+                quit;
+                %if &SQLOBS = 0 %then %do; /*Êı¾İ¼¯ÖĞÃ»ÓĞÕÒµ½±äÁ¿*/
+                    %put ERROR: ÔÚ &libname_in..&memname_in ÖĞÃ»ÓĞÕÒµ½±êÊ¶·û±äÁ¿ %bquote(&&uid_&i)£¡;
+                    %let IS_VALID_UID = FALSE;
+                %end;
+            %end;
+            %if &IS_VALID_UID = FALSE %then %goto exit_with_error;
         %end;
     %end;
 
 
     /*MISSING*/
     %if %superq(missing) = %bquote() %then %do;
-        %put ERROR: å‚æ•° MISSING ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı MISSING Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
 
     %if %superq(missing) ^= TRUE and %superq(missing) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° MISSING åªèƒ½æ˜¯ TRUE æˆ– FALSEï¼;
+        %put ERROR: ²ÎÊı MISSING Ö»ÄÜÊÇ TRUE »ò FALSE£¡;
         %goto exit_with_error;
     %end;
 
@@ -390,7 +417,7 @@ Version Date: 2023-03-08 1.0.1
     /*MISSING_NOTE*/
     %if %superq(missing) = TRUE %then %do;
         %if %superq(missing_note) = %bquote() %then %do;
-            %put ERROR: å‚æ•° MISSING_NOTE ä¸ºç©ºï¼;
+            %put ERROR: ²ÎÊı MISSING_NOTE Îª¿Õ£¡;
             %goto exit_with_error;
         %end;
         %else %do;
@@ -399,7 +426,7 @@ Version Date: 2023-03-08 1.0.1
                 %let missing_note_sql_expr = %superq(missing_note);
             %end;
             %else %do;
-                %put ERROR: å‚æ•° MISSING_NOTE æ ¼å¼ä¸æ­£ç¡®ï¼ŒæŒ‡å®šçš„å­—ç¬¦ä¸²å¿…é¡»ä½¿ç”¨åŒ¹é…çš„å¼•å·åŒ…å›´ï¼;
+                %put ERROR: ²ÎÊı MISSING_NOTE ¸ñÊ½²»ÕıÈ·£¬Ö¸¶¨µÄ×Ö·û´®±ØĞëÊ¹ÓÃÆ¥ÅäµÄÒıºÅ°üÎ§£¡;
                 %goto exit;
             %end;
         %end;
@@ -409,33 +436,64 @@ Version Date: 2023-03-08 1.0.1
     /*MISSING_POSITION*/
     %if %superq(missing) = TRUE %then %do;
         %if %superq(missing_position) = %bquote() %then %do;
-            %put ERROR: å‚æ•° MISSING_POSITION ä¸ºç©ºï¼;
+            %put ERROR: ²ÎÊı MISSING_POSITION Îª¿Õ£¡;
             %goto exit_with_error;
         %end;
         %else %if %superq(missing_position) = FIRST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %do i = &var_level_n %to 2 %by -1;
-                %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
-                %let var_level_note_&i = %unquote(%nrbquote(&&)var_level_note_%eval(&i - 1));
-            %end;
-            %let var_level_1 = "";
-            %let var_level_note_1 = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var
+                if _n_ = 1 then do;
+                    var_level = "";
+                    var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                    output;
+                end;
+                set tmp_qualify_distinct_var;
+                output;
+            run;
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %let var_level_&var_level_n = "";
-            %let var_level_note_&var_level_n = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var;
+                set tmp_qualify_distinct_var;
+                output;
+                var_level = "";
+                var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                output;
+            run;
         %end;
         %else %do;
-            %put ERROR: å‚æ•° MISSING_POSITION åªèƒ½æ˜¯ FIRST æˆ– LASTï¼;
+            %put ERROR: ²ÎÊı MISSING_POSITION Ö»ÄÜÊÇ FIRST »ò LAST£¡;
             %goto exit_with_error;
         %end;
     %end;
 
+    proc sql noprint;
+        select count(*)                    into : var_level_n        from tmp_qualify_distinct_var;
+        %if &var_level_n > 0 %then %do;
+            select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
+            select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
+
+            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
+            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
+            select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
+        %end;
+        %else %do;
+            %put NOTE: Êı¾İ¼¯ÖĞÃ»ÓĞÈÎºÎ·ÖÀà£¡;
+        %end;
+    quit;
+
+    data tmp_qualify_indata;
+        set &libname_in..&memname_in(&dataset_options_in);
+        %if &var_level_n > 0 %then %do;
+            if &var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;);
+        %end;
+        %else %do;
+            delete;
+        %end;
+    run;
+
 
     /*PATTERN*/
     %if %bquote(&pattern) = %bquote() %then %do;
-        %put ERROR: å‚æ•° PATTERN ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı PATTERN Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
 
@@ -458,14 +516,14 @@ Version Date: 2023-03-08 1.0.1
         %let string_&i = %sysfunc(prxposn(&reg_stat_id, %eval(&stat_n * 2 + 1), %bquote(&pattern)));
     %end;
     %else %do;
-        %put ERROR: åœ¨å¯¹å‚æ•° PATTERN è§£æç»Ÿè®¡é‡åç§°åŠå…¶ä»–å­—ç¬¦æ—¶å‘ç”Ÿäº†é”™è¯¯ï¼Œå¯¼è‡´é”™è¯¯çš„åŸå› å¯èƒ½æ˜¯æŒ‡å®šäº†ä¸å—æ”¯æŒçš„ç»Ÿè®¡é‡ï¼Œæˆ–è€…æœªä½¿ç”¨â€œ##â€å¯¹å­—ç¬¦â€œ#â€è¿›è¡Œè½¬ä¹‰ï¼;
+        %put ERROR: ÔÚ¶Ô²ÎÊı PATTERN ½âÎöÍ³¼ÆÁ¿Ãû³Æ¼°ÆäËû×Ö·ûÊ±·¢ÉúÁË´íÎó£¬µ¼ÖÂ´íÎóµÄÔ­Òò¿ÉÄÜÊÇÖ¸¶¨ÁË²»ÊÜÖ§³ÖµÄÍ³¼ÆÁ¿£¬»òÕßÎ´Ê¹ÓÃ¡°##¡±¶Ô×Ö·û¡°#¡±½øĞĞ×ªÒå£¡;
         %goto exit_with_error;
     %end;
 
 
     /*OUTDATA*/
     %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: å‚æ•° OUTDATA ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı OUTDATA Îª¿Õ£¡;
         %goto exit_with_error;
     %end;
     %else %do;
@@ -475,23 +533,23 @@ Version Date: 2023-03-08 1.0.1
 
         %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
         %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
-            %put ERROR: å‚æ•° OUTDATA = %bquote(&outdata) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı OUTDATA = %bquote(&outdata) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
         %else %do;
             %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
             %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
             %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-            %if &libname_out = %bquote() %then %let libname_out = WORK; /*æœªæŒ‡å®šé€»è¾‘åº“ï¼Œé»˜è®¤ä¸ºWORKç›®å½•*/
+            %if &libname_out = %bquote() %then %let libname_out = WORK; /*Î´Ö¸¶¨Âß¼­¿â£¬Ä¬ÈÏÎªWORKÄ¿Â¼*/
             proc sql noprint;
                 select * from DICTIONARY.MEMBERS where libname = "&libname_out";
             quit;
             %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_out é€»è¾‘åº“ä¸å­˜åœ¨ï¼;
+                %put ERROR: &libname_out Âß¼­¿â²»´æÔÚ£¡;
                 %goto exit_with_error;
             %end;
         %end;
-        %put NOTE: è¾“å‡ºæ•°æ®é›†è¢«æŒ‡å®šä¸º &libname_out..&memname_out;
+        %put NOTE: Êä³öÊı¾İ¼¯±»Ö¸¶¨Îª &libname_out..&memname_out;
     %end;
 
 
@@ -504,7 +562,7 @@ Version Date: 2023-03-08 1.0.1
     %if %bquote(&stat_format) ^= #AUTO %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
         %if &stat_format_n <= 0 %then %do;
-            %put ERROR: å‚æ•° STAT_FORMAT ä¸ºç©ºï¼;
+            %put ERROR: ²ÎÊı STAT_FORMAT Îª¿Õ£¡;
             %goto exit_with_error;
         %end;
 
@@ -524,15 +582,15 @@ Version Date: 2023-03-08 1.0.1
                         select * from DICTIONARY.FORMATS where fmtname = "&stat_new_format_base" and fmttype = "F";
                     quit;
                     %if &SQLOBS = 0 %then %do;
-                        %put ERROR: ä¸ºç»Ÿè®¡é‡ &stat_whose_format_2be_update æŒ‡å®šçš„è¾“å‡ºæ ¼å¼ &stat_new_format_base ä¸å­˜åœ¨ï¼;
+                        %put ERROR: ÎªÍ³¼ÆÁ¿ &stat_whose_format_2be_update Ö¸¶¨µÄÊä³ö¸ñÊ½ &stat_new_format_base ²»´æÔÚ£¡;
                         %let IS_VALID_STAT_FORMAT = FALSE;
                     %end;
                 %end;
 
-                /*æ›´æ–°ç»Ÿè®¡é‡çš„è¾“å‡ºæ ¼å¼*/
+                /*¸üĞÂÍ³¼ÆÁ¿µÄÊä³ö¸ñÊ½*/
                 %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format);
 
-                /*å¯¹äºå­˜åœ¨åˆ«åçš„ç»Ÿè®¡é‡ï¼Œéœ€åŒæ­¥ä¿®æ”¹è¾“å‡ºæ ¼å¼*/
+                /*¶ÔÓÚ´æÔÚ±ğÃûµÄÍ³¼ÆÁ¿£¬ĞèÍ¬²½ĞŞ¸ÄÊä³ö¸ñÊ½*/
                 %if &stat_whose_format_2be_update = N %then %do;
                     %let FREQ_format = %bquote(&stat_new_format);
                 %end;
@@ -545,7 +603,7 @@ Version Date: 2023-03-08 1.0.1
             %end;
         %end;
         %else %do;
-            %put ERROR: å‚æ•° STAT_FORMAT = %bquote(&stat_format) æ ¼å¼ä¸æ­£ç¡®ï¼;
+            %put ERROR: ²ÎÊı STAT_FORMAT = %bquote(&stat_format) ¸ñÊ½²»ÕıÈ·£¡;
             %goto exit_with_error;
         %end;
     %end;
@@ -569,7 +627,7 @@ Version Date: 2023-03-08 1.0.1
             %let label_sql_expr = %superq(label);
         %end;
         %else %do;
-            %put ERROR: å‚æ•° LABEL æ ¼å¼ä¸æ­£ç¡®ï¼ŒæŒ‡å®šçš„å­—ç¬¦ä¸²å¿…é¡»ä½¿ç”¨åŒ¹é…çš„å¼•å·åŒ…å›´ï¼;
+            %put ERROR: ²ÎÊı LABEL ¸ñÊ½²»ÕıÈ·£¬Ö¸¶¨µÄ×Ö·û´®±ØĞëÊ¹ÓÃÆ¥ÅäµÄÒıºÅ°üÎ§£¡;
             %goto exit;
         %end;
     %end;
@@ -588,7 +646,7 @@ Version Date: 2023-03-08 1.0.1
             %let indent_sql_expr = %superq(indent);
         %end;
         %else %do;
-            %put ERROR: å‚æ•° INDENT æ ¼å¼ä¸æ­£ç¡®ï¼ŒæŒ‡å®šçš„å­—ç¬¦ä¸²å¿…é¡»ä½¿ç”¨åŒ¹é…çš„å¼•å·åŒ…å›´ï¼;
+            %put ERROR: ²ÎÊı INDENT ¸ñÊ½²»ÕıÈ·£¬Ö¸¶¨µÄ×Ö·û´®±ØĞëÊ¹ÓÃÆ¥ÅäµÄÒıºÅ°üÎ§£¡;
             %goto exit;
         %end;
     %end;
@@ -607,7 +665,7 @@ Version Date: 2023-03-08 1.0.1
             %let suffix_sql_expr = %superq(suffix);
         %end;
         %else %do;
-            %put ERROR: å‚æ•° SUFFIX æ ¼å¼ä¸æ­£ç¡®ï¼ŒæŒ‡å®šçš„å­—ç¬¦ä¸²å¿…é¡»ä½¿ç”¨åŒ¹é…çš„å¼•å·åŒ…å›´ï¼;
+            %put ERROR: ²ÎÊı SUFFIX ¸ñÊ½²»ÕıÈ·£¬Ö¸¶¨µÄ×Ö·û´®±ØĞëÊ¹ÓÃÆ¥ÅäµÄÒıºÅ°üÎ§£¡;
             %goto exit;
         %end;
     %end;
@@ -615,18 +673,18 @@ Version Date: 2023-03-08 1.0.1
 
     /*TOTAL*/
     %if %superq(total) = %bquote() %then %do;
-        %put ERROR: å‚æ•° TOTAL ä¸ºç©ºï¼;
+        %put ERROR: ²ÎÊı TOTAL Îª¿Õ£¡;
         %goto exit;
     %end;
 
     %if %superq(total) ^= TRUE and %superq(total) ^= FALSE %then %do;
-        %put ERROR: å‚æ•° TOTAL åªèƒ½æ˜¯ TRUE å’Œ FALSE å…¶ä¸­ä¹‹ä¸€ï¼;
+        %put ERROR: ²ÎÊı TOTAL Ö»ÄÜÊÇ TRUE ºÍ FALSE ÆäÖĞÖ®Ò»£¡;
         %goto exit;
     %end;
 
 
-    /*----------------------------------------------ä¸»ç¨‹åº----------------------------------------------*/
-    /*1. å»é‡UID*/
+    /*----------------------------------------------Ö÷³ÌĞò----------------------------------------------*/
+    /*1. È¥ÖØUID*/
     %if %superq(uid) = #NULL %then %do;
         data tmp_qualify_indata_unique_total
              tmp_qualify_indata_unique_var;
@@ -637,21 +695,21 @@ Version Date: 2023-03-08 1.0.1
     %end;
     %else %do;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_total nodupkey;
-            by &uid;
+            by %do i = 1 %to &uid_n; &&uid_&i %end;;
         run;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_var nodupkey;
-            by &uid &var_name;
+            by %do i = 1 %to &uid_n; &&uid_&i %end; &var_name;
         run;
     %end;
 
 
-    /*2. è®¡ç®—é¢‘æ•°ã€é¢‘æ¬¡ã€é¢‘ç‡*/
-    /*æ›¿æ¢ "#|" ä¸º "|", "##" ä¸º "#"*/
+    /*2. ¼ÆËãÆµÊı¡¢Æµ´Î¡¢ÆµÂÊ*/
+    /*Ìæ»» "#|" Îª "|", "##" Îª "#"*/
     %macro temp_combpl_hash(string);
         transtrn(transtrn(&string, "#|", "|"), "##", "#")
     %mend;
 
-    /*é¢‘æ•°ä¸ºé›¶çš„è¾“å‡ºç»“æœ*/
+    /*ÆµÊıÎªÁãµÄÊä³ö½á¹û*/
     %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI %then %do;
         %let FREQ_zero      = 0;
         %let FREQ_zero_fmt  = %sysfunc(putn(&FREQ_zero, &FREQ_format -R));
@@ -672,55 +730,70 @@ Version Date: 2023-03-08 1.0.1
         run;
     %end;
 
-    /*æ±‡æ€»*/
+    /*»ã×Ü*/
     proc sql noprint;
+        select count(*) into :total_n from tmp_qualify_indata_unique_total;
         create table tmp_qualify_outdata_label as
             select
+                distinct
+                0                                 as IDT,
                 0                                 as SEQ,
-                %unquote(%superq(label_sql_expr)) as ITEM
+                %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
-                    ,
-                    /*é¢‘æ•°*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata_unique_total)
-                                                                                           as FREQ,
+                    /*ÆµÊı*/
+                    coalesce(count(*), 0)                                                  as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
-                    /*é¢‘æ•°-å…¼å®¹æ—§ç‰ˆæœ¬*/
+                    /*ÆµÊı-¼æÈİ¾É°æ±¾*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
-                    /*é¢‘æ¬¡*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata)
-                                                                                           as TIMES,
+                    /*Æµ´Î*/
+                    coalesce((select count(*) from tmp_qualify_indata), 0)                 as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
-                    /*é¢‘ç‡*/
-                    1                                                                      as RATE,
-                    strip(put(1, &RATE_format))                                            as RATE_FMT,
+                    /*ÆµÂÊ*/
+                    ifn(&total_n = 0, ., 1)                                                as RATE,
+                    ifc(not missing(calculated RATE), strip(put(1, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
                     %temp_combpl_hash("&&string_&j")                                       as VALUE
                 %end;
-            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1);
+                %else %do;
+                    .                                                                      as FREQ,
+                    ""                                                                     as FREQ_FMT,
+                    .                                                                      as N,
+                    ""                                                                     as N_FMT,
+                    .                                                                      as TIMES,
+                    ""                                                                     as TIMES_FMT,
+                    .                                                                      as RATE,
+                    ""                                                                     as RATE_FMT,
+                    ""                                                                     as VALUE
+                %end;
+            from tmp_qualify_indata_unique_total;
     quit;
 
     %do i = 1 %to &var_level_n;
         proc sql noprint;
             create table tmp_qualify_outdata_level_&i as
                 select
+                    1                                                                      as IDT,
                     &i                                                                     as SEQ,
                     %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
                                                                                            as ITEM,
-                    /*é¢‘æ•°*/
-                    sum(&var_name = &&var_level_&i)                                        as FREQ,
+                    /*ÆµÊı*/
+                    coalesce(sum(&var_name = &&var_level_&i), 0)                           as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
-                    /*é¢‘æ•°-å…¼å®¹æ—§ç‰ˆæœ¬*/
+                    /*ÆµÊı-¼æÈİ¾É°æ±¾*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
-                    /*é¢‘æ¬¡*/
-                    (select sum(&var_name = &&var_level_&i) from tmp_qualify_indata)       as TIMES,
+                    /*Æµ´Î*/
+                    coalesce((select sum(&var_name = &&var_level_&i) from tmp_qualify_indata), 0)
+                                                                                           as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
-                    /*é¢‘ç‡*/
+                    /*ÆµÂÊ*/
                     calculated N/count(*)                                                  as RATE,
-                    strip(put(calculated RATE, &RATE_format))                              as RATE_FMT,
+                    ifc(not missing(calculated RATE), strip(put(calculated RATE, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
@@ -730,7 +803,7 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
 
-    /*3. è¾“å‡ºæ•°æ®é›†*/
+    /*3. Êä³öÊı¾İ¼¯*/
     proc sql noprint;
         create table tmp_qualify_outdata as
             select * from tmp_qualify_outdata_label
@@ -739,11 +812,21 @@ Version Date: 2023-03-08 1.0.1
             %end;
             ;
 
-        select max(length(item)), max(length(value)) into :column_item_len_max, :column_value_len_max from tmp_qualify_outdata;
+        select max(length(item)), max(length(FREQ_FMT)), max(length(N_FMT)), max(length(TIMES_FMT)), max(length(RATE_FMT)), max(length(value))
+            into :column_item_len_max, :column_freq_fmt_len_max, :column_n_fmt_len_max, :column_times_fmt_len_max, :column_rate_fmt_len_max, :column_value_len_max from tmp_qualify_outdata;
+        %let column_freq_fmt_len_max  = %sysfunc(max(&column_freq_fmt_len_max, %length(FREQ_zero_fmt)));
+        %let column_n_fmt_len_max     = %sysfunc(max(&column_n_fmt_len_max, %length(N_zero_fmt)));
+        %let column_times_fmt_len_max = %sysfunc(max(&column_times_fmt_len_max, %length(TIMES_zero_fmt)));
+        %let column_rate_fmt_len_max  = %sysfunc(max(&column_rate_fmt_len_max, %length(RATE_zero_fmt)));
+        %let column_value_len_max  = %sysfunc(max(&column_value_len_max, %length(VALUE_zero)));
 
         alter table tmp_qualify_outdata
-            modify item  char(&column_item_len_max),
-                   value char(&column_value_len_max);
+            modify item      char(&column_item_len_max),
+                   freq_fmt  char(&column_freq_fmt_len_max),
+                   n_fmt     char(&column_n_fmt_len_max),
+                   times_fmt char(&column_times_fmt_len_max),
+                   rate_fmt  char(&column_rate_fmt_len_max),
+                   value     char(&column_value_len_max);
     quit;
 
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
@@ -761,13 +844,13 @@ Version Date: 2023-03-08 1.0.1
     run;
 
 
-    /*----------------------------------------------è¿è¡Œåå¤„ç†----------------------------------------------*/
-    /*åˆ é™¤ä¸­é—´æ•°æ®é›†*/
+    /*----------------------------------------------ÔËĞĞºó´¦Àí----------------------------------------------*/
+    /*É¾³ıÖĞ¼äÊı¾İ¼¯*/
     %if &DEL_TEMP_DATA = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total
-                   %if not (%sysmexecname(%sysfunc(max(%sysmexecdepth - 2, 0))) = QUALIFY_MULTI_TEST) %then %do; /*å¦‚æœè¢« %qualify_multi_test è°ƒç”¨ï¼Œåˆ™ä¿ç•™æ•°æ®é›† tmp_qualify_indata_unique_var*/
+                   %if not (%sysmexecname(%sysfunc(max(%sysmexecdepth - 2, 0))) = QUALIFY_MULTI_TEST) %then %do; /*Èç¹û±» %qualify_multi_test µ÷ÓÃ£¬Ôò±£ÁôÊı¾İ¼¯ tmp_qualify_indata_unique_var*/
                        tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt
@@ -776,21 +859,22 @@ Version Date: 2023-03-08 1.0.1
                    %do i = 1 %to &var_level_n;
                        tmp_qualify_outdata_level_&i
                    %end;
+                   tmp_qualify_outdata
                    ;
         quit;
     %end;
 
-    /*åˆ é™¤ä¸´æ—¶å®*/
+    /*É¾³ıÁÙÊ±ºê*/
     proc catalog catalog = work.sasmacr;
         delete temp_combpl_hash.macro;
     quit;
     %goto exit;
 
-    /*å¼‚å¸¸é€€å‡º*/
+    /*Òì³£ÍË³ö*/
     %exit_with_error:
     %let qualify_exit_with_error = TRUE;
 
-    /*æ­£å¸¸é€€å‡º*/
+    /*Õı³£ÍË³ö*/
     %exit:
-    %put NOTE: å® Qualify å·²ç»“æŸè¿è¡Œï¼;
+    %put NOTE: ºê Qualify ÒÑ½áÊøÔËĞĞ£¡;
 %mend;

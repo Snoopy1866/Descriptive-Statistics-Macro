@@ -13,13 +13,19 @@ Version Date: 2024-01-08 0.1
               2024-06-04 0.8
               2024-06-13 0.9
               2024-07-15 0.10
+              2024-11-13 0.11
+              2024-11-14 0.12
+              2025-01-08 0.13
+              2025-01-14 0.14
+              2025-01-15 0.15
+              2025-01-17 0.16
 ===================================
 */
 
 %macro qualify_multi_test(INDATA,
                           VAR,
                           GROUP,
-                          GROUPBY,
+                          GROUPBY          = #AUTO,
                           BY               = #AUTO,
                           UID              = #NULL,
                           PATTERN          = %nrstr(#FREQ(#RATE)),
@@ -31,6 +37,9 @@ Version Date: 2024-01-08 0.1
                           LABEL            = #AUTO,
                           INDENT           = #AUTO,
                           SUFFIX           = #AUTO,
+                          CHISQ_NOTE       = "卡方检验",
+                          FISHER_NOTE      = "Fisher精确检验",
+                          FISHER_STAT_PH   = "",
                           TOTAL            = FALSE,
                           PROCHTTP_PROXY   = 127.0.0.1:7890,
                           DEL_TEMP_DATA    = TRUE)
@@ -44,8 +53,6 @@ Version Date: 2024-01-08 0.1
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let group                = %sysfunc(strip(%bquote(&group)));
-    %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
     %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
 
     /*声明全局变量*/
@@ -122,14 +129,6 @@ Version Date: 2024-01-08 0.1
             quit;
             %if &SQLOBS = 0 %then %do;
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
-                %goto exit_with_error;
-            %end;
-
-            proc sql noprint;
-                select count(*) into : nobs from &indata;
-            quit;
-            %if &nobs = 0 %then %do;
-                %put ERROR: 分析数据集 &indata 为空！;
                 %goto exit_with_error;
             %end;
         %end;
@@ -248,6 +247,51 @@ Version Date: 2024-01-08 0.1
         %end;
     %end;
 
+    /*CHISQ_NOTE*/
+    %if %superq(chisq_note) = %bquote() %then %do;
+        %let chisq_note_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_chisq_note_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_chisq_note_id, %superq(chisq_note))) %then %do;
+            %let chisq_note_sql_expr = %superq(chisq_note);
+        %end;
+        %else %do;
+            %put ERROR: 参数 CHISQ_NOTE 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
+    /*FISHER_NOTE*/
+    %if %superq(fisher_note) = %bquote() %then %do;
+        %let fisher_note_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_fisher_note_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_fisher_note_id, %superq(fisher_note))) %then %do;
+            %let fisher_note_sql_expr = %superq(fisher_note);
+        %end;
+        %else %do;
+            %put ERROR: 参数 FISHER_NOTE 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
+    /*FISHER_STAT_PH*/
+    %if %superq(fisher_stat_ph) = %bquote() %then %do;
+        %let fisher_stat_ph_sql_expr = %bquote('');
+    %end;
+    %else %do;
+        %let reg_fisher_stat_ph_id = %sysfunc(prxparse(%bquote(/^(\x22[^\x22]*\x22|\x27[^\x27]*\x27)$/)));
+        %if %sysfunc(prxmatch(&reg_fisher_stat_ph_id, %superq(fisher_stat_ph))) %then %do;
+            %let fisher_stat_ph_sql_expr = %superq(fisher_stat_ph);
+        %end;
+        %else %do;
+            %put ERROR: 参数 FISHER_STAT_PH 格式不正确，指定的字符串必须使用匹配的引号包围！;
+            %goto exit;
+        %end;
+    %end;
+
 
     /*----------------------------------------------主程序----------------------------------------------*/
     /*1. 复制数据*/
@@ -279,6 +323,10 @@ Version Date: 2024-01-08 0.1
         %goto exit_with_error;
     %end;
 
+    proc sql noprint;
+        select max(seq) into :desc_seq_max from tmp_qmt_desc; /*获取描述性统计结果的最大 seq 值*/
+    quit;
+
     /*3. 统计推断*/
     %if &p_format = #AUTO %then %do;
         /*P值输出格式*/
@@ -290,63 +338,86 @@ Version Date: 2024-01-08 0.1
         %let p_format = qlmt_pvalue.;
     %end;
 
-    /*卡方和Fisher精确检验*/
-    proc freq data = tmp_qmt_indata_unique_var noprint;
-        tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
-        output out = tmp_qmt_chisq chisq;
-    run;
-
     /*定义宏变量，存储说明文字*/
     %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
     %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
+    %let note_chisq   = %unquote(%superq(chisq_note_sql_expr));
+    %let note_fisher  = %unquote(%superq(fisher_note_sql_expr));
+    %let placeholder_fisher = %unquote(%superq(fisher_stat_ph_sql_expr));
 
     proc sql noprint;
-        select * from DICTIONARY.COLUMNS where libname = "WORK" and memname = "TMP_QMT_CHISQ";
-        %if &SQLOBS = 0 %then %do; /*行或列的非缺失观测少于2，无法计算统计量*/
+        select count(distinct &var_name) into :var_nonmissing_level_n from tmp_qmt_indata_unique_var where not missing(&var_name);
+        select count(distinct &group_var) into :group_nonmissing_level_n from tmp_qmt_indata_unique_var where not missing(&group_var);
+    quit;
+
+    %if &var_nonmissing_level_n < 2 or &group_nonmissing_level_n < 2 %then %do;
+        /*行或列的非缺失观测少于2，无法计算统计量*/
+        %put NOTE: 行或列的非缺失观测少于2，无法计算统计量，将输出空数据集！;
+        proc sql noprint;
             create table tmp_qmt_stat
-                (item char(%eval(%length(%bquote(&indent_sql_expr)) + 12)), value_1 char(10), value_2 char(10));
+                    (idt num, seq num, item char(10), value_1 char(10), value_2 char(10));
             insert into tmp_qmt_stat
-                set item    = &note_stat,
+                set idt     = 1,
+                    seq     = &desc_seq_max + 1,
+                    item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
             insert into tmp_qmt_stat
-                set item    = &note_pvalue,
+                set idt     = 1,
+                    seq     = &desc_seq_max + 2,
+                    item    = &note_pvalue,
                     value_1 = "-";
-        %end;
-        %else %do;
+        quit;
+    %end;
+    %else %do;
+        /*卡方和Fisher精确检验*/
+        proc freq data = tmp_qmt_indata_unique_var noprint;
+            tables &var_name*&group_var /chisq(warn = (output nolog)) fisher;
+            output out = tmp_qmt_chisq chisq;
+        run;
+
+        proc sql noprint;
             select WARN_PCHI into : chisq_warn from tmp_qmt_chisq;
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
                     select
-                        &note_stat       as item,
-                        "Fisher精确检验" as value_1,
-                        "-"              as value_2
+                        1                   as idt,
+                        &desc_seq_max + 1   as seq,
+                        &note_stat          as item,
+                        &note_fisher        as value_1,
+                        &placeholder_fisher as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
+                        1                               as idt,
+                        &desc_seq_max + 2               as seq,
                         &note_pvalue                    as item,
                         strip(put(XP2_FISH, &p_format)) as value_1
                     from tmp_qmt_chisq;
             %end;
             %else %do; /*卡方检验适用*/
                 %if &ts_format = #AUTO %then %do;
-                    select max(ceil(log10(abs(_PCHI_))) + 6, 7) into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(_PCHI_))), 1) + 6 into : ts_fmt_width from tmp_qmt_chisq; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 create table tmp_qmt_stat as
                     select
+                        1                              as idt,
+                        &desc_seq_max + 1              as seq,
                         &note_stat                     as item,
-                        "卡方检验"                     as value_1,
+                        &note_chisq                    as value_1,
                         strip(put(_PCHI_, &ts_format)) as value_2
                     from tmp_qmt_chisq
                     outer union corr
                     select
+                        1                             as idt,
+                        &desc_seq_max + 2             as seq,
                         &note_pvalue                  as item,
                         strip(put(P_PCHI, &p_format)) as value_1
                     from tmp_qmt_chisq;
             %end;
-        %end;
-    quit;
+        quit;
+    %end;
 
     /*4. 合并结果*/
     proc sql noprint;

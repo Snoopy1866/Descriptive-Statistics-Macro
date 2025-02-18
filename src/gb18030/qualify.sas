@@ -27,6 +27,13 @@ Version Date: 2023-03-08 1.0.1
               2024-07-10 1.0.22
               2024-07-19 1.0.23
               2024-09-18 1.0.24
+              2024-11-13 1.0.25
+              2024-11-14 1.0.26
+              2025-01-09 1.0.27
+              2025-01-14 1.1.0
+              2025-01-15 1.1.1
+              2025-01-16 1.1.2
+              2025-02-09 1.1.3
 ===================================
 */
 
@@ -127,13 +134,16 @@ Version Date: 2023-03-08 1.0.1
                 %put ERROR: 在 &libname_in 逻辑库中没有找到 &memname_in 数据集！;
                 %goto exit_with_error;
             %end;
+
+            proc sql noprint;
+                select count(*) into : nobs from &indata;
+            quit;
+            %if &nobs = 0 %then %do;
+                %put NOTE: 分析数据集 &indata 为空！;
+            %end;
         %end;
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
-
-    data tmp_qualify_indata;
-        set &libname_in..&memname_in(&dataset_options_in);
-    run;
 
 
     /*VAR*/
@@ -263,7 +273,7 @@ Version Date: 2023-03-08 1.0.1
     /*根据参数 by 调整各分类顺序，生成宏变量以供后续调用*/
     %if %bquote(&by_stat) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -279,14 +289,14 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     count(&var_name)     as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 group by var_level
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
     %else %if %bquote(&by_var) ^= %bquote() %then %do;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     &var_name            as var_level,
@@ -302,7 +312,7 @@ Version Date: 2023-03-08 1.0.1
                         &var_name
                     %end;                as var_level_note,
                     &by_var              as var_level_by_criteria
-                from tmp_qualify_indata
+                from %bquote(&indata)
                 order by var_level_by_criteria &by_direction, var_level ascending;
         quit;
     %end;
@@ -311,7 +321,7 @@ Version Date: 2023-03-08 1.0.1
             select &by_fmt;
         run;
         proc sql noprint;
-            create table tmp_qualify_distinct_var as
+            create table tmp_qualify_distinct_var(where = (not missing(var_level))) as
                 select
                     distinct
                     coalescec(a.&var_name, b.label)       as var_level,
@@ -330,7 +340,7 @@ Version Date: 2023-03-08 1.0.1
                                                           as var_level_by_criteria,
                     ifc(missing(b.label), 'Y', '')
                                                           as var_level_fmt_not_defined
-                from tmp_qualify_indata as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
+                from %bquote(&indata) as a full join tmp_qualify_by_fmt as b on a.&var_name = b.label
                 order by var_level_by_criteria &by_direction, var_level ascending;
 
             select sum(var_level_fmt_not_defined = "Y") into : by_fmt_not_defined_n trimmed from tmp_qualify_distinct_var where not missing(var_level);
@@ -340,15 +350,6 @@ Version Date: 2023-03-08 1.0.1
         quit;
     %end;
 
-    proc sql noprint;
-        select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
-        select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
-
-        select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
-        select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
-        select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
-    quit;
-
 
     /*UID*/
     %if %bquote(&uid) = %bquote() %then %do;
@@ -357,20 +358,46 @@ Version Date: 2023-03-08 1.0.1
     %end;
 
     %if %bquote(&uid) ^= #NULL %then %do;
-        %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %let uid_n = %sysfunc(max(1, %sysfunc(kcountw(%bquote(&uid), %bquote(), s))));
+        %if &uid_n = 1 %then %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)$/);
+        %end;
+        %else %do;
+            %let reg_uid = %bquote(/^([A-Za-z_][A-Za-z_\d]*)%sysfunc(repeat((?:\s+([A-Za-z_][A-Za-z_\d]*)), %eval(&uid_n - 2)))$/);
+        %end;
         %let reg_uid_id = %sysfunc(prxparse(&reg_uid));
+
         %if %sysfunc(prxmatch(&reg_uid_id, %bquote(&uid))) = 0 %then %do;
             %put ERROR: 参数 UID = %bquote(&uid) 格式不正确！;
             %goto exit_with_error;
         %end;
         %else %do;
-            proc sql noprint;
-                select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&uid";
-            quit;
-            %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
-                %put ERROR: 在 &libname_in..&memname_in 中没有找到变量 &uid;
-                %goto exit_with_error;
+            /*判断是否指定重复的变量*/
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                %if &i < &uid_n %then %do;
+                    %do j = %eval(&i + 1) %to &uid_n;
+                        %let uid_&j = %sysfunc(prxposn(&reg_uid_id, &j, %bquote(&uid)));
+                        %if %bquote(&&uid_&i) = %bquote(&&uid_&j) %then %do;
+                            %put ERROR: 不允许重复指定标识符变量 %bquote(&&uid_&i)！;
+                            %goto exit_with_error;
+                        %end;
+                    %end;
+                %end;
             %end;
+            /*判断变量是否存在*/
+            %let IS_VALID_UID = TRUE;
+            %do i = 1 %to &uid_n;
+                %let uid_&i = %sysfunc(prxposn(&reg_uid_id, &i, %bquote(&uid)));
+                proc sql noprint;
+                    select type into :type from DICTIONARY.COLUMNS where libname = "&libname_in" and memname = "&memname_in" and upcase(name) = "&&uid_&i";
+                quit;
+                %if &SQLOBS = 0 %then %do; /*数据集中没有找到变量*/
+                    %put ERROR: 在 &libname_in..&memname_in 中没有找到标识符变量 %bquote(&&uid_&i)！;
+                    %let IS_VALID_UID = FALSE;
+                %end;
+            %end;
+            %if &IS_VALID_UID = FALSE %then %goto exit_with_error;
         %end;
     %end;
 
@@ -413,24 +440,55 @@ Version Date: 2023-03-08 1.0.1
             %goto exit_with_error;
         %end;
         %else %if %superq(missing_position) = FIRST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %do i = &var_level_n %to 2 %by -1;
-                %let var_level_&i = %unquote(%nrbquote(&&)var_level_%eval(&i - 1));
-                %let var_level_note_&i = %unquote(%nrbquote(&&)var_level_note_%eval(&i - 1));
-            %end;
-            %let var_level_1 = "";
-            %let var_level_note_1 = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var
+                if _n_ = 1 then do;
+                    var_level = "";
+                    var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                    output;
+                end;
+                set tmp_qualify_distinct_var;
+                output;
+            run;
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
-            %let var_level_n = %eval(&var_level_n + 1);
-            %let var_level_&var_level_n = "";
-            %let var_level_note_&var_level_n = %superq(missing_note_sql_expr);
+            data tmp_qualify_distinct_var;
+                set tmp_qualify_distinct_var;
+                output;
+                var_level = "";
+                var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                output;
+            run;
         %end;
         %else %do;
             %put ERROR: 参数 MISSING_POSITION 只能是 FIRST 或 LAST！;
             %goto exit_with_error;
         %end;
     %end;
+
+    proc sql noprint;
+        select count(*)                    into : var_level_n        from tmp_qualify_distinct_var;
+        %if &var_level_n > 0 %then %do;
+            select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
+            select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
+
+            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
+            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
+            select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
+        %end;
+        %else %do;
+            %put NOTE: 数据集中没有任何分类！;
+        %end;
+    quit;
+
+    data tmp_qualify_indata;
+        set &libname_in..&memname_in(&dataset_options_in);
+        %if &var_level_n > 0 %then %do;
+            if &var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;);
+        %end;
+        %else %do;
+            delete;
+        %end;
+    run;
 
 
     /*PATTERN*/
@@ -637,10 +695,10 @@ Version Date: 2023-03-08 1.0.1
     %end;
     %else %do;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_total nodupkey;
-            by &uid;
+            by %do i = 1 %to &uid_n; &&uid_&i %end;;
         run;
         proc sort data = tmp_qualify_indata out = tmp_qualify_indata_unique_var nodupkey;
-            by &uid &var_name;
+            by %do i = 1 %to &uid_n; &&uid_&i %end; &var_name;
         run;
     %end;
 
@@ -674,53 +732,68 @@ Version Date: 2023-03-08 1.0.1
 
     /*汇总*/
     proc sql noprint;
+        select count(*) into :total_n from tmp_qualify_indata_unique_total;
         create table tmp_qualify_outdata_label as
             select
+                distinct
+                0                                 as IDT,
                 0                                 as SEQ,
-                %unquote(%superq(label_sql_expr)) as ITEM
+                %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
-                    ,
                     /*频数*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata_unique_total)
-                                                                                           as FREQ,
+                    coalesce(count(*), 0)                                                  as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
                     /*频数-兼容旧版本*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
-                    (select sum(&var_name in (%do i = 1 %to &var_level_n; &&var_level_&i %end;)) from tmp_qualify_indata)
-                                                                                           as TIMES,
+                    coalesce((select count(*) from tmp_qualify_indata), 0)                 as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*频率*/
-                    1                                                                      as RATE,
-                    strip(put(1, &RATE_format))                                            as RATE_FMT,
+                    ifn(&total_n = 0, ., 1)                                                as RATE,
+                    ifc(not missing(calculated RATE), strip(put(1, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
                     %temp_combpl_hash("&&string_&j")                                       as VALUE
                 %end;
-            from tmp_qualify_indata_unique_total(firstobs = 1 obs = 1);
+                %else %do;
+                    .                                                                      as FREQ,
+                    ""                                                                     as FREQ_FMT,
+                    .                                                                      as N,
+                    ""                                                                     as N_FMT,
+                    .                                                                      as TIMES,
+                    ""                                                                     as TIMES_FMT,
+                    .                                                                      as RATE,
+                    ""                                                                     as RATE_FMT,
+                    ""                                                                     as VALUE
+                %end;
+            from tmp_qualify_indata_unique_total;
     quit;
 
     %do i = 1 %to &var_level_n;
         proc sql noprint;
             create table tmp_qualify_outdata_level_&i as
                 select
+                    1                                                                      as IDT,
                     &i                                                                     as SEQ,
                     %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
                                                                                            as ITEM,
                     /*频数*/
-                    sum(&var_name = &&var_level_&i)                                        as FREQ,
+                    coalesce(sum(&var_name = &&var_level_&i), 0)                           as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
                     /*频数-兼容旧版本*/
                     calculated FREQ                                                        as N,
                     calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
-                    (select sum(&var_name = &&var_level_&i) from tmp_qualify_indata)       as TIMES,
+                    coalesce((select sum(&var_name = &&var_level_&i) from tmp_qualify_indata), 0)
+                                                                                           as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*频率*/
                     calculated N/count(*)                                                  as RATE,
-                    strip(put(calculated RATE, &RATE_format))                              as RATE_FMT,
+                    ifc(not missing(calculated RATE), strip(put(calculated RATE, &RATE_format)), "-")
+                                                                                           as RATE_FMT,
                     %do j = 1 %to &stat_n;
                         %temp_combpl_hash("&&string_&j") || strip(calculated &&stat_&j.._FMT) ||
                     %end;
@@ -739,11 +812,21 @@ Version Date: 2023-03-08 1.0.1
             %end;
             ;
 
-        select max(length(item)), max(length(value)) into :column_item_len_max, :column_value_len_max from tmp_qualify_outdata;
+        select max(length(item)), max(length(FREQ_FMT)), max(length(N_FMT)), max(length(TIMES_FMT)), max(length(RATE_FMT)), max(length(value))
+            into :column_item_len_max, :column_freq_fmt_len_max, :column_n_fmt_len_max, :column_times_fmt_len_max, :column_rate_fmt_len_max, :column_value_len_max from tmp_qualify_outdata;
+        %let column_freq_fmt_len_max  = %sysfunc(max(&column_freq_fmt_len_max, %length(FREQ_zero_fmt)));
+        %let column_n_fmt_len_max     = %sysfunc(max(&column_n_fmt_len_max, %length(N_zero_fmt)));
+        %let column_times_fmt_len_max = %sysfunc(max(&column_times_fmt_len_max, %length(TIMES_zero_fmt)));
+        %let column_rate_fmt_len_max  = %sysfunc(max(&column_rate_fmt_len_max, %length(RATE_zero_fmt)));
+        %let column_value_len_max  = %sysfunc(max(&column_value_len_max, %length(VALUE_zero)));
 
         alter table tmp_qualify_outdata
-            modify item  char(&column_item_len_max),
-                   value char(&column_value_len_max);
+            modify item      char(&column_item_len_max),
+                   freq_fmt  char(&column_freq_fmt_len_max),
+                   n_fmt     char(&column_n_fmt_len_max),
+                   times_fmt char(&column_times_fmt_len_max),
+                   rate_fmt  char(&column_rate_fmt_len_max),
+                   value     char(&column_value_len_max);
     quit;
 
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
@@ -776,6 +859,7 @@ Version Date: 2023-03-08 1.0.1
                    %do i = 1 %to &var_level_n;
                        tmp_qualify_outdata_level_&i
                    %end;
+                   tmp_qualify_outdata
                    ;
         quit;
     %end;
