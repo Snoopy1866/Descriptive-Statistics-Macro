@@ -759,13 +759,13 @@ Version Date: 2023-03-08 1.0.1
                     %temp_combpl_hash("&&string_&j")                                       as VALUE
                 %end;
                 %else %do;
-                    .                                                                      as FREQ,
+                    sum(.)                                                                 as FREQ,
                     ""                                                                     as FREQ_FMT,
-                    .                                                                      as N,
+                    sum(.)                                                                 as N,
                     ""                                                                     as N_FMT,
-                    .                                                                      as TIMES,
+                    sum(.)                                                                 as TIMES,
                     ""                                                                     as TIMES_FMT,
-                    .                                                                      as RATE,
+                    sum(.)                                                                 as RATE,
                     ""                                                                     as RATE_FMT,
                     ""                                                                     as VALUE
                 %end;
