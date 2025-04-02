@@ -51,7 +51,7 @@ Version Date: 2023-03-08 1.0.1
                INDENT           = #AUTO,
                SUFFIX           = #AUTO,
                TOTAL            = FALSE,
-               DEL_TEMP_DATA    = TRUE)
+               debug    = TRUE)
                /des = "定性指标分析" parmbuff;
 
 
@@ -72,7 +72,7 @@ Version Date: 2023-03-08 1.0.1
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
     %let total                = %upcase(%sysfunc(strip(%bquote(&total))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(FREQ|RATE|TIMES|N);
@@ -846,7 +846,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total

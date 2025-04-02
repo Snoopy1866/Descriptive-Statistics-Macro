@@ -36,7 +36,7 @@ Version Date: 2023-12-26 0.1
                      SUFFIX           = #AUTO,
                      TOTAL            = FALSE,
                      PROCHTTP_PROXY   = 127.0.0.1:7890,
-                     DEL_TEMP_DATA    = TRUE)
+                     debug    = TRUE)
                      /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -49,7 +49,7 @@ Version Date: 2023-12-26 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global qualify_multi_exit_with_error;
@@ -478,7 +478,7 @@ Version Date: 2023-12-26 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_m_indata
                    tmp_qualify_m_outdata

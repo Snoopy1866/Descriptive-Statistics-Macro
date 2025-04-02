@@ -11,7 +11,7 @@ Version Date: 2023-02-09 V1.11
 
 %macro desc_coun(INDATA, VAR, FORMAT = PERCENTN9.2, BY = &VAR, MISSING = FALSE, DENOMINATOR = #AUTO,
                  INDENT = %bquote(    ), LABEL = #AUTO, IS_LABEL_INDENT = FALSE, IS_LABEL_DISPLAY = TRUE,
-                 OUTDATA = #AUTO, DEL_TEMP_DATA = TRUE, DEL_DUP_BY_VAR = #NULL,
+                 OUTDATA = #AUTO, debug = TRUE, DEL_DUP_BY_VAR = #NULL,
                  SKIP_PARAM_CHECK = FALSE, SKIP_MAIN_PROG = FALSE, PARAM_VALID_FLAG_VAR = #NULL,
                  PARAM_LIST_BUFFER = #NULL) /des = "定性资料描述分析" parmbuff;
 /*
@@ -32,7 +32,7 @@ IS_LABEL_DISPLAY     表头标签是否展示(IS_LABEL_DISPLAY = FALSE时, 参数LABEL, IS_
 OUTDATA              输出数据集名称
 
 ----Developer Argument----
-DEL_TEMP_DATA        是否删除中间数据集
+debug        是否删除中间数据集
 DEL_DUP_BY_VAR       删除重复观测基于的变量（例如：统计某个SOC下的AE例数时，需指定 DEL_DUP_BY_VAR = USUBJID）
 SKIP_PARAM_CHECK     是否跳过参数检查
 SKIP_MAIN_PROG       是否跳过主程序
@@ -57,7 +57,7 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %let is_label_indent      = %upcase(%sysfunc(strip(%bquote(&is_label_indent))));
     %let is_label_display     = %upcase(%sysfunc(strip(%bquote(&is_label_display))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
     %let del_dup_by_var       = %upcase(%sysfunc(strip(%bquote(&del_dup_by_var))));
     %let skip_param_check     = %upcase(%sysfunc(strip(%bquote(&skip_param_check))));
     %let skip_main_prog       = %upcase(%sysfunc(strip(%bquote(&skip_main_prog))));
@@ -545,9 +545,9 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %end;
 
 
-    /*DEL_TEMP_DATA*/
-    %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: 参数 DEL_TEMP_DATA 必须是 TRUE 或 FALSE！;
+    /*debug*/
+    %if %bquote(&debug) ^= TRUE and %bquote(&debug) ^= FALSE %then %do;
+        %put ERROR: 参数debugA 必须是 TRUE 或 FALSE！;
         %goto exit_err;
     %end;
 
@@ -845,7 +845,7 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %end;
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         proc datasets noprint nowarn; /*删除临时数据集*/
             delete %do i = 1 %to &var_n;
                        temp_nodup_&&VAR_&i

@@ -21,7 +21,7 @@ Version Date: 2022-09-21 V1.1
                    ADD_CAT_ALL     = TRUE TRUE,
                    PCT_OUT         = FALSE,
                    FORMAT          = PERCENTN9.2,
-                   DEL_TEMP_DATA   = TRUE) /des = "基本列联表" parmbuff;
+                   debug   = TRUE) /des = "基本列联表" parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
@@ -43,7 +43,7 @@ Version Date: 2022-09-21 V1.1
     %let add_cat_all     = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&add_cat_all)))))));
     %let pct_out         = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&pct_out)))))));
     %let format          = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&format)))))));
-    %let del_temp_data   = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug   = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明局部变量*/
     %local i j;
@@ -474,9 +474,9 @@ Version Date: 2022-09-21 V1.1
     %end;
 
     
-    /*DEL_TEMP_DATA*/
-    %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: 参数 DEL_TEMP_DATA 必须是 TRUE 或 FALSE！;
+    /*debug*/
+    %if %bquote(&debug) ^= TRUE and %bquote(&debug) ^= FALSE %then %do;
+        %put ERROR: 参数 debug 必须是 TRUE 或 FALSE！;
         %goto exit;
     %end;
 
@@ -829,7 +829,7 @@ Version Date: 2022-09-21 V1.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
 
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         /*删除中间数据集*/
         proc datasets noprint nowarn;
             delete temp_rowcat

@@ -28,7 +28,7 @@ Version Date: 2023-03-16 1.3.1
                 STAT_NOTE     = #AUTO,
                 LABEL         = #AUTO,
                 INDENT        = #AUTO,
-                DEL_TEMP_DATA = TRUE)
+                debug = TRUE)
                 /des = "定量指标分析" parmbuff;
 
 
@@ -44,7 +44,7 @@ Version Date: 2023-03-16 1.3.1
     %let var                  = %upcase(%sysfunc(strip(%bquote(&var))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(KURTOSIS|SKEWNESS|MEDIAN|QRANGE|STDDEV|STDERR|NMISS|RANGE|KURT|LCLM|MEAN|MODE|SKEW|UCLM|CSS|MAX|MIN|P10|P20|P25|P30|P40|P50|P60|P70|P75|P80|P90|P95|P99|STD|SUM|USS|VAR|CV|P1|P5|Q1|Q3|N);
@@ -665,7 +665,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_quantify_pattern_stat
                    tmp_quantify_stat

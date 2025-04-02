@@ -24,7 +24,7 @@ $R \times C$ 列联表，计算频数及频率(可选)。
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
@@ -269,7 +269,7 @@ ROWCAT = PARSIGN(DESCENDING)
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
 **Syntax** : TRUE | FALSE
 

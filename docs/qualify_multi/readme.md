@@ -27,7 +27,7 @@
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
@@ -238,7 +238,7 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
 **Syntax** : TRUE | FALSE
 
@@ -251,7 +251,7 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE_1 VALUE_2 VALUE_SUM TIMES_1 TIMES_2 TIMES_SUM
 > [!NOTE]
 >
 > - 此参数用于开发者调试，一般无需关注。
-> - 本宏程序内部调用的依赖宏程序 `%qualify` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify`，请单独调用 `%qualify` 并指定 `DEL_TEMP_DATA = FALSE`。
+> - 本宏程序内部调用的依赖宏程序 `%qualify` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify`，请单独调用 `%qualify` 并指定 `debug = FALSE`。
 
 ---
 
