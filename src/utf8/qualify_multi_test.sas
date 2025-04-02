@@ -3,46 +3,31 @@
 Macro Name: qualify_multi_test
 Macro Label:多组别定性指标汇总统计
 Author: wtwang
-Version Date: 2024-01-08 0.1
-              2024-01-18 0.2
-              2024-01-22 0.3
-              2024-01-23 0.4
-              2024-04-18 0.5
-              2024-04-28 0.6
-              2024-06-03 0.7
-              2024-06-04 0.8
-              2024-06-13 0.9
-              2024-07-15 0.10
-              2024-11-13 0.11
-              2024-11-14 0.12
-              2025-01-08 0.13
-              2025-01-14 0.14
-              2025-01-15 0.15
-              2025-01-17 0.16
+Version Date: 2025-04-02
 ===================================
 */
 
-%macro qualify_multi_test(INDATA,
-                          VAR,
-                          GROUP,
-                          GROUPBY          = #AUTO,
-                          BY               = #AUTO,
-                          UID              = #NULL,
-                          PATTERN          = %nrstr(#FREQ(#RATE)),
-                          MISSING          = FALSE,
-                          MISSING_NOTE     = "缺失",
-                          MISSING_POSITION = LAST,
-                          OUTDATA          = RES_&VAR,
-                          STAT_FORMAT      = #AUTO,
-                          LABEL            = #AUTO,
-                          INDENT           = #AUTO,
-                          SUFFIX           = #AUTO,
-                          CHISQ_NOTE       = "卡方检验",
-                          FISHER_NOTE      = "Fisher精确检验",
-                          FISHER_STAT_PH   = "",
-                          TOTAL            = FALSE,
-                          PROCHTTP_PROXY   = 127.0.0.1:7890,
-                          DEL_TEMP_DATA    = TRUE)
+%macro qualify_multi_test(indata,
+                          var,
+                          group,
+                          groupby          = #auto,
+                          by               = #auto,
+                          uid              = #null,
+                          pattern          = %nrstr(#freq(#rate)),
+                          missing          = false,
+                          missing_note     = "缺失",
+                          missing_position = last,
+                          outdata          = res_&var,
+                          stat_format      = #auto,
+                          label            = #auto,
+                          indent           = #auto,
+                          suffix           = #auto,
+                          chisq_note       = "卡方检验",
+                          fisher_note      = "Fisher精确检验",
+                          fisher_stat_ph   = "",
+                          total            = false,
+                          prochttp_proxy   = 127.0.0.1:7890,
+                          debug            = false)
                           /des = "多组别定性指标汇总统计" parmbuff;
 
     /*打开帮助文档*/
@@ -53,7 +38,7 @@ Version Date: 2024-01-08 0.1
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global qlmt_exit_with_error
@@ -454,7 +439,7 @@ Version Date: 2024-01-08 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
                    tmp_qmt_indata_unique_var

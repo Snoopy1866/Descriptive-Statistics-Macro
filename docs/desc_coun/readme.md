@@ -25,7 +25,7 @@
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ### 扩展参数
 
@@ -323,7 +323,7 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
 **Syntax** : TRUE|FALSE
 
@@ -331,7 +331,7 @@ _`denominator-specification`_ 的具体取值及含义如下：
 
 **Default** : TRUE
 
-默认情况下，宏程序会自动删除所有运行过程中生成的中间数据集，在此宏程序基础上构建其他程序时，如需使用中间数据集，请指定参数 `DEL_TEMP_DATA = FALSE`。
+默认情况下，宏程序会自动删除所有运行过程中生成的中间数据集，在此宏程序基础上构建其他程序时，如需使用中间数据集，请指定参数 `debug = FALSE`。
 
 有关宏程序运行过程中生成的中间数据集的详细信息，请查阅：[中间数据集]()。
 

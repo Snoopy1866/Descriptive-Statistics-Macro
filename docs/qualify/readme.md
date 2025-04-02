@@ -26,7 +26,7 @@
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
@@ -495,7 +495,7 @@ TOTAL = TRUE
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
 **Syntax** : TRUE | FALSE
 

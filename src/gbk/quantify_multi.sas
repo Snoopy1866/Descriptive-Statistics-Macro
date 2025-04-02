@@ -22,7 +22,7 @@ Version Date: 2023-12-21 0.1
                       LABEL          = #AUTO,
                       INDENT         = #AUTO,
                       PROCHTTP_PROXY = 127.0.0.1:7890,
-                      DEL_TEMP_DATA  = TRUE)
+                      debug  = false)
                       /des = "多组别定量指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -317,7 +317,7 @@ Version Date: 2023-12-21 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_quantify_m_indata
                    tmp_quantify_m_outdata

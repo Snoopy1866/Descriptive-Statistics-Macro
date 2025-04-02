@@ -31,7 +31,7 @@
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
@@ -185,7 +185,7 @@ FISHER_STAT_PH = "-"
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
 **Syntax** : TRUE | FALSE
 
@@ -198,7 +198,7 @@ FISHER_STAT_PH = "-"
 > [!NOTE]
 >
 > - 此参数用于开发者调试，一般无需关注。
-> - 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `DEL_TEMP_DATA = FALSE`。
+> - 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `debug = FALSE`。
 
 ---
 

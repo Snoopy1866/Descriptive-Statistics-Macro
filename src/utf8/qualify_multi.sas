@@ -3,40 +3,28 @@
 Macro Name: qualify_multi
 Macro Label:多组别定性指标分析
 Author: wtwang
-Version Date: 2023-12-26 0.1
-              2024-01-19 0.2
-              2024-01-22 0.3
-              2024-04-16 0.4
-              2024-04-18 0.5
-              2024-04-25 0.6
-              2024-04-25 0.7
-              2024-06-04 0.8
-              2024-06-13 0.9
-              2024-07-15 0.10
-              2024-11-14 0.11
-              2025-01-14 0.12
-              2025-01-15 0.13
+Version Date: 2025-04-02
 ===================================
 */
 
-%macro qualify_multi(INDATA,
-                     VAR,
-                     GROUP,
-                     GROUPBY          = #AUTO,
-                     BY               = #AUTO,
-                     UID              = #NULL,
-                     PATTERN          = %nrstr(#FREQ(#RATE)),
-                     MISSING          = FALSE,
-                     MISSING_NOTE     = "缺失",
-                     MISSING_POSITION = LAST,
-                     OUTDATA          = RES_&VAR,
-                     STAT_FORMAT      = #AUTO,
-                     LABEL            = #AUTO,
-                     INDENT           = #AUTO,
-                     SUFFIX           = #AUTO,
-                     TOTAL            = FALSE,
-                     PROCHTTP_PROXY   = 127.0.0.1:7890,
-                     DEL_TEMP_DATA    = TRUE)
+%macro qualify_multi(indata,
+                     var,
+                     group,
+                     groupby          = #auto,
+                     by               = #auto,
+                     uid              = #null,
+                     pattern          = %nrstr(#freq(#rate)),
+                     missing          = false,
+                     missing_note     = "缺失",
+                     missing_position = last,
+                     outdata          = res_&var,
+                     stat_format      = #auto,
+                     label            = #auto,
+                     indent           = #auto,
+                     suffix           = #auto,
+                     total            = false,
+                     prochttp_proxy   = 127.0.0.1:7890,
+                     debug            = false)
                      /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/
@@ -49,7 +37,7 @@ Version Date: 2023-12-26 0.1
     /*统一参数大小写*/
     %let group                = %sysfunc(strip(%bquote(&group)));
     %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global qualify_multi_exit_with_error;
@@ -478,7 +466,7 @@ Version Date: 2023-12-26 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = TRUE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_m_indata
                    tmp_qualify_m_outdata

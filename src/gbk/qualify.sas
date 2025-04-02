@@ -3,55 +3,25 @@
 Macro Name: qualify
 Macro Label:定性指标分析
 Author: wtwang
-Version Date: 2023-03-08 1.0.1
-              2023-11-06 1.0.2
-              2023-11-08 1.0.3
-              2023-11-27 1.0.4
-              2023-11-28 1.0.5
-              2023-12-26 1.0.6
-              2023-12-28 1.0.7
-              2024-01-18 1.0.8
-              2024-01-22 1.0.9
-              2024-01-23 1.0.10
-              2024-03-15 1.0.11
-              2024-03-19 1.0.12
-              2024-04-18 1.0.13
-              2024-04-25 1.0.14
-              2024-04-26 1.0.15
-              2024-04-28 1.0.16
-              2024-05-31 1.0.17
-              2024-06-03 1.0.18
-              2024-06-04 1.0.19
-              2024-06-13 1.0.20
-              2024-06-14 1.0.21
-              2024-07-10 1.0.22
-              2024-07-19 1.0.23
-              2024-09-18 1.0.24
-              2024-11-13 1.0.25
-              2024-11-14 1.0.26
-              2025-01-09 1.0.27
-              2025-01-14 1.1.0
-              2025-01-15 1.1.1
-              2025-01-16 1.1.2
-              2025-02-09 1.1.3
+Version Date: 2025-04-02
 ===================================
 */
 
-%macro qualify(INDATA,
-               VAR,
-               BY               = #AUTO,
-               UID              = #NULL,
-               PATTERN          = %nrstr(#FREQ(#RATE)),
-               MISSING          = FALSE,
-               MISSING_NOTE     = "缺失",
-               MISSING_POSITION = LAST,
-               OUTDATA          = #AUTO,
-               STAT_FORMAT      = #AUTO,
-               LABEL            = #AUTO,
-               INDENT           = #AUTO,
-               SUFFIX           = #AUTO,
-               TOTAL            = FALSE,
-               DEL_TEMP_DATA    = TRUE)
+%macro qualify(indata,
+               var,
+               by               = #auto,
+               uid              = #null,
+               pattern          = %nrstr(#freq(#rate)),
+               missing          = false,
+               missing_note     = "缺失",
+               missing_position = last,
+               outdata          = #auto,
+               stat_format      = #auto,
+               label            = #auto,
+               indent           = #auto,
+               suffix           = #auto,
+               total            = false,
+               debug            = false)
                /des = "定性指标分析" parmbuff;
 
 
@@ -72,7 +42,7 @@ Version Date: 2023-03-08 1.0.1
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
     %let total                = %upcase(%sysfunc(strip(%bquote(&total))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug                = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(FREQ|RATE|TIMES|N);
@@ -846,7 +816,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total
