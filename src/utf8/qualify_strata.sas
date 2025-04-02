@@ -25,7 +25,7 @@ var = A, (C, (E, F)|D, (F)|E, F)|B, (D, (F)|E, F)|C, ((F)|E, F)|D, (F)|E, F
                       format = NULL,
                       unique_var = NULL,
                       outdata = NULL,
-                      del_temp_data = NULL) /des = "定性资料分层描述分析" parmbuff;
+                      debug = NULL) /des = "定性资料分层描述分析" parmbuff;
 
     /*打开帮助文档*/
     %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;

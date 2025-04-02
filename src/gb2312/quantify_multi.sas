@@ -1,40 +1,30 @@
 /*
-===================================
-Macro Name: quantify
-Macro Label:多组别定量指标分析
-Author: wtwang
-Version Date: 2023-12-21 0.1
-              2023-12-25 0.2
-              2024-01-05 0.3
-              2024-01-19 0.4
-              2024-11-14 0.5
-===================================
+详细文档请前往 Github 查阅: https://github.com/Snoopy1866/Descriptive-Statistics-Macro
 */
 
-%macro quantify_multi(INDATA,
-                      VAR,
-                      GROUP,
-                      GROUPBY        = #AUTO,
-                      OUTDATA        = RES_&VAR,
-                      PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX), 
-                      STAT_FORMAT    = #AUTO,
-                      STAT_NOTE      = #AUTO,
-                      LABEL          = #AUTO,
-                      INDENT         = #AUTO,
-                      PROCHTTP_PROXY = 127.0.0.1:7890,
-                      DEL_TEMP_DATA  = TRUE)
-                      /des = "多组别定量指标分析" parmbuff;
+%macro quantify_multi(indata,
+                      var,
+                      group,
+                      groupby     = #auto,
+                      outdata     = res_&var,
+                      pattern     = %nrstr(#n(#nmiss)|#mean±#std|#median(#q1, #q3)|#min, #max), 
+                      stat_format = #auto,
+                      stat_note   = #auto,
+                      label       = #auto,
+                      indent      = #auto,
+                      debug       = false
+                      ) / parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify_multi/readme.md";
+        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/v2/docs/quantify_multi/readme.md";
         %goto exit;
     %end;
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let group                = %sysfunc(strip(%bquote(&group)));
-    %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let group   = %sysfunc(strip(%bquote(&group)));
+    %let groupby = %upcase(%sysfunc(strip(%bquote(&groupby))));
 
     /*声明全局变量*/
     %global quantify_multi_exit_with_error;
@@ -50,32 +40,7 @@ Version Date: 2023-12-21 0.1
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUANTIFY";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put WARNING: 前置依赖缺失，正在尝试从网络上下载......;
-        
-        %let cur_encoding = %sysfunc(getOption(ENCODING));
-        %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
-            %let sub_folder = gbk;
-        %end;
-        %else %if %bquote(&cur_encoding) = %bquote(UTF-8) %then %do;
-            %let sub_folder = utf8;
-        %end;
-
-        filename predpc "quantify.sas";
-        proc http url = "https://raw.githubusercontent.com/Snoopy1866/Descriptive-Statistics-Macro/main/&sub_folder/quantify.sas" out = predpc;
-        run;
-        %if %symexist(SYS_PROCHTTP_STATUS_CODE) %then %do;
-            %if &SYS_PROCHTTP_STATUS_CODE = 200 %then %do;
-                %include predpc;
-            %end;
-            %else %do;
-                %put ERROR: 远程主机连接成功，但并未成功获取目标文件，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY 后再次尝试运行！;
-                %goto exit_with_error;
-            %end;
-        %end;
-        %else %do;
-            %put ERROR: 远程主机连接失败，请检查网络连接和代理设置，或手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY 后再次尝试运行！;
-            %goto exit_with_error;
-        %end;
+        %put WARNING: 前置依赖缺失，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY 后再次尝试运行！;
     %end;
 
 
@@ -254,16 +219,16 @@ Version Date: 2023-12-21 0.1
 
     /*2. 整体统计*/
     %put NOTE: ===================================合计===================================;
-    %quantify(INDATA      = tmp_quantify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
+    %quantify(indata      = tmp_quantify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
                                                                               &&group_level_&i %bquote(,)
                                                                           %end;))),
-              VAR         = %superq(VAR),
-              OUTDATA     = tmp_quantify_m_res_sum(rename = (value = value_sum)),
-              PATTERN     = %superq(PATTERN),
-              STAT_FORMAT = %superq(STAT_FORMAT),
-              STAT_NOTE   = %superq(STAT_NOTE),
-              LABEL       = %superq(LABEL),
-              INDENT      = %superq(INDENT));
+              var         = %superq(var),
+              outdata     = tmp_quantify_m_res_sum(rename = (value = value_sum)),
+              pattern     = %superq(pattern),
+              stat_format = %superq(stat_format),
+              stat_note   = %superq(stat_note),
+              label       = %superq(label),
+              indent      = %superq(indent));
 
     %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -272,14 +237,14 @@ Version Date: 2023-12-21 0.1
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
-        %quantify(INDATA      = tmp_quantify_m_indata(where = (&group_var = &&group_level_&i)),
-                  VAR         = %superq(VAR),
-                  OUTDATA     = temp_res_group_level_&i(rename = (value = value_&i)),
-                  PATTERN     = %superq(PATTERN),
-                  STAT_FORMAT = #PREV,
-                  STAT_NOTE   = %superq(STAT_NOTE),
-                  LABEL       = %superq(LABEL),
-                  INDENT      = %superq(INDENT));
+        %quantify(indata      = tmp_quantify_m_indata(where = (&group_var = &&group_level_&i)),
+                  var         = %superq(var),
+                  outdata     = temp_res_group_level_&i(rename = (value = value_&i)),
+                  pattern     = %superq(pattern),
+                  stat_format = #prev,
+                  stat_note   = %superq(stat_note),
+                  label       = %superq(label),
+                  indent      = %superq(indent));
 
         %if %bquote(&quantify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
@@ -317,7 +282,7 @@ Version Date: 2023-12-21 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_quantify_m_indata
                    tmp_quantify_m_outdata

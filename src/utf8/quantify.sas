@@ -1,50 +1,32 @@
 /*
-===================================
-Macro Name: quantify
-Macro Label:定量指标分析
-Author: wtwang
-Version Date: 2023-03-16 1.3.1
-              2023-11-08 1.3.2
-              2023-11-27 1.3.3
-              2024-01-05 1.3.4
-              2024-01-18 1.3.5
-              2024-01-23 1.3.6
-              2024-03-06 1.3.7
-              2024-03-07 1.3.8
-              2024-03-19 1.3.9
-              2024-04-26 1.3.10
-              2024-04-28 1.3.11
-              2024-06-05 1.3.12
-              2024-09-18 1.3.13
-              2025-01-09 1.3.14
-===================================
+详细文档请前往 Github 查阅: https://github.com/Snoopy1866/Descriptive-Statistics-Macro
 */
 
-%macro quantify(INDATA,
-                VAR,
-                PATTERN       = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                OUTDATA       = RES_&VAR,
-                STAT_FORMAT   = #AUTO,
-                STAT_NOTE     = #AUTO,
-                LABEL         = #AUTO,
-                INDENT        = #AUTO,
-                DEL_TEMP_DATA = TRUE)
-                /des = "定量指标分析" parmbuff;
+%macro quantify(indata,
+                var,
+                pattern     = %nrstr(#n(#nmiss)|#mean±#std|#median(#q1, #q3)|#min, #max),
+                outdata     = res_&var,
+                stat_format = #auto,
+                stat_note   = #auto,
+                label       = #auto,
+                indent      = #auto,
+                debug       = false
+                ) / parmbuff;
 
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify/readme.md";
+        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/v2/docs/quantify/readme.md";
         %goto exit;
     %end;
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let indata               = %sysfunc(strip(%bquote(&indata)));
-    %let var                  = %upcase(%sysfunc(strip(%bquote(&var))));
-    %let outdata              = %sysfunc(strip(%bquote(&outdata)));
-    %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let indata       = %sysfunc(strip(%bquote(&indata)));
+    %let var          = %upcase(%sysfunc(strip(%bquote(&var))));
+    %let outdata      = %sysfunc(strip(%bquote(&outdata)));
+    %let stat_format  = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*受支持的统计量*/
     %let stat_supported = %bquote(KURTOSIS|SKEWNESS|MEDIAN|QRANGE|STDDEV|STDERR|NMISS|RANGE|KURT|LCLM|MEAN|MODE|SKEW|UCLM|CSS|MAX|MIN|P10|P20|P25|P30|P40|P50|P60|P70|P75|P80|P90|P95|P99|STD|SUM|USS|VAR|CV|P1|P5|Q1|Q3|N);
@@ -91,7 +73,6 @@ Version Date: 2023-03-16 1.3.1
     %let Q3_note       = %bquote('Q3');
     %let N_note        = %bquote('例数');
 
-
     /*统计量对应的PROC MEANS过程输出的数据集中的变量名*/
     %let KURTOSIS_var = %bquote(&var._KURTOSIS);
     %let SKEWNESS_var = %bquote(&var._SKEWNESS);
@@ -133,7 +114,6 @@ Version Date: 2023-03-16 1.3.1
     %let Q1_var       = %bquote(&var._Q1);
     %let Q3_var       = %bquote(&var._Q3);
     %let N_var        = %bquote(&var._N);
-
 
     /*声明全局变量*/
     /*全局输出格式*/
@@ -665,7 +645,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_quantify_pattern_stat
                    tmp_quantify_stat
