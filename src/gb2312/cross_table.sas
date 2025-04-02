@@ -3,25 +3,23 @@
 Macro Name: cross_table
 Macro Label:基本列联表
 Author: wtwang
-Version Date: 2022-09-21 V1.1
-              2024-05-28 V1.2
-              2024-06-05 V1.2.1
+Version Date: 2025-04-02
 ===================================
 */
 
-%macro cross_table(INDATA,
-                   ROWCAT,
-                   COLCAT,
-                   OUTDATA,
-                   ROWCAT_BY       = #AUTO,
-                   COLCAT_BY       = #AUTO,
-                   N               = #AUTO,
-                   ADD_CAT_MISSING = FALSE FALSE,
-                   ADD_CAT_OTHER   = FALSE FALSE,
-                   ADD_CAT_ALL     = TRUE TRUE,
-                   PCT_OUT         = FALSE,
-                   FORMAT          = PERCENTN9.2,
-                   debug   = false) /des = "基本列联表" parmbuff;
+%macro cross_table(indata,
+                   rowcat,
+                   colcat,
+                   outdata,
+                   rowcat_by       = #auto,
+                   colcat_by       = #auto,
+                   n               = #auto,
+                   add_cat_missing = false false,
+                   add_cat_other   = false false,
+                   add_cat_all     = true true,
+                   pct_out         = false,
+                   format          = PERCENTN9.2,
+                   debug          = false) /des = "基本列联表" parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
@@ -843,5 +841,3 @@ Version Date: 2022-09-21 V1.1
     %exit:
     %put NOTE: 宏 cross_table 已结束运行！;
 %mend;
-
-
