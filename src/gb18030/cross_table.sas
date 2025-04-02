@@ -21,7 +21,7 @@ Version Date: 2022-09-21 V1.1
                    ADD_CAT_ALL     = TRUE TRUE,
                    PCT_OUT         = FALSE,
                    FORMAT          = PERCENTN9.2,
-                   debug   = TRUE) /des = "基本列联表" parmbuff;
+                   debug   = false) /des = "基本列联表" parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
@@ -829,7 +829,7 @@ Version Date: 2022-09-21 V1.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
 
-    %if &debug = TRUE %then %do;
+    %if &debug = false %then %do;
         /*删除中间数据集*/
         proc datasets noprint nowarn;
             delete temp_rowcat

@@ -51,7 +51,7 @@ Version Date: 2023-03-08 1.0.1
                INDENT           = #AUTO,
                SUFFIX           = #AUTO,
                TOTAL            = FALSE,
-               debug    = TRUE)
+               debug    = false)
                /des = "定性指标分析" parmbuff;
 
 
@@ -846,7 +846,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &debug = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total

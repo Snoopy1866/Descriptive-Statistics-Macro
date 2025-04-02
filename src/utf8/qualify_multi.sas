@@ -36,7 +36,7 @@ Version Date: 2023-12-26 0.1
                      SUFFIX           = #AUTO,
                      TOTAL            = FALSE,
                      PROCHTTP_PROXY   = 127.0.0.1:7890,
-                     debug    = TRUE)
+                     debug    = false)
                      /des = "多组别定性指标分析" parmbuff;
 
     /*打开帮助文档*/

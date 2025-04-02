@@ -28,7 +28,7 @@ Version Date: 2023-03-16 1.3.1
                 STAT_NOTE     = #AUTO,
                 LABEL         = #AUTO,
                 INDENT        = #AUTO,
-                debug = TRUE)
+                debug = false)
                 /des = "定量指标分析" parmbuff;
 
 
@@ -665,7 +665,7 @@ Version Date: 2023-03-16 1.3.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &debug = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_quantify_pattern_stat
                    tmp_quantify_stat

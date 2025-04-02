@@ -547,7 +547,7 @@ PARAM_LIST_BUFFER    参数列表缓冲池
 
     /*debug*/
     %if %bquote(&debug) ^= TRUE and %bquote(&debug) ^= FALSE %then %do;
-        %put ERROR: 参数 debug 必须是 TRUE 或 FALSE！;
+        %put ERROR: 参数debugA 必须是 TRUE 或 FALSE！;
         %goto exit_err;
     %end;
 

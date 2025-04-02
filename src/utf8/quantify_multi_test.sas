@@ -24,7 +24,7 @@ Version Date: 2024-01-05 0.1
                            LABEL          = #AUTO,
                            INDENT         = #AUTO,
                            PROCHTTP_PROXY = 127.0.0.1:7890,
-                           debug  = TRUE)
+                           debug  = false)
                            /des = "多组别定量指标汇总统计" parmbuff;
 
     /*打开帮助文档*/
@@ -330,7 +330,7 @@ Version Date: 2024-01-05 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &debug = TRUE %then %do;
+    %if &debug = false %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
                    tmp_qmt_outdata
