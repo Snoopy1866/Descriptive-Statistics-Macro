@@ -1,5 +1,5 @@
 /*
-详细文档请前往 Github 查阅: https://github.com/Snoopy1866/Descriptive-Statistics-Macro
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
 %macro cross_table(indata,
@@ -19,7 +19,7 @@
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/v2/docs/cross_table/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/cross_table/readme.md";
         %goto exit;
     %end;
 
