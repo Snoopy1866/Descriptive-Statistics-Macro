@@ -1,42 +1,30 @@
 /*
-===================================
-Macro Name: quantify_multi_test
-Macro Label:多组别定量指标汇总统计
-Author: wtwang
-Version Date: 2024-01-05 0.1
-              2024-01-18 0.2
-              2024-01-23 0.3
-              2024-05-29 0.4
-              2024-06-14 0.5
-              2024-11-14 0.6
-              2025-01-08 0.7
-===================================
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
-%macro quantify_multi_test(INDATA,
-                           VAR,
-                           GROUP,
-                           GROUPBY        = #AUTO,
-                           OUTDATA        = RES_&VAR,
-                           PATTERN        = %nrstr(#N(#NMISS)|#MEAN±#STD|#MEDIAN(#Q1, #Q3)|#MIN, #MAX),
-                           STAT_FORMAT    = #AUTO,
-                           STAT_NOTE      = #AUTO,
-                           LABEL          = #AUTO,
-                           INDENT         = #AUTO,
-                           PROCHTTP_PROXY = 127.0.0.1:7890,
-                           DEL_TEMP_DATA  = TRUE)
-                           /des = "多组别定量指标汇总统计" parmbuff;
+%macro quantify_multi_test(indata,
+                           var,
+                           group,
+                           groupby     = #auto,
+                           outdata     = res_&var,
+                           pattern     = %nrstr(#n(#nmiss)|#mean±#std|#median(#q1, #q3)|#min, #max),
+                           stat_format = #auto,
+                           stat_note   = #auto,
+                           label       = #auto,
+                           indent      = #auto,
+                           debug       = false
+                           ) / parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/quantify_multi_test/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/quantify_multi_test/readme.md";
         %goto exit;
     %end;
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let group                = %sysfunc(strip(%bquote(&group)));
-    %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let group   = %sysfunc(strip(%bquote(&group)));
+    %let groupby = %upcase(%sysfunc(strip(%bquote(&groupby))));
 
     /*声明全局变量*/
     %global qtmt_exit_with_error
@@ -53,32 +41,7 @@ Version Date: 2024-01-05 0.1
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUANTIFY_MULTI";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put WARNING: 前置依赖缺失，正在尝试从网络上下载......;
-
-        %let cur_encoding = %sysfunc(getOption(ENCODING));
-        %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
-            %let sub_folder = gbk;
-        %end;
-        %else %if %bquote(&cur_encoding) = %bquote(UTF-8) %then %do;
-            %let sub_folder = utf8;
-        %end;
-
-        filename predpc "quantify_multi.sas";
-        proc http url = "https://raw.githubusercontent.com/Snoopy1866/Descriptive-Statistics-Macro/main/&sub_folder/quantify_multi.sas" out = predpc;
-        run;
-        %if %symexist(SYS_PROCHTTP_STATUS_CODE) %then %do;
-            %if &SYS_PROCHTTP_STATUS_CODE = 200 %then %do;
-                %include predpc;
-            %end;
-            %else %do;
-                %put ERROR: 远程主机连接成功，但并未成功获取目标文件，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY_MULTI 后再次尝试运行！;
-                %goto exit_with_error;
-            %end;
-        %end;
-        %else %do;
-            %put ERROR: 远程主机连接失败，请检查网络连接和代理设置，或手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY_MULTI 后再次尝试运行！;
-            %goto exit_with_error;
-        %end;
+        %put WARNING: 前置依赖缺失，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUANTIFY_MULTI 后再次尝试运行！;
     %end;
 
 
@@ -184,16 +147,16 @@ Version Date: 2024-01-05 0.1
     /*2. 统计描述*/
     %let p_format  = #AUTO;
     %let ts_format = #AUTO;
-    %quantify_multi(INDATA      = tmp_qmt_indata,
-                    VAR         = %superq(VAR),
-                    GROUP       = %superq(GROUP),
-                    GROUPBY     = %superq(GROUPBY),
-                    OUTDATA     = tmp_qmt_outdata,
-                    PATTERN     = %superq(PATTERN),
-                    STAT_FORMAT = %superq(STAT_FORMAT),
-                    STAT_NOTE   = %superq(STAT_NOTE),
-                    LABEL       = %superq(LABEL),
-                    INDENT      = %superq(INDENT));
+    %quantify_multi(indata      = tmp_qmt_indata,
+                    var         = %superq(var),
+                    group       = %superq(group),
+                    groupby     = %superq(groupby),
+                    outdata     = tmp_qmt_outdata,
+                    pattern     = %superq(pattern),
+                    stat_format = %superq(stat_format),
+                    stat_note   = %superq(stat_note),
+                    label       = %superq(label),
+                    indent      = %superq(indent));
 
     %if %bquote(&quantify_multi_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -330,7 +293,7 @@ Version Date: 2024-01-05 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
                    tmp_qmt_outdata

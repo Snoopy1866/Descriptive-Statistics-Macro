@@ -6,31 +6,31 @@
 
 ### 必选参数
 
-- [INDATA](#indata)
-- [VAR](#var)
+- [indata](#indata)
+- [var](#var)
 
 ### 可选参数
 
-- [BY](#by)
-- [UID](#uid)
-- [PATTERN](#pattern)
-- [MISSING](#missing)
-- [MISSING_NOTE](#missing_note)
-- [MISSING_POSITION](#missing_position)
-- [OUTDATA](#outdata)
-- [STAT_FORMAT](#stat_format)
-- [LABEL](#label)
-- [INDENT](#indent)
-- [SUFFIX](#suffix)
-- [TOTAL](#total)
+- [by](#by)
+- [uid](#uid)
+- [pattern](#pattern)
+- [missing](#missing)
+- [missing_note](#missing_note)
+- [missing_position](#missing_position)
+- [outdata](#outdata)
+- [stat_format](#stat_format)
+- [label](#label)
+- [indent](#indent)
+- [suffix](#suffix)
+- [total](#total)
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
-### INDATA
+### indata
 
 **Syntax** : <_libname._>_dataset_(_dataset-options_)
 
@@ -45,16 +45,16 @@ _dataset-options_: 数据集选项，兼容 SAS 系统支持的所有数据集�
 **Usage** :
 
 ```sas
-INDATA = ADSL
-INDATA = SHKY.ADSL
-INDATA = SHKY.ADSL(where = (FAS = "Y"))
+indata = adsl
+indata = adam.adsl
+indata = adam.adsl(where = (fasfl = "Y"))
 ```
 
 [**Example**](#一般用法)
 
 ---
 
-### VAR
+### var
 
 **Syntax** :
 
@@ -63,45 +63,42 @@ INDATA = SHKY.ADSL(where = (FAS = "Y"))
 
 指定定性分析的变量。
 
-_`category`_ 表示重命名前的分类名称，_`note`_ 表示重命名后的分类名称。重命名后的分类名称仅作为输出数据集中该分类显示的名称，实际输出的统计量结果仍然是按照重命名前的分类名称进行计算的。例如：
-
-```sas
-VAR = SEX("男" = "Male", "女" = "Female")
-```
+_`category`_ 表示用于计算统计量的分类名称，_`note`_ 表示用于显示输出的分类名称。在你需要对某个特定分类的名称进行修改（例如：添加角标）时，_`note`_ 使得你在调用宏的时候就可以完成这一步骤。
 
 > [!WARNING]
 >
-> - 参数 `VAR` 不允许指定不存在于参数 `INDATA` 指定的数据集中的变量；
-> - 参数 `VAR` 不允许指定数值型变量；
+> - 参数 `var` 不允许指定不存在于参数 `indata` 指定的数据集中的变量；
+> - 参数 `var` 不允许指定数值型变量；
 
 **Usage** :
 
 ```sas
-VAR = SEX
+var = sex
+var = sex("男" = "male", "女" = "female")
 ```
 
 [**Example**](#一般用法)
 
 ---
 
-### BY
+### by
 
 **Syntax** :
 
-- #FREQ<(ASC\<ENDING\> | DESC\<ENDING\>)>
-- _variable_<(ASC\<ENDING\> | DESC\<ENDING\>)>
-- _format_<(ASC\<ENDING\> | DESC\<ENDING\>)>
+- #freq<(asc\<ending\> | desc\<ending\>)>
+- _variable_<(asc\<ending\> | desc\<ending\>)>
+- _format_<(asc\<ending\> | desc\<ending\>)>
 
 指定各分类在输出数据集中的排列顺序依据。
 
-**Default** : #FREQ(DESCENDING)
+**Default** : `#freq(descending)`
 
 默认情况下，各分类按照频数从大到小排列，频数较大的分类将显示在输出数据集中靠前的位置。
 
 > [!IMPORTANT]
 >
-> - 若参数 `BY` 指定了基于某个输出格式进行排序，则该格式必须是 CATALOG-BASED，即在 `DICTIONARY.FORMATS` 表中，变量 `source` 的值应当是 `C`。
-> - 当指定一个输出格式作为排序依据时，该输出格式应当使用 `VALUE` 语句生成，例如：
+> - 若参数 `by` 指定了基于某个输出格式进行排序，则该格式必须是 `catalog-based`，即在 `dictionary.formats` 表中，变量 `source` 的值应当是 `C`。
+> - 当指定一个输出格式作为排序依据时，该输出格式应当使用 `value` 语句生成，例如：
 >
 >   ```sas
 >   proc format;
@@ -116,56 +113,55 @@ VAR = SEX
 **Usage** :
 
 ```sas
-BY = #freq
-BY = SEXN(asc)
-BY = SEXN.(descending)
+by = #freq
+by = sexn(asc)
+by = sexn.(descending)
 ```
 
 [**Example**](#指定分类排序方式)
 
 ---
 
-### UID
+### uid
 
 **Syntax** : _variable_ <_variable_, ...>
 
-指定唯一标识符变量。宏程序将根据参数 `UID` 指定的变量对数据集进行去重，使用去重后的数据集统计频数，去重前的数据集统计频次。
+指定唯一标识符变量。宏程序将根据参数 `uid` 指定的变量对数据集进行去重，使用去重后的数据集统计频数，去重前的数据集统计频次。
 
-`UID` 的值通常是能够标识观测所属 `频数统计对象` 的变量。
+`uid` 的值通常是能够标识观测所属 `频数统计对象` 的变量。
 
-对 `频数统计对象` 的详细解释如下：
+对 `频数统计对象` 的详细解释举例如下：
 
-- 若数据集 `adsl` 的主键是 `USUBJID`，需要统计性别 `sex` 的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，与主键相同，此时可以指定 `UID = USUBJID`，也可以不指定 `UID`
-- 若数据集 `adlb` 的主键是 `USUBJID PARCAT PARAM VISIT`，需要统计实验室检查的频数和频次，此时的 `频数统计对象` 是 `USUBJID`，无法构成主键，需要指定 `UID = USUBJID`
-- 若数据集 `adlb` 的主键是 `USUBJID PARCAT PARAM VISIT`，需要统计实验室检查-检查项目的频数和频次，此时的 `频数统计对象` 是 `USUBJID PARCAT PARAM`，无法构成主键，需要指定 `UID = USUBJID PARCAT PARAM`
+- 若数据集 `adsl` 的主键是 `usubjid`，需要统计性别 `sex` 的频数和频次，此时的 `频数统计对象` 是 `usubjid`，与主键相同，此时可以指定 `uid = usubjid`，也可以不指定 `uid`
+- 若数据集 `adae` 的主键是 `usubjid aeseq`，需要统计不良事件的频数和频次，此时的 `频数统计对象` 是 `usubjid`，无法构成主键，需要指定 `uid = usubjid`
+- 若数据集 `adlb` 的主键是 `usubjid param visit`，需要统计检查项目的频数和频次，此时的 `频数统计对象` 是 `usubjid param`，无法构成主键，需要指定 `uid = usubjid param`
 
 > [!NOTE]
 >
-> - 在 `ADSL` 数据集中，`UID` 的值一般是 ` `（空值）
-> - 在 `OCCDS` 数据集中，`UID` 的值一般是 `USUBJID`
-> - 在 `BDS` 数据集中，`UID` 的值一般是 `USUBJID PARCAT PARAM ...`
+> - 在 `ADSL` 数据集中，`uid` 的值一般是 ` `（空值）
+> - 在 `OCCDS` 数据集中，`uid` 的值一般是 `usubjid`
+> - 在 `BDS` 数据集中，`uid` 的值一般是 `usubjid param`
 
-**Default** : #NULL
+**Default** : `#null`
 
 默认情况下，宏程序将分析数据集中的每一条观测都视为不同统计对象的观测结果，在这种情况下，输出数据集中的频数和频次计算结果相同。
 
 > [!IMPORTANT]
 >
-> - 由于默认不输出频次统计结果，因此还需要在参数 [OUTDATA](#outdata) 中通过数据集选项指定显示频次统计结果，例如：`OUTDATA = T1(KEEP = ITEM VALUE TIMES)`。
+> - 由于默认不输出频次统计结果，因此还需要在参数 [outdata](#outdata) 中通过数据集选项指定显示频次统计结果，例如：`outdata = t1(keep = item value times)`。
 
 **Usage** :
 
 ```sas
-UID = USUBJID
-UID = USUBJID PARAM
-UID = USUBJID PARAM VISIT
+uid = usubjid
+uid = usubjid param visit
 ```
 
 [**Example**](#指定唯一标识符变量)
 
 ---
 
-### PATTERN
+### pattern
 
 **Syntax** : <_string(s)_>#_statistic-keyword-1_<_string(s)_><#_statistic-keyword-2_<_string(s)_>><...>
 
@@ -173,143 +169,144 @@ UID = USUBJID PARAM VISIT
 
 其中，_`statistic-keyword`_ 可以指定以下统计量：
 
-| 统计量 | 含义         |
-| ------ | ------------ |
-| RATE   | 构成比（率） |
-| N      | 频数         |
+| 统计量  | 含义         |
+| ------- | ------------ |
+| `freq`  | 频数         |
+| `times` | 频次         |
+| `rate`  | 构成比（率） |
 
 _`string(s)`_ 可以是任意字符（串），若字符串含有字符 `#`，则使用 `##` 进行转义。
 
-**Default** : `%nrstr(#N(#RATE))`
+**Default** : `%nrstr(#freq(#rate))`
 
 **Usage** :
 
 ```sas
-PATTERN = #N
-PATTERN = #N[#RATE]##
+pattern = #freq
+pattern = #freq[#rate]##
 ```
 
 [**Example**](#指定统计量的输出模式)
 
 ---
 
-### MISSING
+### missing
 
-**Syntax** : TRUE | FALSE
+**Syntax** : `true` | `false`
 
 指定是否统计缺失分类。
 
-**Default** : FALSE
+**Default** : `false`
 
 默认情况下，宏程序不统计缺失分类的频数和频率。
 
 **Usage** :
 
 ```sas
-MISSING = TRUE
+missing = true
 ```
 
 [**Example**](#指定是否统计缺失分类)
 
 ---
 
-### MISSING_NOTE
+### missing_note
 
 **Syntax** : _string_
 
 指定缺失分类的的说明文字，该字符串必须使用匹配的单（双）引号包围。
 
-如果指定的 `MISSING_NOTE` 中含有不匹配的引号，例如，需要指定 `MISSING_NOTE` 为一个单引号，可以选择以下传参方式：
+如果指定的 `missing_note` 中含有不匹配的引号，例如，需要指定 `missing_note` 为一个单引号，可以选择以下传参方式：
 
 ```sas
-MISSING_NOTE = "'"
+missing_note = "'"
 ```
 
 但不能使用以下传参方式：
 
 ```sas
-MISSING_NOTE = ''''
+missing_note = ''''
 ```
 
-这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。
+这与通常情况下“被成对的单引号包围的内部连续两个单引号被视为一个单引号”的语法略有不同。
 
-**Default** : "缺失"
+> [!IMPORTANT]
+>
+> 当指定 `missing = false` 时，该参数将被忽略。
+
+**Default** : `"缺失"`
 
 **Usage** :
 
 ```sas
-MISSING_NOTE = "缺失-n(%)"
+missing_note = "缺失-n(%)"
 ```
 
 [**Example**](#指定缺失分类的说明文字)
 
 ---
 
-### MISSING_POSITION
+### missing_position
 
-**Syntax** : FIRST | LAST
+**Syntax** : `first` | `last`
 
-指定缺失分类在输出数据集中显示的位置。FIRST 表示显示在所有分类前面，LAST 表示显示在所有分类后面。
+指定缺失分类在输出数据集中显示的位置。`first` 表示显示在所有分类前面，`last` 表示显示在所有分类后面。
 
-当指定 `MISSING = FALSE` 时，该参数将被忽略。
+> [!IMPORTANT]
+>
+> 当指定 `missing = false` 时，该参数将被忽略。
 
-**Default** : LAST
+**Default** : `last`
 
 **Usage** :
 
 ```sas
-MISSING_POSITION = FIRST
+missing_position = first
 ```
 
 [**Example**](#指定缺失分类的显示位置)
 
 ---
 
-### OUTDATA
+### outdata
 
 **Syntax** : <_libname._>_dataset_(_dataset-options_)
 
-指定统计结果输出的数据集，可包含数据集选项，用法同参数 [INDATA](#indata)。
+指定统计结果输出的数据集，可包含数据集选项，用法同参数 [indata](#indata)。
 
 输出数据集含有以下变量：
 
-| 变量名                                   | 含义                                          |
-| ---------------------------------------- | --------------------------------------------- |
-| IDT                                      | 缩进标识（_indent identifier_）               |
-| SEQ                                      | 行号                                          |
-| ITEM                                     | 分类名称（展示名称）                          |
-| VALUE                                    | 统计量在 [PATTERN](#pattern) 指定的模式下的值 |
-| FREQ                                     | 频数                                          |
-| FREQ_FMT                                 | 频数格式化值                                  |
-| <font color=red>N<sup>1</sup></font>     | 频数                                          |
-| <font color=red>N_FMT<sup>1</sup></font> | 频数格式化值                                  |
-| TIMES                                    | 频次                                          |
-| TIMES_FMT                                | 频次格式化值                                  |
-| RATE                                     | 频率                                          |
-| RATE_FMT                                 | 频率格式化值                                  |
-
-> [!IMPORTANT]
->
-> <sup>1</sup> 建议改用 `FREQ`, `FREQ_FMT`，保留 `N`, `N_FMT` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
+| 变量名      | 含义                                                |
+| ----------- | --------------------------------------------------- |
+| `idt`       | 缩进标识（_indent identifier_）                     |
+| `seq`       | 行号                                                |
+| `item`      | 分类名称（展示名称）                                |
+| `value`     | 统计量在 [pattern](#pattern) 指定的模式下的格式化值 |
+| `freq`      | 频数                                                |
+| `freq_fmt`  | 频数格式化值                                        |
+| `times`     | 频次                                                |
+| `times_fmt` | 频次格式化值                                        |
+| `rate`      | 频率                                                |
+| `rate_fmt`  | 频率格式化值                                        |
 
 其中：
 
-- 若指定参数 [UID](#uid) = `#NULL` 或 ` ` （空值），则默认输出变量 `ITEM` 和 `VALUE`
-- 若指定参数 [UID](#uid) = _`variable`_，则默认输出变量 `ITEM`, `VALUE` 和 `TIMES_FMT`
+- 若指定参数 [uid](#uid) = `#null` 或 ` `（空值），则默认输出变量 `item` 和 `value`
+- 若指定参数 [uid](#uid) = _`variable`_，则默认输出变量 `item`, `value` 和 `times_fmt`
 
-**Default** : #AUTO
+**Default** : `#auto`
 
-默认情况下，输出数据集被命名为 `RES_`_`var`_，其中 _`var`_ 为参数 [VAR](#var) 指定的变量的名称。
+默认情况下，输出数据集被命名为 `res_`_`var`_，其中 _`var`_ 为参数 [var](#var) 指定的变量的名称。
 
 > [!TIP]
 >
-> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)`
+> - 如需显示隐藏的变量，可使用数据集选项实现，例如：`outdata = t1(keep = seq item value freq times)`
 
 **Usage** :
 
 ```sas
-OUTDATA = T1
-OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
+outdata = t1
+outdata = t1(keep = seq item value freq times)
 ```
 
 [**Example**](#指定需要保留的变量)
@@ -320,7 +317,7 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 
 ---
 
-### STAT_FORMAT
+### stat_format
 
 **Syntax** : <(> #_statistic-keyword-1_ = _format-1_ <, #_statistic-keyword-2_ = _format-2_ <, ...>><)>
 
@@ -328,27 +325,24 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 
 其中，_`statistic-keyword`_ 可以指定以下统计量：
 
-| 统计量                               | 含义          | 默认值               |
-| ------------------------------------ | ------------- | -------------------- |
-| FREQ                                 | 频数          | BEST.                |
-| <font color=red>N<sup>1</sup></font> | 频数          | BEST.                |
-| TIMES                                | 频次          | BEST.                |
-| RATE                                 | 构成比（率）  | PERCENTN9.2          |
-| TS <sup>2</sup>                      | 检验统计量    | _#AUTO_ <sup>3</sup> |
-| P <sup>2</sup>                       | 假设检验 P 值 | _#AUTO_ <sup>4</sup> |
+| 统计量            | 含义            | 默认值                 |
+| ----------------- | --------------- | ---------------------- |
+| `freq`            | 频数            | `best.`                |
+| `times`           | 频次            | `best.`                |
+| `rate`            | 构成比（率）    | `percentn9.2`          |
+| `ts` <sup>1</sup> | 检验统计量      | _`#auto`_ <sup>2</sup> |
+| `p` <sup>1</sup>  | 假设检验 _P_ 值 | _`#auto`_ <sup>3</sup> |
 
 > [!IMPORTANT]
 >
-> - <sup>1</sup> 建议改用 `FREQ`，保留 `N` 仅为兼容旧版本程序，未来的版本 (_v1.5+_) 可能不受支持；
+> - <sup>1</sup> 仅在宏 `%qualify_multi_test` 中可用；
 >
-> - <sup>2</sup> 仅在宏 `%qualify_multi_test` 中可用；
+> - <sup>2</sup> 检验统计量输出格式的默认值为 _`w.d`_，其中：
 >
-> - <sup>3</sup> 检验统计量输出格式的默认值为 _w.d_，其中：
+>   - _`w`_ = $\max\left(\left\lceil\log_{10}\left|s\right|\right\rceil, 1\right) + 6$， $s$ 表示检验统计量的值
+>   - _`d`_ = 4
 >
->   - _w_ = $\max(\lceil\log_{10}\left|s\right|\rceil, 1) + 6$， $s$ 表示检验统计量的值
->   - _d_ = 4
->
-> - <sup>4</sup> 假设检验 P 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 PROC FORMAT 过程定义：
+> - <sup>3</sup> 假设检验 _P_ 值输出格式的默认值为 `qlmt_pvalue.`，`qlmt_pvalue.` 由以下 `proc format` 过程定义：
 >
 >   ```sas
 >   proc format;
@@ -361,147 +355,147 @@ OUTDATA = T1(KEEP = SEQ ITEM VALUE FREQ TIMES)
 **Usage** :
 
 ```sas
-STAT_FORMAT = (#N = z4., #RATE = percentn9.2)
-STAT_FORMAT = (#RATE = qual., #TS = 8.4, #P = pv.)
+stat_format = (#freq = z4., #rate = percentn9.2)
+stat_format = (#rate = qual., #ts = 8.4, #p = pv.)
 ```
 
 [**Example**](#指定统计量的输出格式)
 
 ---
 
-### LABEL
+### label
 
 **Syntax** : _string_
 
 指定输出结果中第一行显示的标签字符串，该字符串必须使用匹配的单（双）引号包围。
 
-如果指定的 `LABEL` 中含有不匹配的引号，例如，需要指定 `LABEL` 为一个单引号，可以选择以下传参方式：
+如果指定的 `label` 中含有不匹配的引号，例如，需要指定 `label` 为一个单引号，可以选择以下传参方式：
 
 ```sas
-LABEL = "'"
+label = "'"
 ```
 
 但不能使用以下传参方式：
 
 ```sas
-LABEL = ''''
+label = ''''
 ```
 
-这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。
+这与通常情况下“被成对的单引号包围的内部连续两个单引号被视为一个单引号”的语法略有不同。
 
-**Default** : #AUTO
+**Default** : `#auto`
 
-默认情况下，宏程序将自动获取变量 [VAR](#var) 的标签，若标签为空，则使用变量 [VAR](#var) 的变量名作为标签。
+默认情况下，宏程序将自动获取变量 [var](#var) 的标签，若标签为空，则使用变量 [var](#var) 的变量名作为标签。
 
 **Usage** :
 
 ```sas
-LABEL = "性别-n(%)"
+label = "性别-n(%)"
 ```
 
 [**Example**](#指定分析变量标签)
 
 ---
 
-### INDENT
+### indent
 
 **Syntax** : _string_
 
 指定输出结果各分类的缩进字符串，该字符串必须使用匹配的单（双）引号包围。
 
-如果指定的 `INDENT` 中含有不匹配的引号，例如，需要指定 `INDENT` 为一个单引号，可以选择以下传参方式：
+如果指定的 `indent` 中含有不匹配的引号，例如，需要指定 `indent` 为一个单引号，可以选择以下传参方式：
 
 ```sas
-INDENT = "'"
+indent = "'"
 ```
 
 但不能使用以下传参方式：
 
 ```sas
-INDENT = ''''
+indent = ''''
 ```
 
-这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。
+这与通常情况下“被成对的单引号包围的内部连续两个单引号被视为一个单引号”的语法略有不同。
 
-**Default** : #AUTO
+**Default** : `#auto`
 
 默认情况下，各分类前使用 4 个英文空格作为缩进字符。
 
 > [!TIP]
 >
-> - 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `INDENT = "\li420 "`；
+> - 可以使用 RTF 控制符控制缩进，例如：五号字体下缩进 2 个中文字符，可指定参数 `indent = "\li420 "`；
 
 **Usage** :
 
 ```sas
-INDENT = "\li420 "
+indent = "\li420 "
 ```
 
 [**Example**](#指定缩进字符串)
 
 ---
 
-### SUFFIX
+### suffix
 
 **Syntax** : _string_
 
 指定输出结果各分类名称的后缀，该字符串必须使用匹配的单（双）引号包围。
 
-如果指定的 `SUFFIX` 中含有不匹配的引号，例如，需要指定 `SUFFIX` 为一个单引号，可以选择以下传参方式：
+如果指定的 `suffix` 中含有不匹配的引号，例如，需要指定 `suffix` 为一个单引号，可以选择以下传参方式：
 
 ```sas
-SUFFIX = "'"
+suffix = "'"
 ```
 
 但不能使用以下传参方式：
 
 ```sas
-SUFFIX = ''''
+suffix = ''''
 ```
 
-这与通常情况下被成对的单引号包围的内部连续两个单引号被视为一个单引号的语法略有不同。
+这与通常情况下“被成对的单引号包围的内部连续两个单引号被视为一个单引号”的语法略有不同。
 
-**Default** : #AUTO
+**Default** : `#auto`
 
 默认情况下，各分类名称不添加后缀。
 
 **Usage** :
 
 ```sas
-SUFFIX = "，n(%)"
+suffix = "，n(%)"
 ```
 
 [**Example**](#指定分类名称后缀)
 
 ---
 
-### TOTAL
+### total
 
-**Syntax** : TRUE | FALSE
+**Syntax** : `true` | `false`
 
 指定是否在标签行输出各分类合计的统计结果。
 
-**Default** : FALSE
+**Default** : `false`
 
-默认情况下，标签行仅显示参数 [LABEL](#label) 指定的字符串，不显示各分类合计的统计结果。
+默认情况下，标签行仅显示参数 [label](#label) 指定的字符串，不显示各分类合计的统计结果。
 
 **Usage** :
 
 ```sas
-TOTAL = TRUE
+total = true
 ```
 
 [**Example**](#指定分类名称后缀)
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
-**Syntax** : TRUE | FALSE
+**Syntax** : `true` | `false`
 
 指定是否删除宏程序运行过程生成的中间数据集。
 
-**Default** : TRUE
+**Default** : `false`
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
@@ -537,12 +531,12 @@ TOTAL = TRUE
 ### 指定统计量的输出模式
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, pattern = %str(#n[#rate]##));
+%qualify(indata = adam.adsl(where = (FASFL = "Y")), var = ecgcsig, pattern = %str(#freq[#rate]##));
 ```
 
 ![](./assets/example-pattern.png)
 
-上述例子中，使用参数 `PATTERN` 改变了默认的统计量输出模式，构成比使用中括号[]包围，结尾使用 `##` 对 `#` 进行转义。
+上述例子中，使用参数 `pattern` 改变了默认的统计量输出模式，构成比使用中括号 `[]` 包围，结尾使用 `##` 对 `#` 进行转义。
 
 ### 指定分类排序方式
 
@@ -571,9 +565,9 @@ TOTAL = TRUE
 ### 指定唯一标识符变量
 
 ```sas
-%qualify(indata = adam.addv(where = (FASFL = "Y")),
-         var = dvtype,
-         uid = usubjid,
+%qualify(indata  = adam.addv(where = (FASFL = "Y")),
+         var     = dvtype,
+         uid     = usubjid,
          outdata = t1(keep = item value freq times));
 ```
 
@@ -582,9 +576,9 @@ TOTAL = TRUE
 ### 指定是否统计缺失分类
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true);
 ```
 
@@ -593,10 +587,10 @@ TOTAL = TRUE
 ### 指定缺失分类的说明文字
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
-         missing = true,
+%qualify(indata       = adam.adsl(where = (FASFL = "Y")),
+         var          = ecgcsig,
+         by           = clsig.,
+         missing      = true,
          missing_note = "不适用");
 ```
 
@@ -605,11 +599,11 @@ TOTAL = TRUE
 ### 指定缺失分类的显示位置
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
-         missing = true,
-         missing_note = "不适用",
+%qualify(indata           = adam.adsl(where = (FASFL = "Y")),
+         var              = ecgcsig,
+         by               = clsig.,
+         missing          = true,
+         missing_note     = "不适用",
          missing_position = first);
 ```
 
@@ -618,9 +612,9 @@ TOTAL = TRUE
 ### 指定需要保留的变量
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true,
          outdata = t1(keep = seq item value n rate));
 ```
@@ -630,11 +624,11 @@ TOTAL = TRUE
 ### 指定统计量的输出格式
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-        var = ecgcsig,
-        by = clsig.,
-        missing = true,
-        stat_format = (#N = z4., #RATE = 5.3));
+%qualify(indata     = adam.adsl(where = (FASFL = "Y")),
+        var         = ecgcsig,
+        by          = clsig.,
+        missing     = true,
+        stat_format = (#freq = z4., #rate = 5.3));
 ```
 
 ![](./assets/example-stat-format.png)
@@ -642,11 +636,11 @@ TOTAL = TRUE
 ### 指定分析变量标签
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true,
-         label = "ECG 临床意义判定-n(%)");
+         label   = "ECG 临床意义判定-n(%)");
 ```
 
 ![](./assets/example-label.png)
@@ -654,28 +648,28 @@ TOTAL = TRUE
 ### 指定缩进字符串
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true,
-         label = "ECG 临床意义判定-n(%)",
-         indent = "\li420 ");
+         label   = "ECG 临床意义判定-n(%)",
+         indent  = "\li420 ");
 ```
 
 ![](./assets/example-indent.png)
 
-上述例子中，使用参数 `INDENT` 指定了 RTF 控制符 `\li420` 作为缩进字符串。如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `PROTECTSPECIALCHAR` 属性值为 `OFF`。
+上述例子中，使用参数 `indent` 指定了 RTF 控制符 `\li420` 作为缩进字符串。如需使 RTF 控制符生效，需要在传送至 ODS 的同时，指定相关元素的 `protectspecialchars` 属性值为 `off`。
 
 ### 指定分类名称后缀
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true,
-         label = "ECG 临床意义判定",
-         indent = "\li420 ",
-         suffix = "，n(%)");
+         label   = "ECG 临床意义判定",
+         indent  = "\li420 ",
+         suffix  = "，n(%)");
 ```
 
 ![](./assets/example-suffix.png)
@@ -683,14 +677,14 @@ TOTAL = TRUE
 ### 指定是否输出各分类合计的统计结果
 
 ```sas
-%qualify(indata = adam.adsl(where = (FASFL = "Y")),
-         var = ecgcsig,
-         by = clsig.,
+%qualify(indata  = adam.adsl(where = (FASFL = "Y")),
+         var     = ecgcsig,
+         by      = clsig.,
          missing = true,
-         label = "ECG 临床意义判定",
-         indent = "\li420 ",
-         suffix = "，n(%)",
-         total = true);
+         label   = "ECG 临床意义判定",
+         indent  = "\li420 ",
+         suffix  = "，n(%)",
+         total   = true);
 ```
 
 ![](./assets/example-total.png)

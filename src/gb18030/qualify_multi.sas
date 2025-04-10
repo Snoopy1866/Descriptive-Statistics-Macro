@@ -1,55 +1,37 @@
 /*
-===================================
-Macro Name: qualify_multi
-Macro Label:多组别定性指标分析
-Author: wtwang
-Version Date: 2023-12-26 0.1
-              2024-01-19 0.2
-              2024-01-22 0.3
-              2024-04-16 0.4
-              2024-04-18 0.5
-              2024-04-25 0.6
-              2024-04-25 0.7
-              2024-06-04 0.8
-              2024-06-13 0.9
-              2024-07-15 0.10
-              2024-11-14 0.11
-              2025-01-14 0.12
-              2025-01-15 0.13
-===================================
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
-%macro qualify_multi(INDATA,
-                     VAR,
-                     GROUP,
-                     GROUPBY          = #AUTO,
-                     BY               = #AUTO,
-                     UID              = #NULL,
-                     PATTERN          = %nrstr(#FREQ(#RATE)),
-                     MISSING          = FALSE,
-                     MISSING_NOTE     = "缺失",
-                     MISSING_POSITION = LAST,
-                     OUTDATA          = RES_&VAR,
-                     STAT_FORMAT      = #AUTO,
-                     LABEL            = #AUTO,
-                     INDENT           = #AUTO,
-                     SUFFIX           = #AUTO,
-                     TOTAL            = FALSE,
-                     PROCHTTP_PROXY   = 127.0.0.1:7890,
-                     DEL_TEMP_DATA    = TRUE)
-                     /des = "多组别定性指标分析" parmbuff;
+%macro qualify_multi(indata,
+                     var,
+                     group,
+                     groupby          = #auto,
+                     by               = #auto,
+                     uid              = #null,
+                     pattern          = %nrstr(#freq(#rate)),
+                     missing          = false,
+                     missing_note     = "缺失",
+                     missing_position = last,
+                     outdata          = res_&var,
+                     stat_format      = #auto,
+                     label            = #auto,
+                     indent           = #auto,
+                     suffix           = #auto,
+                     total            = false,
+                     debug            = false
+                     ) / parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify_multi/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/qualify_multi/readme.md";
         %goto exit;
     %end;
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let group                = %sysfunc(strip(%bquote(&group)));
-    %let groupby              = %upcase(%sysfunc(strip(%bquote(&groupby))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let group   = %sysfunc(strip(%bquote(&group)));
+    %let groupby = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let debug   = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global qualify_multi_exit_with_error;
@@ -65,32 +47,7 @@ Version Date: 2023-12-26 0.1
         select * from DICTIONARY.CATALOGS where libname = "WORK" and memname = "SASMACR" and objname = "QUALIFY";
     quit;
     %if &SQLOBS = 0 %then %do;
-        %put WARNING: 前置依赖缺失，正在尝试从网络上下载......;
-        
-        %let cur_encoding = %sysfunc(getOption(ENCODING));
-        %if %bquote(&cur_encoding) = %bquote(EUC-CN) %then %do;
-            %let sub_folder = gbk;
-        %end;
-        %else %if %bquote(&cur_encoding) = %bquote(UTF-8) %then %do;
-            %let sub_folder = utf8;
-        %end;
-
-        filename predpc "quantify.sas";
-        proc http url = "https://raw.githubusercontent.com/Snoopy1866/Descriptive-Statistics-Macro/main/&sub_folder/qualify.sas" out = predpc;
-        run;
-        %if %symexist(SYS_PROCHTTP_STATUS_CODE) %then %do;
-            %if &SYS_PROCHTTP_STATUS_CODE = 200 %then %do;
-                %include predpc;
-            %end;
-            %else %do;
-                %put ERROR: 远程主机连接成功，但并未成功获取目标文件，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
-                %goto exit_with_error;
-            %end;
-        %end;
-        %else %do;
-            %put ERROR: 远程主机连接失败，请检查网络连接和代理设置，或手动导入前置依赖 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
-            %goto exit_with_error;
-        %end;
+        %put WARNING: 前置依赖缺失，请手动导入前置依赖 %nrbquote(%nrstr(%%))QUALIFY 后再次尝试运行！;
     %end;
 
 
@@ -175,8 +132,6 @@ Version Date: 2023-12-26 0.1
 
                 %let group_level_freq_&i      = "&&group_level_unquote_&i(频数)";
                 %let group_level_freq_fmt_&i  = "&&group_level_unquote_&i(频数格式化)";
-                %let group_level_n_&i         = "&&group_level_unquote_&i(频数)(兼容)";
-                %let group_level_n_fmt_&i     = "&&group_level_unquote_&i(频数格式化)(兼容)";
                 %let group_level_times_&i     = "&&group_level_unquote_&i(频次)";
                 %let group_level_times_fmt_&i = "&&group_level_unquote_&i(频次格式化)";
                 %let group_level_rate_&i      = "&&group_level_unquote_&i(频率)";
@@ -288,8 +243,6 @@ Version Date: 2023-12-26 0.1
         select quote(strip(group_level))                         into : group_level_1-           from tmp_qualify_m_groupby_sorted;
         select quote(strip(group_level) || '(频数)')             into : group_level_freq_1-      from tmp_qualify_m_groupby_sorted;
         select quote(strip(group_level) || '(频数格式化)')       into : group_level_freq_fmt_1-  from tmp_qualify_m_groupby_sorted;
-        select quote(strip(group_level) || '(频数)(兼容)')       into : group_level_n_1-         from tmp_qualify_m_groupby_sorted;
-        select quote(strip(group_level) || '(频数格式化)(兼容)') into : group_level_n_fmt_1-     from tmp_qualify_m_groupby_sorted;
         select quote(strip(group_level) || '(频次)')             into : group_level_times_1-     from tmp_qualify_m_groupby_sorted;
         select quote(strip(group_level) || '(频次格式化)')       into : group_level_times_fmt_1- from tmp_qualify_m_groupby_sorted;
         select quote(strip(group_level) || '(频率)')             into : group_level_rate_1-      from tmp_qualify_m_groupby_sorted;
@@ -336,30 +289,28 @@ Version Date: 2023-12-26 0.1
 
     /*2. 整体统计*/
     %put NOTE: ===================================合计===================================;
-    %qualify(INDATA      = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
+    %qualify(indata      = tmp_qualify_m_indata(where = (&group_var in (%do i = 1 %to &group_level_n;
                                                                             &&group_level_&i %bquote(,)
                                                                         %end;))),
-             VAR              = %superq(VAR),
-             BY               = %superq(BY),
-             UID              = %superq(UID),
-             PATTERN          = %superq(PATTERN),
-             MISSING          = %superq(MISSING),
-             MISSING_NOTE     = %superq(MISSING_NOTE),
-             MISSING_POSITION = %superq(MISSING_POSITION),
-             OUTDATA          = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
+             var              = %superq(var),
+             by               = %superq(by),
+             uid              = %superq(uid),
+             pattern          = %superq(pattern),
+             missing          = %superq(missing),
+             missing_note     = %superq(missing_note),
+             missing_position = %superq(missing_position),
+             outdata          = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
                                                                 FREQ      = FREQ_SUM
                                                                 FREQ_FMT  = FREQ_SUM_FMT
-                                                                N         = N_SUM
-                                                                N_FMT     = N_SUM_FMT
                                                                 TIMES     = TIMES_SUM
                                                                 TIMES_FMT = TIMES_SUM_FMT
                                                                 RATE      = RATE_SUM
                                                                 RATE_FMT  = RATE_SUM_FMT)),
-             STAT_FORMAT      = %superq(STAT_FORMAT),
-             LABEL            = %superq(LABEL),
-             INDENT           = %superq(INDENT),
-             SUFFIX           = %superq(SUFFIX),
-             TOTAL            = %superq(TOTAL));
+             stat_format      = %superq(stat_format),
+             label            = %superq(label),
+             indent           = %superq(indent),
+             suffix           = %superq(suffix),
+             total            = %superq(total));
 
     %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
         %goto exit_with_error;
@@ -375,28 +326,26 @@ Version Date: 2023-12-26 0.1
     /*3. 分组别统计*/
     %do i = 1 %to &group_level_n;
         %put NOTE: ===================================&&group_level_&i===================================;
-        %qualify(INDATA           = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
-                 VAR              = %superq(VAR),
-                 BY               = %superq(BY),
-                 UID              = %superq(UID),
-                 PATTERN          = %superq(PATTERN),
-                 MISSING          = %superq(MISSING),
-                 MISSING_NOTE     = %superq(MISSING_NOTE),
-                 MISSING_POSITION = %superq(MISSING_POSITION),
-                 OUTDATA          = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
+        %qualify(indata           = tmp_qualify_m_indata(where = (&group_var = &&group_level_&i)),
+                 var              = %superq(var),
+                 by               = %superq(by),
+                 uid              = %superq(uid),
+                 pattern          = %superq(pattern),
+                 missing          = %superq(missing),
+                 missing_note     = %superq(missing_note),
+                 missing_position = %superq(missing_position),
+                 outdata          = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
                                                                          FREQ      = FREQ_&i
                                                                          FREQ_FMT  = FREQ_&i._FMT
-                                                                         N         = N_&i
-                                                                         N_FMT     = N_&i._FMT
                                                                          TIMES     = TIMES_&i
                                                                          TIMES_FMT = TIMES_&i._FMT
                                                                          RATE      = RATE_&i
                                                                          RATE_FMT  = RATE_&i._FMT)),
-                 STAT_FORMAT      = %superq(STAT_FORMAT),
-                 LABEL            = %superq(LABEL),
-                 INDENT           = %superq(INDENT),
-                 SUFFIX           = %superq(SUFFIX),
-                 TOTAL            = %superq(TOTAL));
+                 stat_format      = %superq(stat_format),
+                 label            = %superq(label),
+                 indent           = %superq(indent),
+                 suffix           = %superq(suffix),
+                 total            = %superq(total));
 
         %if %bquote(&qualify_exit_with_error) = TRUE %then %do; /*判断子程序调用是否产生错误*/
             %goto exit_with_error;
@@ -414,8 +363,6 @@ Version Date: 2023-12-26 0.1
                     sub&i..value_&i      label = &&group_level_&i,
                     sub&i..freq_&i       label = &&group_level_freq_&i,
                     sub&i..freq_&i._fmt  label = &&group_level_freq_fmt_&i,
-                    sub&i..n_&i          label = &&group_level_n_&i,
-                    sub&i..n_&i._fmt     label = &&group_level_n_fmt_&i,
                     sub&i..times_&i      label = &&group_level_times_&i,
                     sub&i..times_&i._fmt label = &&group_level_times_fmt_&i,
                     sub&i..rate_&i       label = &&group_level_rate_&i,
@@ -424,8 +371,6 @@ Version Date: 2023-12-26 0.1
                 sum.value_sum            label = "合计",
                 sum.freq_sum             label = "合计(频数)",
                 sum.freq_sum_fmt         label = "合计(频数)",
-                sum.n_sum                label = "合计(频数)(兼容)",
-                sum.n_sum_fmt            label = "合计(频数格式化)(兼容)",
                 sum.times_sum            label = "合计(频次)",
                 sum.times_sum_fmt        label = "合计(频次格式化)",
                 sum.rate_sum             label = "合计(频率)",
@@ -440,8 +385,6 @@ Version Date: 2023-12-26 0.1
                 set value_&i      = "%superq(VALUE_zero)",
                     freq_&i       = %superq(FREQ_zero),
                     freq_&i._fmt  = "%superq(FREQ_zero_fmt)",
-                    n_&i          = %superq(N_zero),
-                    n_&i._fmt     = "%superq(N_zero_fmt)",
                     times_&i      = %superq(TIMES_zero),
                     times_&i._fmt = "%superq(TIMES_zero_fmt)",
                     rate_&i       = %superq(RATE_zero),
@@ -478,7 +421,7 @@ Version Date: 2023-12-26 0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_m_indata
                    tmp_qualify_m_outdata

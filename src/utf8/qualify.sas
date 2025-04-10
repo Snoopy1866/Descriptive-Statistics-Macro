@@ -1,94 +1,56 @@
 /*
-===================================
-Macro Name: qualify
-Macro Label:定性指标分析
-Author: wtwang
-Version Date: 2023-03-08 1.0.1
-              2023-11-06 1.0.2
-              2023-11-08 1.0.3
-              2023-11-27 1.0.4
-              2023-11-28 1.0.5
-              2023-12-26 1.0.6
-              2023-12-28 1.0.7
-              2024-01-18 1.0.8
-              2024-01-22 1.0.9
-              2024-01-23 1.0.10
-              2024-03-15 1.0.11
-              2024-03-19 1.0.12
-              2024-04-18 1.0.13
-              2024-04-25 1.0.14
-              2024-04-26 1.0.15
-              2024-04-28 1.0.16
-              2024-05-31 1.0.17
-              2024-06-03 1.0.18
-              2024-06-04 1.0.19
-              2024-06-13 1.0.20
-              2024-06-14 1.0.21
-              2024-07-10 1.0.22
-              2024-07-19 1.0.23
-              2024-09-18 1.0.24
-              2024-11-13 1.0.25
-              2024-11-14 1.0.26
-              2025-01-09 1.0.27
-              2025-01-14 1.1.0
-              2025-01-15 1.1.1
-              2025-01-16 1.1.2
-              2025-02-09 1.1.3
-===================================
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
-%macro qualify(INDATA,
-               VAR,
-               BY               = #AUTO,
-               UID              = #NULL,
-               PATTERN          = %nrstr(#FREQ(#RATE)),
-               MISSING          = FALSE,
-               MISSING_NOTE     = "缺失",
-               MISSING_POSITION = LAST,
-               OUTDATA          = #AUTO,
-               STAT_FORMAT      = #AUTO,
-               LABEL            = #AUTO,
-               INDENT           = #AUTO,
-               SUFFIX           = #AUTO,
-               TOTAL            = FALSE,
-               DEL_TEMP_DATA    = TRUE)
-               /des = "定性指标分析" parmbuff;
+%macro qualify(indata,
+               var,
+               by               = #freq(descending),
+               uid              = #null,
+               pattern          = %nrstr(#freq(#rate)),
+               missing          = false,
+               missing_note     = "缺失",
+               missing_position = last,
+               outdata          = #auto,
+               stat_format      = #auto,
+               label            = #auto,
+               indent           = #auto,
+               suffix           = #auto,
+               total            = false,
+               debug            = false
+               ) / parmbuff;
 
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/qualify/readme.md";
         %goto exit;
     %end;
 
     /*----------------------------------------------初始化----------------------------------------------*/
     /*统一参数大小写*/
-    %let indata               = %sysfunc(strip(%bquote(&indata)));
-    %let var                  = %sysfunc(strip(%bquote(&var)));
-    %let by                   = %upcase(%sysfunc(strip(%bquote(&by))));
-    %let uid                  = %upcase(%sysfunc(strip(%bquote(&uid))));
-    %let missing              = %upcase(%sysfunc(strip(%bquote(&missing))));
-    %let missing_position     = %upcase(%sysfunc(strip(%bquote(&missing_position))));
-    %let outdata              = %sysfunc(strip(%bquote(&outdata)));
-    %let stat_format          = %upcase(%sysfunc(strip(%bquote(&stat_format))));
-    %let total                = %upcase(%sysfunc(strip(%bquote(&total))));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let indata           = %sysfunc(strip(%bquote(&indata)));
+    %let var              = %sysfunc(strip(%bquote(&var)));
+    %let by               = %upcase(%sysfunc(strip(%bquote(&by))));
+    %let uid              = %upcase(%sysfunc(strip(%bquote(&uid))));
+    %let missing          = %upcase(%sysfunc(strip(%bquote(&missing))));
+    %let missing_position = %upcase(%sysfunc(strip(%bquote(&missing_position))));
+    %let outdata          = %sysfunc(strip(%bquote(&outdata)));
+    %let stat_format      = %upcase(%sysfunc(strip(%bquote(&stat_format))));
+    %let total            = %upcase(%sysfunc(strip(%bquote(&total))));
+    %let debug            = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*受支持的统计量*/
-    %let stat_supported = %bquote(FREQ|RATE|TIMES|N);
+    %let stat_supported = %bquote(FREQ|RATE|TIMES);
 
     /*声明全局变量*/
     /*全局输出格式*/
     %global FREQ_format
             RATE_format
             TIMES_format
-            N_format
             ;
     /*全局零频数输出格式*/
     %global FREQ_zero
             FREQ_zero_fmt
-            N_zero
-            N_zero_fmt
             TIMES_zero
             TIMES_zero_fmt
             RATE_zero
@@ -210,10 +172,6 @@ Version Date: 2023-03-08 1.0.1
     %if %bquote(&by) = %bquote() %then %do;
         %put ERROR: 参数 BY 为空！;
         %goto exit_with_error;
-    %end;
-    %else %if %bquote(&by) = #AUTO %then %do;
-        %put NOTE: 未指定各分类的排序方式，将按照各分类的频数从大到小进行排序！;
-        %let by = #FREQ(DESCENDING);
     %end;
 
     /*解析参数 by, 检查合法性*/
@@ -557,7 +515,6 @@ Version Date: 2023-03-08 1.0.1
     %let FREQ_format  = best.;
     %let RATE_format  = percentn9.2;
     %let TIMES_format = &FREQ_format;
-    %let N_format     = &FREQ_format;
 
     %if %bquote(&stat_format) ^= #AUTO %then %do;
         %let stat_format_n = %eval(%sysfunc(kcountw(%bquote(&stat_format), %bquote(=), q)) - 1);
@@ -589,14 +546,6 @@ Version Date: 2023-03-08 1.0.1
 
                 /*更新统计量的输出格式*/
                 %let &stat_whose_format_2be_update._format = %bquote(&stat_new_format);
-
-                /*对于存在别名的统计量，需同步修改输出格式*/
-                %if &stat_whose_format_2be_update = N %then %do;
-                    %let FREQ_format = %bquote(&stat_new_format);
-                %end;
-                %else %if &stat_whose_format_2be_update = FREQ %then %do;
-                    %let N_format = %bquote(&stat_new_format);
-                %end;
             %end;
             %if &IS_VALID_STAT_FORMAT = FALSE %then %do;
                 %goto exit_with_error;
@@ -713,8 +662,6 @@ Version Date: 2023-03-08 1.0.1
     %if %sysmexecname(%sysmexecdepth - 1) = QUALIFY_MULTI %then %do;
         %let FREQ_zero      = 0;
         %let FREQ_zero_fmt  = %sysfunc(putn(&FREQ_zero, &FREQ_format -R));
-        %let N_zero         = 0;
-        %let N_zero_fmt     = %sysfunc(putn(&N_zero, &N_format -R));
         %let TIMES_zero     = 0;
         %let TIMES_zero_fmt = %sysfunc(putn(&TIMES_zero, &TIMES_format -R));
         %let RATE_zero      = 0;
@@ -743,9 +690,6 @@ Version Date: 2023-03-08 1.0.1
                     /*频数*/
                     coalesce(count(*), 0)                                                  as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
-                    /*频数-兼容旧版本*/
-                    calculated FREQ                                                        as N,
-                    calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
                     coalesce((select count(*) from tmp_qualify_indata), 0)                 as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
@@ -761,8 +705,6 @@ Version Date: 2023-03-08 1.0.1
                 %else %do;
                     sum(.)                                                                 as FREQ,
                     ""                                                                     as FREQ_FMT,
-                    sum(.)                                                                 as N,
-                    ""                                                                     as N_FMT,
                     sum(.)                                                                 as TIMES,
                     ""                                                                     as TIMES_FMT,
                     sum(.)                                                                 as RATE,
@@ -783,9 +725,6 @@ Version Date: 2023-03-08 1.0.1
                     /*频数*/
                     coalesce(sum(&var_name = &&var_level_&i), 0)                           as FREQ,
                     strip(put(calculated FREQ, &FREQ_format))                              as FREQ_FMT,
-                    /*频数-兼容旧版本*/
-                    calculated FREQ                                                        as N,
-                    calculated FREQ_FMT                                                    as N_FMT,
                     /*频次*/
                     coalesce((select sum(&var_name = &&var_level_&i) from tmp_qualify_indata), 0)
                                                                                            as TIMES,
@@ -812,10 +751,9 @@ Version Date: 2023-03-08 1.0.1
             %end;
             ;
 
-        select max(length(item)), max(length(FREQ_FMT)), max(length(N_FMT)), max(length(TIMES_FMT)), max(length(RATE_FMT)), max(length(value))
-            into :column_item_len_max, :column_freq_fmt_len_max, :column_n_fmt_len_max, :column_times_fmt_len_max, :column_rate_fmt_len_max, :column_value_len_max from tmp_qualify_outdata;
+        select max(length(item)), max(length(FREQ_FMT)), max(length(TIMES_FMT)), max(length(RATE_FMT)), max(length(value))
+            into :column_item_len_max, :column_freq_fmt_len_max, :column_times_fmt_len_max, :column_rate_fmt_len_max, :column_value_len_max from tmp_qualify_outdata;
         %let column_freq_fmt_len_max  = %sysfunc(max(&column_freq_fmt_len_max, %length(FREQ_zero_fmt)));
-        %let column_n_fmt_len_max     = %sysfunc(max(&column_n_fmt_len_max, %length(N_zero_fmt)));
         %let column_times_fmt_len_max = %sysfunc(max(&column_times_fmt_len_max, %length(TIMES_zero_fmt)));
         %let column_rate_fmt_len_max  = %sysfunc(max(&column_rate_fmt_len_max, %length(RATE_zero_fmt)));
         %let column_value_len_max  = %sysfunc(max(&column_value_len_max, %length(VALUE_zero)));
@@ -823,7 +761,6 @@ Version Date: 2023-03-08 1.0.1
         alter table tmp_qualify_outdata
             modify item      char(&column_item_len_max),
                    freq_fmt  char(&column_freq_fmt_len_max),
-                   n_fmt     char(&column_n_fmt_len_max),
                    times_fmt char(&column_times_fmt_len_max),
                    rate_fmt  char(&column_rate_fmt_len_max),
                    value     char(&column_value_len_max);
@@ -846,7 +783,7 @@ Version Date: 2023-03-08 1.0.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
     /*删除中间数据集*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qualify_indata
                    tmp_qualify_indata_unique_total

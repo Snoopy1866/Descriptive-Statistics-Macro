@@ -1,5 +1,5 @@
 /*
-详细文档请前往 Github 查阅: https://github.com/Snoopy1866/Descriptive-Statistics-Macro
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 /*
 var = A
@@ -25,11 +25,11 @@ var = A, (C, (E, F)|D, (F)|E, F)|B, (D, (F)|E, F)|C, ((F)|E, F)|D, (F)|E, F
                       format = NULL,
                       unique_var = NULL,
                       outdata = NULL,
-                      del_temp_data = NULL) /des = "定性资料分层描述分析" parmbuff;
+                      debug = NULL) /des = "定性资料分层描述分析" parmbuff;
 
     /*打开帮助文档*/
     %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/qualify_strata/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/main/docs/qualify_strata/readme.md";
         %goto exit;
     %end;
 

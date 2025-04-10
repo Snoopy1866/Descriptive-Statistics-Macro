@@ -1,48 +1,29 @@
 /*
-===================================
-Macro Name: desc_coun
-Macro Label:定性资料描述性分析
-Author: wtwang
-Version Date: 2023-02-09 V1.11
-              2024-03-18 V1.12
-===================================
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
-
-%macro desc_coun(INDATA, VAR, FORMAT = PERCENTN9.2, BY = &VAR, MISSING = FALSE, DENOMINATOR = #AUTO,
-                 INDENT = %bquote(    ), LABEL = #AUTO, IS_LABEL_INDENT = FALSE, IS_LABEL_DISPLAY = TRUE,
-                 OUTDATA = #AUTO, DEL_TEMP_DATA = TRUE, DEL_DUP_BY_VAR = #NULL,
-                 SKIP_PARAM_CHECK = FALSE, SKIP_MAIN_PROG = FALSE, PARAM_VALID_FLAG_VAR = #NULL,
-                 PARAM_LIST_BUFFER = #NULL) /des = "定性资料描述分析" parmbuff;
-/*
-----Required Argument----
-INDATA               待分析数据集
-VAR                  待分析变量
-
-----Optional Argument----
-FORMAT               百分比输出格式
-BY                   排序依据(ASC, DESC, VARIABLE)
-MISSING              是否将缺失值视为一类(将会占据上一层级下的一个分类)
-DENOMINATOR          计算百分比基于的变量或数值(#ALL, 表示基于合计频数进行计算
-                                                #LAST，表示基于上一层级的频数进行计算)
-INDENT               相邻层级之间的缩进字符(串)
-LABEL                输出数据集的表头标签(例如: 性别-n(%))
-IS_LABEL_INDENT      表头标签是否缩进
-IS_LABEL_DISPLAY     表头标签是否展示(IS_LABEL_DISPLAY = FALSE时, 参数LABEL, IS_LABEL_INDENT仍然生效)
-OUTDATA              输出数据集名称
-
-----Developer Argument----
-DEL_TEMP_DATA        是否删除中间数据集
-DEL_DUP_BY_VAR       删除重复观测基于的变量（例如：统计某个SOC下的AE例数时，需指定 DEL_DUP_BY_VAR = USUBJID）
-SKIP_PARAM_CHECK     是否跳过参数检查
-SKIP_MAIN_PROG       是否跳过主程序
-PARAM_VALID_FLAG_VAR 参数合法性标识变量
-PARAM_LIST_BUFFER    参数列表缓冲池
-*/
+%macro desc_coun(indata,
+                 var,
+                 format               = percentn9.2,
+                 by                   = &var,
+                 missing              = false,
+                 denominator          = #auto,
+                 indent               = %bquote(    ),
+                 label                = #auto,
+                 is_label_indent      = false,
+                 is_label_display     = true,
+                 outdata              = #auto,
+                 del_dup_by_var       = #null,
+                 skip_param_check     = false,
+                 skip_main_prog       = false,
+                 param_valid_flag_var = #null,
+                 param_list_buffer    = #null,
+                 debug                = false,
+                 ) / parmbuff;
 
     /*打开帮助文档*/
     %if %bquote(%upcase(&SYSPBUFF)) = %bquote((HELP)) or %bquote(%upcase(&SYSPBUFF)) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/desc_coun/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/desc_coun/readme.md";
         %goto exit;
     %end;
 
@@ -57,7 +38,7 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %let is_label_indent      = %upcase(%sysfunc(strip(%bquote(&is_label_indent))));
     %let is_label_display     = %upcase(%sysfunc(strip(%bquote(&is_label_display))));
     %let outdata              = %sysfunc(strip(%bquote(&outdata)));
-    %let del_temp_data        = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug        = %upcase(%sysfunc(strip(%bquote(&debug))));
     %let del_dup_by_var       = %upcase(%sysfunc(strip(%bquote(&del_dup_by_var))));
     %let skip_param_check     = %upcase(%sysfunc(strip(%bquote(&skip_param_check))));
     %let skip_main_prog       = %upcase(%sysfunc(strip(%bquote(&skip_main_prog))));
@@ -545,9 +526,9 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %end;
 
 
-    /*DEL_TEMP_DATA*/
-    %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: 参数 DEL_TEMP_DATA 必须是 TRUE 或 FALSE！;
+    /*debug*/
+    %if %bquote(&debug) ^= TRUE and %bquote(&debug) ^= FALSE %then %do;
+        %put ERROR: 参数debugA 必须是 TRUE 或 FALSE！;
         %goto exit_err;
     %end;
 
@@ -845,7 +826,7 @@ PARAM_LIST_BUFFER    参数列表缓冲池
     %end;
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         proc datasets noprint nowarn; /*删除临时数据集*/
             delete %do i = 1 %to &var_n;
                        temp_nodup_&&VAR_&i

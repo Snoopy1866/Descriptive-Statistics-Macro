@@ -1,31 +1,25 @@
 /*
-===================================
-Macro Name: cross_table
-Macro Label:基本列联表
-Author: wtwang
-Version Date: 2022-09-21 V1.1
-              2024-05-28 V1.2
-              2024-06-05 V1.2.1
-===================================
+详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
 */
 
-%macro cross_table(INDATA,
-                   ROWCAT,
-                   COLCAT,
-                   OUTDATA,
-                   ROWCAT_BY       = #AUTO,
-                   COLCAT_BY       = #AUTO,
-                   N               = #AUTO,
-                   ADD_CAT_MISSING = FALSE FALSE,
-                   ADD_CAT_OTHER   = FALSE FALSE,
-                   ADD_CAT_ALL     = TRUE TRUE,
-                   PCT_OUT         = FALSE,
-                   FORMAT          = PERCENTN9.2,
-                   DEL_TEMP_DATA   = TRUE) /des = "基本列联表" parmbuff;
+%macro cross_table(indata,
+                   rowcat,
+                   colcat,
+                   outdata,
+                   rowcat_by       = #auto,
+                   colcat_by       = #auto,
+                   n               = #auto,
+                   add_cat_missing = false false,
+                   add_cat_other   = false false,
+                   add_cat_all     = true true,
+                   pct_out         = false,
+                   format          = PERCENTN9.2,
+                   debug           = false
+                   ) / parmbuff;
 
     /*打开帮助文档*/
     %if %qupcase(&SYSPBUFF) = %bquote((HELP)) or %qupcase(&SYSPBUFF) = %bquote(()) %then %do;
-        X explorer "https://github.com/Snoopy1866/Descriptive-Statistics-Macro/blob/main/docs/cross_table/readme.md";
+        X explorer "https://github.com/Snoopy1866/sas-summarize/blob/v2/docs/cross_table/readme.md";
         %goto exit;
     %end;
 
@@ -43,7 +37,7 @@ Version Date: 2022-09-21 V1.1
     %let add_cat_all     = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&add_cat_all)))))));
     %let pct_out         = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&pct_out)))))));
     %let format          = %upcase(%sysfunc(strip(%bquote(%sysfunc(compbl(%bquote(&format)))))));
-    %let del_temp_data   = %upcase(%sysfunc(strip(%bquote(&del_temp_data))));
+    %let debug           = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明局部变量*/
     %local i j;
@@ -473,10 +467,10 @@ Version Date: 2022-09-21 V1.1
         %end;
     %end;
 
-    
-    /*DEL_TEMP_DATA*/
-    %if %bquote(&DEL_TEMP_DATA) ^= TRUE and %bquote(&DEL_TEMP_DATA) ^= FALSE %then %do;
-        %put ERROR: 参数 DEL_TEMP_DATA 必须是 TRUE 或 FALSE！;
+
+    /*debug*/
+    %if %bquote(&debug) ^= TRUE and %bquote(&debug) ^= FALSE %then %do;
+        %put ERROR: 参数debugA 必须是 TRUE 或 FALSE！;
         %goto exit;
     %end;
 
@@ -829,7 +823,7 @@ Version Date: 2022-09-21 V1.1
 
     /*----------------------------------------------运行后处理----------------------------------------------*/
 
-    %if &DEL_TEMP_DATA = TRUE %then %do;
+    %if &debug = FALSE %then %do;
         /*删除中间数据集*/
         proc datasets noprint nowarn;
             delete temp_rowcat
@@ -843,5 +837,3 @@ Version Date: 2022-09-21 V1.1
     %exit:
     %put NOTE: 宏 cross_table 已结束运行！;
 %mend;
-
-

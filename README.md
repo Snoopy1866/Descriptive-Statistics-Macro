@@ -12,11 +12,13 @@
 
 ## 详细文档
 
-- [qualify](docs/qualify/readme.md)
-- [qualify_multi](docs/qualify_multi/readme.md)
-- [qualify_multi_test](docs/qualify_multi_test/readme.md)
-- [quantify](docs/quantify/readme.md)
-- [quantify_multi](docs/quantify_multi/readme.md)
-- [quantify_multi_test](docs/quantify_multi_test/readme.md)
-- [desc_coun](docs/desc_coun/readme.md)
-- [cross_table](docs/cross_table/readme.md)
+| 🧩 程序名称            | ✨ 描述                 | 📚 文档                                  |
+| ---------------------- | ----------------------- | ---------------------------------------- |
+| `%qualify`             | 单组定性汇总            | [↗️](docs/qualify/readme.md)             |
+| `%qualify_multi`       | 多组定性汇总            | [↗️](docs/qualify_multi/readme.md)       |
+| `%qualify_multi_test`  | 多组定性汇总 + 假设检验 | [↗️](docs/qualify_multi_test/readme.md)  |
+| `%quantify`            | 单组定量汇总            | [↗️](docs/quantify/readme.md)            |
+| `%quantify_multi`      | 多组定量汇总            | [↗️](docs/quantify_multi/readme.md)      |
+| `%quantify_multi_test` | 多组定量汇总 + 假设检验 | [↗️](docs/quantify_multi_test/readme.md) |
+| `%cross_table`         | 列联表                  | [↗️](docs/cross_table/readme.md)         |
+| `%desc_coun`           | 单组定性分层汇总        | [↗️](docs/desc_coun/readme.md)           |

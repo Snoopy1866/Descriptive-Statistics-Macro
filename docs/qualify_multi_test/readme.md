@@ -1,131 +1,130 @@
 ## 简介
 
-多组单个定性指标的分析，输出频数、频率等指标，并进行卡方检验或 Fisher 精确检验。
+多组单个定性指标的分析，输出频数、构成比（率）指标，并进行卡方检验或 _fisher_ 精确检验。
 
 ## 语法
 
 ### 必选参数
 
-- [INDATA](#indata)
-- [VAR](#var)
-- [GROUP](#group)
+- [indata](#indata)
+- [var](#var)
+- [group](#group)
 
 ### 可选参数
 
-- [GROUPBY](#groupby)
-- [BY](#by)
-- [UID](#uid)
-- [PATTERN](#pattern)
-- [MISSING](#missing)
-- [MISSING_NOTE](#missing_note)
-- [MISSING_POSITION](#missing_position)
-- [OUTDATA](#outdata)
-- [STAT_FORMAT](#stat_format)
-- [LABEL](#label)
-- [INDENT](#indent)
-- [SUFFIX](#suffix)
-- [CHISQ_NOTE](#chisq_note)
-- [FISHER_NOTE](#fisher_note)
-- [FISHER_STAT_PH](#fisher_stat_ph)
-- [PROCHTTP_PROXY](#prochttp_proxy)
+- [groupby](#groupby)
+- [by](#by)
+- [uid](#uid)
+- [pattern](#pattern)
+- [missing](#missing)
+- [missing_note](#missing_note)
+- [missing_position](#missing_position)
+- [outdata](#outdata)
+- [stat_format](#stat_format)
+- [label](#label)
+- [indent](#indent)
+- [suffix](#suffix)
+- [chisq_note](#chisq_note)
+- [fisher_note](#fisher_note)
+- [fisher_stat_ph](#fisher_stat_ph)
 
 ### 调试参数
 
-- [DEL_TEMP_DATA](#del_temp_data)
+- [debug](#debug)
 
 ## 参数说明
 
-### INDATA
+### indata
 
-用法同 [INDATA](../qualify/readme.md#indata)。
-
----
-
-### VAR
-
-用法同 [VAR](../qualify/readme.md#var)。
+用法同 [indata](../qualify/readme.md#indata)。
 
 ---
 
-### GROUP
+### var
 
-用法同 [GROUP](../qualify_multi/readme.md#group)
-
----
-
-### GROUPBY
-
-用法同 [GROUPBY](../qualify_multi/readme.md#groupby)
+用法同 [var](../qualify/readme.md#var)。
 
 ---
 
-### BY
+### group
 
-用法同 [BY](../qualify/readme.md#by)。
-
----
-
-### UID
-
-用法同 [UID](../qualify/readme.md#uid)。
+用法同 [group](../qualify_multi/readme.md#group)
 
 ---
 
-### PATTERN
+### groupby
 
-用法同 [PATTERN](../qualify/readme.md#pattern)。
-
----
-
-### MISSING
-
-用法同 [MISSING](../qualify/readme.md#missing)。
+用法同 [groupby](../qualify_multi/readme.md#groupby)
 
 ---
 
-### MISSING_NOTE
+### by
 
-用法同 [MISSING_NOTE](../qualify/readme.md#missing_note)。
-
----
-
-### MISSING_POSITION
-
-用法同 [MISSING_POSITION](../qualify/readme.md#missing_position)。
+用法同 [by](../qualify/readme.md#by)。
 
 ---
 
-### OUTDATA
+### uid
 
-用法同 [OUTDATA](../qualify_multi/readme.md#outdata)。
-
----
-
-### STAT_FORMAT
-
-用法同 [STAT_FORMAT](../qualify/readme.md#stat_format)。
+用法同 [uid](../qualify/readme.md#uid)。
 
 ---
 
-### LABEL
+### pattern
 
-用法同 [LABEL](../qualify/readme.md#label)。
-
----
-
-### INDENT
-
-用法同 [INDENT](../qualify/readme.md#indent)。
+用法同 [pattern](../qualify/readme.md#pattern)。
 
 ---
 
-### SUFFIX
+### missing
 
-用法同 [SUFFIX](../qualify/readme.md#suffix)。
+用法同 [missing](../qualify/readme.md#missing)。
 
 ---
 
-### CHISQ_NOTE
+### missing_note
+
+用法同 [missing_note](../qualify/readme.md#missing_note)。
+
+---
+
+### missing_position
+
+用法同 [missing_position](../qualify/readme.md#missing_position)。
+
+---
+
+### outdata
+
+用法同 [outdata](../qualify_multi/readme.md#outdata)。
+
+---
+
+### stat_format
+
+用法同 [stat_format](../qualify/readme.md#stat_format)。
+
+---
+
+### label
+
+用法同 [label](../qualify/readme.md#label)。
+
+---
+
+### indent
+
+用法同 [indent](../qualify/readme.md#indent)。
+
+---
+
+### suffix
+
+用法同 [suffix](../qualify/readme.md#suffix)。
+
+---
+
+### chisq_note
 
 **Syntax** : _string_
 
@@ -140,65 +139,61 @@
 **Usage** :
 
 ```sas
-CHISQ_NOTE = "χ\super 2 \nosupersub 检验"
+chisq_note = "χ\super 2 \nosupersub 检验"
 ```
 
-### FISHER_NOTE
+### fisher_note
 
 **Syntax** : _string_
 
-指定输出结果中 Fisher 精确检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
+指定输出结果中 _fisher_ 精确检验方法显示的字符串，该字符串必须使用匹配的单（双）引号包围。
 
 > [!NOTE]
 >
-> 该选项仅在使用 Fisher 精确检验时生效。
+> 该选项仅在使用 _fisher_ 精确检验时生效。
 
 **Default** : `"Fisher精确检验"`
 
 **Usage** :
 
 ```sas
-FISHER_NOTE = "Fisher"
+fisher_note = "Fisher"
 ```
 
-### FISHER_STAT_PH
+### fisher_stat_ph
 
 **Syntax** : _string_
 
-指定输出结果中 Fisher 精确检验统计量显示的占位字符串，该字符串必须使用匹配的单（双）引号包围。
+指定输出结果中 _fisher_ 精确检验统计量显示的占位字符串，该字符串必须使用匹配的单（双）引号包围。
 
 > [!NOTE]
 >
-> 该选项仅在使用 Fisher 精确检验时生效。
+> 该选项仅在使用 _fisher_ 精确检验时生效。
 
 **Default** : `""`
 
 **Usage** :
 
 ```sas
-FISHER_STAT_PH = "-"
+fisher_stat_ph = "-"
 ```
-
-### PROCHTTP_PROXY
-
-用法同 [PROCHTTP_PROXY](../qualify_multi/readme.md#prochttp_proxy)。
 
 ---
 
-### DEL_TEMP_DATA
+### debug
 
-**Syntax** : TRUE | FALSE
+**Syntax** : `true` | `false`
 
 指定是否删除宏程序运行过程生成的中间数据集。
 
-**Default** : TRUE
+**Default** : `false`
 
 默认情况下，宏程序会自动删除运行过程生成的中间数据集。
 
 > [!NOTE]
 >
 > - 此参数用于开发者调试，一般无需关注。
-> - 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `DEL_TEMP_DATA = FALSE`。
+> - 本宏程序内部调用的依赖宏程序 `%qualify_multi` 运行过程中生成的中间数据集无法通过此参数控制，在退出 `%qualify_multi` 时，这些中间数据集默认被删除，如需单独调试宏程序 `%qualify_multi`，请单独调用 `%qualify_multi` 并指定 `debug = true`。
 
 ---
 
