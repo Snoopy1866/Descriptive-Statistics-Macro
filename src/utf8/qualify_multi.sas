@@ -1,5 +1,5 @@
 /*
-详细文档请前往 Github 查阅: https://githsas-summarizee-Statistics-Macro
+详细文档请前往 Github 查阅: https://github.com/Snoopy1866/sas-summarize
 */
 
 %macro qualify_multi(indata,
