@@ -28,6 +28,7 @@
 
     /*声明全局变量*/
     %global qtmt_exit_with_error
+            group_level_n
             groupby_criteria;
     %let qtmt_exit_with_error = FALSE;
 
@@ -151,7 +152,7 @@
                     var         = %superq(var),
                     group       = %superq(group),
                     groupby     = %superq(groupby),
-                    outdata     = tmp_qmt_outdata,
+                    outdata     = tmp_qmt_desc(keep = _all_),
                     pattern     = %superq(pattern),
                     stat_format = %superq(stat_format),
                     stat_note   = %superq(stat_note),
@@ -163,7 +164,7 @@
     %end;
 
     proc sql noprint;
-        select max(seq) into :desc_seq_max from tmp_qmt_outdata; /*获取描述性统计结果的最大 seq 值*/
+        select max(seq) into :desc_seq_max from tmp_qmt_desc; /*获取描述性统计结果的最大 seq 值*/
     quit;
 
     /*3. 统计推断*/
@@ -192,15 +193,20 @@
     /*定义宏变量，存储说明文字*/
     %let note_stat    = %unquote(%superq(indent_sql_expr)) || "统计量";
     %let note_pvalue  = %unquote(%superq(indent_sql_expr)) || "P值";
-    
+
+    proc sql noprint;
+        create table tmp_qmt_stat
+            (seq num, item char(10), value_1 char(16), value_2 char(10));
+    quit;
+
     %if &nrmtest_valid = 0 %then %do; /*两组均为单点分布，无法检验正态性，不计算统计量*/
         proc sql noprint;
-            insert into tmp_qmt_outdata
+            insert into tmp_qmt_stat
                 set seq     = &desc_seq_max + 1,
                     item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
-            insert into tmp_qmt_outdata
+            insert into tmp_qmt_stat
                 set seq     = &desc_seq_max + 2,
                     item    = &note_pvalue,
                     value_1 = "-";
@@ -218,12 +224,12 @@
                 select max(ceil(log10(abs(Z_WIL))), 1) + 6 into : ts_fmt_width from tmp_qmt_wcxtest; /*计算输出格式的宽度*/
                 %let ts_format = &ts_fmt_width..4;
             %end;
-            insert into tmp_qmt_outdata
+            insert into tmp_qmt_stat
                 set seq     = &desc_seq_max + 1,
                     item    = &note_stat,
                     value_1 = "Wilcoxon秩和检验",
                     value_2 = strip(put((select Z_WIL from tmp_qmt_wcxtest), &ts_format));
-            insert into tmp_qmt_outdata
+            insert into tmp_qmt_stat
                 set seq     = &desc_seq_max + 2,
                     item    = &note_pvalue,
                     value_1 = strip(put((select P2_WIL from tmp_qmt_wcxtest), &p_format));
@@ -251,12 +257,12 @@
                     select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
-                insert into tmp_qmt_outdata
+                insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &ts_format));
-                insert into tmp_qmt_outdata
+                insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "不等于"), &p_format));
@@ -268,22 +274,36 @@
                     select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
-                insert into tmp_qmt_outdata
+                insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
                         value_1 = "t检验",
                         value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &ts_format));
-                insert into tmp_qmt_outdata
+                insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
                         value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "等于"), &p_format));
             quit;
         %end;
     %end;
-    
+
+
+    /*4. 合并结果*/
+    proc sql noprint;
+        create table tmp_qmt_outdata as
+            select * from tmp_qmt_desc outer union corr
+            select * from tmp_qmt_stat;
+    quit;
+
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
+                                        keep = item %do i = 1 %to &group_level_n;
+                                                        value_&i
+                                                    %end;
+                                                    %if &group_level_n > 1 %then %do;
+                                                        value_sum
+                                                    %end;
                                     %end;
                                     %else %do;
                                         &dataset_options_out
