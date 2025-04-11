@@ -481,7 +481,7 @@
         %goto exit_with_error;
     %end; 
 
-    %if %bquote(&stat_note) ^= #AUTO %then %do;
+    %if %qupcase(%bquote(&stat_note)) ^= #AUTO %then %do;
         %let stat_note_n = %eval(%sysfunc(kcountw(%bquote(&stat_note), %bquote(=), q)) - 1);
         %let reg_stat_note_expr_unit = %bquote(\s*#(&stat_supported)\s*=\s*(\x22[^\x22]*\x22|\x27[^\x27]*\x27)[\s,]*);
         %let reg_stat_note_expr = %bquote(/^\(?%sysfunc(repeat(&reg_stat_note_expr_unit, %eval(&stat_note_n - 1)))\)?$/i);
