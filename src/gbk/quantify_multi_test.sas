@@ -25,6 +25,7 @@
     /*统一参数大小写*/
     %let group   = %sysfunc(strip(%bquote(&group)));
     %let groupby = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let debug   = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global qtmt_exit_with_error
@@ -316,11 +317,13 @@
     %if &debug = FALSE %then %do;
         proc datasets noprint nowarn;
             delete tmp_qmt_indata
-                   tmp_qmt_outdata
+                   Tmp_qmt_desc
                    tmp_qmt_nrmtest
                    tmp_qmt_equality
                    tmp_qmt_ttests
                    tmp_qmt_wcxtest
+                   Tmp_qmt_stat
+                   tmp_qmt_outdata
                    ;
         quit;
     %end;
