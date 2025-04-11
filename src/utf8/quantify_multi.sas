@@ -25,6 +25,7 @@
     /*统一参数大小写*/
     %let group   = %sysfunc(strip(%bquote(&group)));
     %let groupby = %upcase(%sysfunc(strip(%bquote(&groupby))));
+    %let debug   = %upcase(%sysfunc(strip(%bquote(&debug))));
 
     /*声明全局变量*/
     %global quantify_multi_exit_with_error;
