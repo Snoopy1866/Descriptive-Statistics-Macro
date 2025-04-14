@@ -730,7 +730,7 @@
                                                                                            as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*ÆµÂÊ*/
-                    calculated N/count(*)                                                  as RATE,
+                    calculated FREQ/count(*)                                               as RATE,
                     ifc(not missing(calculated RATE), strip(put(calculated RATE, &RATE_format)), "-")
                                                                                            as RATE_FMT,
                     %do j = 1 %to &stat_n;
