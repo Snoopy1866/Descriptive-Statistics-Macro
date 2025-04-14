@@ -401,7 +401,7 @@
             data tmp_qualify_distinct_var
                 if _n_ = 1 then do;
                     var_level = "";
-                    var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
+                    var_level_note = %unquote(%superq(missing_note_sql_expr));
                     output;
                 end;
                 set tmp_qualify_distinct_var;
@@ -410,11 +410,13 @@
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
             data tmp_qualify_distinct_var;
-                set tmp_qualify_distinct_var;
+                set tmp_qualify_distinct_var end = end;
                 output;
-                var_level = "";
-                var_level_note = %unquote(%sysfunc(quote(%superq(missing_note_sql_expr))));
-                output;
+                if end then do;
+                    var_level = "";
+                    var_level_note = %unquote(%superq(missing_note_sql_expr));
+                    output;
+                end;
             run;
         %end;
         %else %do;
@@ -424,14 +426,13 @@
     %end;
 
     proc sql noprint;
-        select count(*)                    into : var_level_n        from tmp_qualify_distinct_var;
+        select count(*) into : var_level_n from tmp_qualify_distinct_var;
         %if &var_level_n > 0 %then %do;
             select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
             select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
 
             select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
             select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
-            select count(var_level)                                                     into : var_level_n       from tmp_qualify_distinct_var;
         %end;
         %else %do;
             %put NOTE: 数据集中没有任何分类！;
