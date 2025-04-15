@@ -794,6 +794,7 @@
                        tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt
+                   tmp_qualify_distinct_var
                    tmp_qualify_distinct_var_missing
                    tmp_qualify_outdata_label
                    %do i = 1 %to &var_level_n;
