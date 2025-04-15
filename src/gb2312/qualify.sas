@@ -398,26 +398,28 @@
             %goto exit_with_error;
         %end;
         %else %if %superq(missing_position) = FIRST %then %do;
-            data tmp_qualify_distinct_var
-                if _n_ = 1 then do;
-                    var_level = "";
-                    var_level_note = %unquote(%superq(missing_note_sql_expr));
-                    output;
-                end;
-                set tmp_qualify_distinct_var;
-                output;
-            run;
+            proc sql noprint;
+                create table tmp_qualify_distinct_var_missing as
+                    select
+                        distinct
+                        ""                                       as var_level,
+                        %unquote(%superq(missing_note_sql_expr)) as var_level_note
+                    from tmp_qualify_distinct_var
+                    outer union corr
+                    select * from tmp_qualify_distinct_var;
+            quit;
         %end;
         %else %if %superq(missing_position) = LAST %then %do;
-            data tmp_qualify_distinct_var;
-                set tmp_qualify_distinct_var end = end;
-                output;
-                if end then do;
-                    var_level = "";
-                    var_level_note = %unquote(%superq(missing_note_sql_expr));
-                    output;
-                end;
-            run;
+            proc sql noprint;
+                create table tmp_qualify_distinct_var_missing as
+                    select * from tmp_qualify_distinct_var
+                    outer union corr
+                    select
+                        distinct
+                        ""                                       as var_level,
+                        %unquote(%superq(missing_note_sql_expr)) as var_level_note
+                    from tmp_qualify_distinct_var;
+            quit;
         %end;
         %else %do;
             %put ERROR: 参数 MISSING_POSITION 只能是 FIRST 或 LAST！;
@@ -426,13 +428,13 @@
     %end;
 
     proc sql noprint;
-        select count(*) into : var_level_n from tmp_qualify_distinct_var;
+        select count(*) into : var_level_n from tmp_qualify_distinct_var_missing;
         %if &var_level_n > 0 %then %do;
-            select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var;
-            select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var;
+            select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var_missing;
+            select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var_missing;
 
-            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var;
-            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var;
+            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var_missing;
+            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var_missing;
         %end;
         %else %do;
             %put NOTE: 数据集中没有任何分类！;
@@ -792,7 +794,7 @@
                        tmp_qualify_indata_unique_var
                    %end;
                    tmp_qualify_by_fmt
-                   tmp_qualify_distinct_var
+                   tmp_qualify_distinct_var_missing
                    tmp_qualify_outdata_label
                    %do i = 1 %to &var_level_n;
                        tmp_qualify_outdata_level_&i
