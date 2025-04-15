@@ -426,6 +426,12 @@
             %goto exit_with_error;
         %end;
     %end;
+    %else %do;
+        data tmp_qualify_distinct_var_missing;
+            set tmp_qualify_distinct_var;
+        run;
+    %end;
+
 
     proc sql noprint;
         select count(*) into : var_level_n from tmp_qualify_distinct_var_missing;
