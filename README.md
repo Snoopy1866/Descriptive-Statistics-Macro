@@ -12,6 +12,9 @@
 | `%quantify`                             | 参数 `stat_note` 默认值 `#auto` 的大小写未正确识别       | [#81](https://github.com/Snoopy1866/sas-summarize/pull/81) |
 | `%quantify_multi_test`                  | 列 `value_1` 长度不足以容纳统计量名称 `Wilcoxon秩和检验` | [#82](https://github.com/Snoopy1866/sas-summarize/pull/82) |
 | `%quantify_multi, %quantify_multi_test` | 参数 `debug` 未能生效                                    | [#83](https://github.com/Snoopy1866/sas-summarize/pull/83) |
+| `%qualify`                              | `缺失` 分类的名称和位置错误                              | [#89](https://github.com/Snoopy1866/sas-summarize/pull/89) |
+| `%qualify`                              | `missing_position = first` 不生效                        | [#90](https://github.com/Snoopy1866/sas-summarize/pull/90) |
+| `%qualify`                              | 未指定参数 `missing` 导致程序中断                        | [#91](https://github.com/Snoopy1866/sas-summarize/pull/91) |
 
 # 简介
 
