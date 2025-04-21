@@ -382,21 +382,11 @@
 
     /*5. 输出数据集*/
     data &libname_out..&memname_out(%if %superq(dataset_options_out) = %bquote() %then %do;
-                                        keep = item %if &uid ^= #NULL %then %do;
-                                                        %do i = 1 %to &group_level_n;
-                                                            times_&i._fmt value_&i
-                                                        %end;
-                                                        %if &group_level_n > 1 %then %do;
-                                                            times_sum_fmt value_sum
-                                                        %end;
+                                        keep = item %do i = 1 %to &group_level_n;
+                                                        value_&i
                                                     %end;
-                                                    %else %do;
-                                                        %do i = 1 %to &group_level_n;
-                                                            value_&i
-                                                        %end;
-                                                        %if &group_level_n > 1 %then %do;
-                                                            value_sum
-                                                        %end;
+                                                    %if &group_level_n > 1 %then %do;
+                                                        value_sum
                                                     %end;
                                     %end;
                                     %else %do;
