@@ -6,7 +6,7 @@
                           var,
                           group,
                           groupby          = #auto,
-                          by               = #auto,
+                          by               = #freq(descending),
                           uid              = #null,
                           pattern          = %nrstr(#freq(#rate)),
                           missing          = false,
