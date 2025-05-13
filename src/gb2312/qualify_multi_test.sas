@@ -311,13 +311,13 @@
             create table tmp_qmt_stat
                     (idt num, seq num, item char(10), value_1 char(10), value_2 char(10));
             insert into tmp_qmt_stat
-                set idt     = 1,
+                set idt     = 2,
                     seq     = &desc_seq_max + 1,
                     item    = &note_stat,
                     value_1 = "-",
                     value_2 = "-";
             insert into tmp_qmt_stat
-                set idt     = 1,
+                set idt     = 3,
                     seq     = &desc_seq_max + 2,
                     item    = &note_pvalue,
                     value_1 = "-";
@@ -335,7 +335,7 @@
             %if &chisq_warn = 1 %then %do; /*卡方检验不适用*/
                 create table tmp_qmt_stat as
                     select
-                        1                   as idt,
+                        2                   as idt,
                         &desc_seq_max + 1   as seq,
                         &note_stat          as item,
                         &note_fisher        as value_1,
@@ -343,7 +343,7 @@
                     from tmp_qmt_chisq
                     outer union corr
                     select
-                        1                               as idt,
+                        3                               as idt,
                         &desc_seq_max + 2               as seq,
                         &note_pvalue                    as item,
                         strip(put(XP2_FISH, &p_format)) as value_1
@@ -356,7 +356,7 @@
                 %end;
                 create table tmp_qmt_stat as
                     select
-                        1                              as idt,
+                        2                              as idt,
                         &desc_seq_max + 1              as seq,
                         &note_stat                     as item,
                         &note_chisq                    as value_1,
@@ -364,7 +364,7 @@
                     from tmp_qmt_chisq
                     outer union corr
                     select
-                        1                             as idt,
+                        3                             as idt,
                         &desc_seq_max + 2             as seq,
                         &note_pvalue                  as item,
                         strip(put(P_PCHI, &p_format)) as value_1
