@@ -439,8 +439,8 @@
             select max(length(var_level))      into : var_level_len      from tmp_qualify_distinct_var_missing;
             select max(length(var_level_note)) into : var_level_note_len from tmp_qualify_distinct_var_missing;
 
-            select quote(strip(var_level))      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var_missing;
-            select quote(strip(var_level_note)) length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var_missing;
+            select quote(strip(var_level), "'")      length = %eval(&var_level_len + 2)      into : var_level_1-      from tmp_qualify_distinct_var_missing;
+            select quote(strip(var_level_note), "'") length = %eval(&var_level_note_len + 2) into : var_level_note_1- from tmp_qualify_distinct_var_missing;
         %end;
         %else %do;
             %put NOTE: 数据集中没有任何分类！;
