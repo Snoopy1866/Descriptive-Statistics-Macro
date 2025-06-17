@@ -175,7 +175,7 @@
     %end;
 
     /*解析参数 by, 检查合法性*/
-    %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)?)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
+    %let reg_by_expr = %bquote(/^(?:(#FREQ)|([A-Za-z_][A-Za-z_\d]*)|(?:([A-Za-z_]+(?:\d+[A-Za-z_]+)*)\.))(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/i);
     %let reg_by_id = %sysfunc(prxparse(&reg_by_expr));
     %if %sysfunc(prxmatch(&reg_by_id, %bquote(&by))) %then %do;
         %let by_stat      = %sysfunc(prxposn(&reg_by_id, 1, %bquote(&by))); /*排序基于的统计量*/
