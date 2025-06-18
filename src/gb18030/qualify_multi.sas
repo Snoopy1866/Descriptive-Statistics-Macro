@@ -52,6 +52,7 @@
 
 
     /*----------------------------------------------参数检查----------------------------------------------*/
+    /*INDATA*/
     %if %bquote(&indata) = %bquote() %then %do;
         %put ERROR: 未指定分析数据集！;
         %goto exit_with_error;
@@ -93,6 +94,32 @@
     %end;
     %put NOTE: 分析数据集被指定为 &libname_in..&memname_in;
 
+    /*OUTDATA*/
+    %if %bquote(&outdata) = %bquote() %then %do;
+        %put ERROR: 参数 OUTDATA 为空！;
+        %goto exit_with_error;
+    %end;
+    %else %do;
+        %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
+        %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
+            %put ERROR: 参数 OUTDATA = %bquote(&outdata) 格式不正确！;
+            %goto exit_with_error;
+        %end;
+        %else %do;
+            %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
+            %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
+            %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
+            %if &libname_out = %bquote() %then %let libname_out = WORK; /*未指定逻辑库，默认为WORK目录*/
+            proc sql noprint;
+                select * from DICTIONARY.MEMBERS where libname = "&libname_out";
+            quit;
+            %if &SQLOBS = 0 %then %do;
+                %put ERROR: &libname_out 逻辑库不存在！;
+                %goto exit_with_error;
+            %end;
+        %end;
+        %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
+    %end;
 
     /*GROUP*/
     %if %superq(group) = %bquote() %then %do;
@@ -250,35 +277,15 @@
         select count(distinct group_level)                       into : group_level_n            from tmp_qualify_m_groupby_sorted;
     quit;
 
-
-    /*OUTDATA*/
-    %if %bquote(&outdata) = %bquote() %then %do;
-        %put ERROR: 参数 OUTDATA 为空！;
-        %goto exit_with_error;
+    %if &group_level_n = 0 %then %do;
+        proc sql noprint;
+            create table &libname_out..&memname_out
+                (idt num,
+                 seq num,
+                 item char label = "分类");
+        quit;
+        %goto exit;
     %end;
-    %else %do;
-        %let reg_outdata_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)?([A-Za-z_][A-Za-z_\d]*)(?:\((.*)\))?$/)));
-        %if %sysfunc(prxmatch(&reg_outdata_id, %bquote(&outdata))) = 0 %then %do;
-            %put ERROR: 参数 OUTDATA = %bquote(&outdata) 格式不正确！;
-            %goto exit_with_error;
-        %end;
-        %else %do;
-            %let libname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 1, &outdata)));
-            %let memname_out = %upcase(%sysfunc(prxposn(&reg_outdata_id, 2, &outdata)));
-            %let dataset_options_out = %sysfunc(prxposn(&reg_outdata_id, 3, &outdata));
-            %if &libname_out = %bquote() %then %let libname_out = WORK; /*未指定逻辑库，默认为WORK目录*/
-            proc sql noprint;
-                select * from DICTIONARY.MEMBERS where libname = "&libname_out";
-            quit;
-            %if &SQLOBS = 0 %then %do;
-                %put ERROR: &libname_out 逻辑库不存在！;
-                %goto exit_with_error;
-            %end;
-        %end;
-        %put NOTE: 输出数据集被指定为 &libname_out..&memname_out;
-    %end;
-
-
 
 
     /*----------------------------------------------主程序----------------------------------------------*/
