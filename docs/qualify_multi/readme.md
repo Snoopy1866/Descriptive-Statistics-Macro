@@ -177,6 +177,10 @@ groupby = armn.
 >
 > - 当 `group` 的水平数量为 1 时，变量 `value_sum` 默认隐藏。
 
+> [!WARNING]
+>
+> - 当 `group` 的水平数量为 0 时，_dataset-options_ 无效。
+
 **Default** : `res_`_`var`_
 
 默认情况下，输出数据集的名称为 `res_`_`var`_，其中 `var` 为参数 [var](#var) 指定的变量名。
