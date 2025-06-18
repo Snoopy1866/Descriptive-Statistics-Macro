@@ -370,7 +370,7 @@
                 %end;
                 sum.value_sum            label = "合计",
                 sum.freq_sum             label = "合计(频数)",
-                sum.freq_sum_fmt         label = "合计(频数)",
+                sum.freq_sum_fmt         label = "合计(频数格式化)",
                 sum.times_sum            label = "合计(频次)",
                 sum.times_sum_fmt        label = "合计(频次格式化)",
                 sum.rate_sum             label = "合计(频率)",
