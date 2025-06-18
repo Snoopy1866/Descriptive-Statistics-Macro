@@ -175,6 +175,7 @@ groupby = armn.
 
 > [!NOTE]
 >
+> - 当 `group` 的水平数量为 0 时，输出数据集仅包含变量 `idt`、`seq`、`item`，此时 _dataset-options_ 无效。
 > - 当 `group` 的水平数量为 1 时，变量 `value_sum` 默认隐藏。
 
 **Default** : `res_`_`var`_
