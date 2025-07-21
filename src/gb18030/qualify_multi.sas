@@ -178,7 +178,7 @@
     %end;
     %else %if %superq(groupby) = #AUTO %then %do;
         %put NOTE: 未指定分组的排序方式，将按照分组变量自身的值升序排列！;
-        %let groupby = &group_var(desc);
+        %let groupby = &group_var(DESC);
     %end;
 
     /*解析参数 by, 检查合法性*/
