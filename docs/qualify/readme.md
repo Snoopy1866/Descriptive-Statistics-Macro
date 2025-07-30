@@ -255,7 +255,7 @@ missing_note = ''''
 
 > [!IMPORTANT]
 >
-> 当指定 `missing = false` 时，该参数将被忽略。
+> 当指定 `missing = false` 或 `missing_output = false` 时，该参数将被忽略。
 
 **Default** : `"缺失"`
 
@@ -277,7 +277,7 @@ missing_note = "缺失-n(%)"
 
 > [!IMPORTANT]
 >
-> 当指定 `missing = false` 时，该参数将被忽略。
+> 当指定 `missing = false` 或 `missing_output = false` 时，该参数将被忽略。
 
 **Default** : `last`
 
