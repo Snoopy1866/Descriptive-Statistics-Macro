@@ -8,6 +8,7 @@
                uid              = #null,
                pattern          = %nrstr(#freq(#rate)),
                missing          = false,
+               missing_output   = true,
                missing_note     = "È±Ê§",
                missing_position = last,
                outdata          = #auto,
@@ -33,6 +34,7 @@
     %let by               = %upcase(%sysfunc(strip(%bquote(&by))));
     %let uid              = %upcase(%sysfunc(strip(%bquote(&uid))));
     %let missing          = %upcase(%sysfunc(strip(%bquote(&missing))));
+    %let missing_output   = %upcase(%sysfunc(strip(%bquote(&missing_output))));
     %let missing_position = %upcase(%sysfunc(strip(%bquote(&missing_position))));
     %let outdata          = %sysfunc(strip(%bquote(&outdata)));
     %let stat_format      = %upcase(%sysfunc(strip(%bquote(&stat_format))));
@@ -694,6 +696,7 @@
                 distinct
                 0                                 as IDT,
                 0                                 as SEQ,
+                ""                                as ITEM_ORIGIN,
                 %unquote(%superq(label_sql_expr)) as ITEM,
                 %if &total = TRUE %then %do;
                     /*ÆµÊý*/
@@ -729,6 +732,7 @@
                 select
                     1                                                                      as IDT,
                     &i                                                                     as SEQ,
+                    %unquote(&&var_level_&i)                                               as ITEM_ORIGIN,
                     %unquote(%superq(indent_sql_expr)) || %unquote(&&var_level_note_&i) || %unquote(%superq(suffix_sql_expr))
                                                                                            as ITEM,
                     /*ÆµÊý*/
@@ -757,6 +761,9 @@
             select * from tmp_qualify_outdata_label
             %do i = 1 %to &var_level_n;
                 outer union corr select * from tmp_qualify_outdata_level_&i
+            %end;
+            %if %superq(missing_output) = FALSE %then %do;
+                where IDT = 1 and not missing(ITEM_ORIGIN)
             %end;
             ;
 

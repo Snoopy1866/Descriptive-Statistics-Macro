@@ -10,6 +10,7 @@
                      uid              = #null,
                      pattern          = %nrstr(#freq(#rate)),
                      missing          = false,
+                     missing_output   = true,
                      missing_note     = "ȱʧ",
                      missing_position = last,
                      outdata          = res_&var,
@@ -304,6 +305,7 @@
              uid              = %superq(uid),
              pattern          = %superq(pattern),
              missing          = %superq(missing),
+             missing_output   = %superq(missing_output),
              missing_note     = %superq(missing_note),
              missing_position = %superq(missing_position),
              outdata          = tmp_qualify_m_res_sum(rename = (VALUE     = VALUE_SUM
@@ -339,6 +341,7 @@
                  uid              = %superq(uid),
                  pattern          = %superq(pattern),
                  missing          = %superq(missing),
+                 missing_output   = %superq(missing_output),
                  missing_note     = %superq(missing_note),
                  missing_position = %superq(missing_position),
                  outdata          = tmp_qualify_m_res_group_&i(rename = (VALUE     = VALUE_&i
