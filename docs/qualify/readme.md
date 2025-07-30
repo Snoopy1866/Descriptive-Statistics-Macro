@@ -15,6 +15,7 @@
 - [uid](#uid)
 - [pattern](#pattern)
 - [missing](#missing)
+- [missing_output](#missing_output)
 - [missing_note](#missing_note)
 - [missing_position](#missing_position)
 - [outdata](#outdata)
@@ -194,11 +195,13 @@ pattern = #freq[#rate]##
 
 **Syntax** : `true` | `false`
 
-指定是否统计缺失分类。
+指定汇总统计时是否考虑缺失值。
 
 **Default** : `false`
 
-默认情况下，宏程序不统计缺失分类的频数和频率。
+默认情况下，宏程序会在汇总统计前剔除缺失值，频数和频率的计算基于非缺失值。
+
+若指定 `missing = true`，则缺失值也将被纳入汇总统计。
 
 **Usage** :
 
@@ -207,6 +210,26 @@ missing = true
 ```
 
 [**Example**](#指定是否统计缺失分类)
+
+---
+
+### missing_output
+
+**Syntax** : `true` | `false`
+
+指定是否输出缺失分类。
+
+> [!IMPORTANT]
+>
+> 当指定 `missing = false` 时，该参数将被忽略。
+
+**Default** : `true`
+
+**Usage** :
+
+```sas
+missing_output = false
+```
 
 ---
 
@@ -276,18 +299,19 @@ missing_position = first
 
 输出数据集含有以下变量：
 
-| 变量名      | 含义                                                |
-| ----------- | --------------------------------------------------- |
-| `idt`       | 缩进标识（_indent identifier_）                     |
-| `seq`       | 行号                                                |
-| `item`      | 分类名称（展示名称）                                |
-| `value`     | 统计量在 [pattern](#pattern) 指定的模式下的格式化值 |
-| `freq`      | 频数                                                |
-| `freq_fmt`  | 频数格式化值                                        |
-| `times`     | 频次                                                |
-| `times_fmt` | 频次格式化值                                        |
-| `rate`      | 频率                                                |
-| `rate_fmt`  | 频率格式化值                                        |
+| 变量名        | 含义                                                |
+| ------------- | --------------------------------------------------- |
+| `idt`         | 缩进标识（_indent identifier_）                     |
+| `seq`         | 行号                                                |
+| `item_origin` | 分类名称（原始名称）                                |
+| `item`        | 分类名称（展示名称）                                |
+| `value`       | 统计量在 [pattern](#pattern) 指定的模式下的格式化值 |
+| `freq`        | 频数                                                |
+| `freq_fmt`    | 频数格式化值                                        |
+| `times`       | 频次                                                |
+| `times_fmt`   | 频次格式化值                                        |
+| `rate`        | 频率                                                |
+| `rate_fmt`    | 频率格式化值                                        |
 
 其中：
 

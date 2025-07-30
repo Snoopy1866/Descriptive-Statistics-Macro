@@ -17,6 +17,7 @@
 - [uid](#uid)
 - [pattern](#pattern)
 - [missing](#missing)
+- [missing_output](#missing_output)
 - [missing_note](#missing_note)
 - [missing_position](#missing_position)
 - [outdata](#outdata)
@@ -79,6 +80,12 @@
 ### missing
 
 用法同 [missing](../qualify/readme.md#missing)。
+
+---
+
+### missing_output
+
+用法同 [missing_output](../qualify/readme.md#missing_output)。
 
 ---
 

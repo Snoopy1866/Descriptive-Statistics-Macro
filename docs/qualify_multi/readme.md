@@ -17,6 +17,7 @@
 - [uid](#uid)
 - [pattern](#pattern)
 - [missing](#missing)
+- [missing_output](#missing_output)
 - [missing_note](#missing_note)
 - [missing_position](#missing_position)
 - [outdata](#outdata)
@@ -131,6 +132,12 @@ groupby = armn.
 
 ---
 
+### missing_output
+
+用法同 [missing_output](../qualify/readme.md#missing_output)。
+
+---
+
 ### missing_note
 
 用法同 [missing_note](../qualify/readme.md#missing_note)。
@@ -149,13 +156,14 @@ groupby = armn.
 
 指定统计结果输出的数据集，可包含数据集选项，用法同参数 [indata](#indata)。
 
-输出数据集有 $9(m + 1) + 2$ 个变量，其中 $m$ 为参数 [group](#group) 指定的分组变量的水平数，具体如下：
+输出数据集含有以下变量：
 
 | 变量名              | 含义                                                                         |
 | ------------------- | ---------------------------------------------------------------------------- |
 | `idt`               | 缩进标识（_indent identifier_）                                              |
 | `seq`               | 行号                                                                         |
-| `item`              | 指标名称                                                                     |
+| `item_origin`       | 分类名称（原始名称）                                                         |
+| `item`              | 分类名称（展示名称）                                                         |
 | `value_`_`i`_       | `group` 的第 _i_ 个水平的统计量在 [pattern](#pattern) 指定的模式下的格式化值 |
 | `freq_`_`i`_        | `group` 的第 _i_ 个水平的频数                                                |
 | `freq_`_`i`_`_fmt`  | `group` 的第 _i_ 个水平的频数格式化值                                        |
