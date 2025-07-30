@@ -739,7 +739,7 @@
                                                                                            as TIMES,
                     strip(put(calculated TIMES, &TIMES_format))                            as TIMES_FMT,
                     /*ÆµÂÊ*/
-                    calculated FREQ/count(*)                                               as RATE,
+                    calculated FREQ/(select count(*) from tmp_qualify_indata_unique_total) as RATE,
                     ifc(not missing(calculated RATE), strip(put(calculated RATE, &RATE_format)), "-")
                                                                                            as RATE_FMT,
                     %do j = 1 %to &stat_n;
