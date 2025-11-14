@@ -400,18 +400,8 @@ proc sql noprint;
             b.param,
             b.paramn,
             b.clsig,
-            (case when b.clsig = "正常"           then "正常"
-                  when b.clsig = "异常无临床意义" then "NCS"
-                  when b.clsig = "异常有临床意义" then "CS"
-                  when b.clsig in ("未查", "")    then "未查"
-            end) as clsig_d,
-            b.bclsig,
-            (case when b.bclsig = "正常"           then "正常"
-                  when b.bclsig = "异常无临床意义" then "NCS"
-                  when b.bclsig = "异常有临床意义" then "CS"
-                  when b.bclsig in ("未查", "")    then "未查"
-            end) as bclsig_d
-        from adam.adsl(where = (saffl = "Y")) as a left join adam.adlb(where = (avisit = "术后0~7D" and param = "尿素氮")) as b on a.usubjid = b.usubjid;
+            b.bclsig
+        from adam.adsl(where = (saffl = "Y")) as a left join adam.adlb(where = (avisit = "术后0~7D" and param = "血红蛋白含量")) as b on a.usubjid = b.usubjid;
 quit;
 ```
 
