@@ -75,28 +75,28 @@ indata = analysis
 
 | 变量名                 | 类型   | 含义                             | 是否保留 |
 | ---------------------- | ------ | -------------------------------- | -------- |
-| ITEM                   | _char_ | 行分类名称                       | ✅       |
-| G*x*\_CAT*y*\_FREQ     | _num_  | 组别 _x_ 列分类 _y_ 频数         | ❎       |
-| G*x*\_CAT*y*\_RATE     | _num_  | 组别 _x_ 列分类 _y_ 率           | ❎       |
-| G*x*\_CAT*y*\_FREQ_FMT | _char_ | 组别 _x_ 列分类 _y_ 频数格式化值 | ❎       |
-| G*x*\_CAT*y*\_RATE_FMT | _char_ | 组别 _x_ 列分类 _y_ 率格式化值   | ❎       |
-| G*x*\_CAT*y*\_VALUE    | _char_ | 组别 _x_ 列分类 _y_ 输出值       | ✅       |
-| G*x*\_CATM_FREQ        | _num_  | 组别 _x_ 缺失频数                | ❎       |
-| G*x*\_CATM_RATE        | _num_  | 组别 _x_ 缺失率                  | ❎       |
-| G*x*\_CATM_FREQ_FMT    | _char_ | 组别 _x_ 缺失频数格式化值        | ❎       |
-| G*x*\_CATM_RATE_FMT    | _char_ | 组别 _x_ 缺失率格式化值          | ❎       |
-| G*x*\_CATM_VALUE       | _char_ | 组别 _x_ 缺失输出值              | ✅       |
-| G*x*\_CATT_FREQ        | _num_  | 组别 _x_ 合计频数                | ❎       |
-| G*x*\_CATT_RATE        | _num_  | 组别 _x_ 合计率                  | ❎       |
-| G*x*\_CATT_FREQ_FMT    | _char_ | 组别 _x_ 合计频数格式化值        | ❎       |
-| G*x*\_CATT_RATE_FMT    | _char_ | 组别 _x_ 合计率格式化值          | ❎       |
-| G*x*\_CATT_VALUE       | _char_ | 组别 _x_ 合计输出值              | ✅       |
-| ALL_CAT&y.\_FREQ       | _num_  | 分类 _y_ 频数                    | ❎       |
-| ALL_CAT&y.\_RATE       | _num_  | 分类 _y_ 率                      | ❎       |
-| ALL_CAT&y.\_FREQ_FMT   | _char_ | 分类 _y_ 频数格式化值            | ❎       |
-| ALL_CAT&y.\_RATE_FMT   | _char_ | 分类 _y_ 率格式化值              | ❎       |
-| ALL_CAT&y.\_VALUE      | _char_ | 分类 _y_ 输出值                  | ✅       |
-| \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>               | ❎       |
+| ITEM                   | _char_ | 行分类名称                       | **是**   |
+| G*x*\_CAT*y*\_FREQ     | _num_  | 组别 _x_ 列分类 _y_ 频数         | 否       |
+| G*x*\_CAT*y*\_RATE     | _num_  | 组别 _x_ 列分类 _y_ 率           | 否       |
+| G*x*\_CAT*y*\_FREQ_FMT | _char_ | 组别 _x_ 列分类 _y_ 频数格式化值 | 否       |
+| G*x*\_CAT*y*\_RATE_FMT | _char_ | 组别 _x_ 列分类 _y_ 率格式化值   | 否       |
+| G*x*\_CAT*y*\_VALUE    | _char_ | 组别 _x_ 列分类 _y_ 输出值       | **是**   |
+| G*x*\_CATM_FREQ        | _num_  | 组别 _x_ 缺失频数                | 否       |
+| G*x*\_CATM_RATE        | _num_  | 组别 _x_ 缺失率                  | 否       |
+| G*x*\_CATM_FREQ_FMT    | _char_ | 组别 _x_ 缺失频数格式化值        | 否       |
+| G*x*\_CATM_RATE_FMT    | _char_ | 组别 _x_ 缺失率格式化值          | 否       |
+| G*x*\_CATM_VALUE       | _char_ | 组别 _x_ 缺失输出值              | **是**   |
+| G*x*\_CATT_FREQ        | _num_  | 组别 _x_ 合计频数                | 否       |
+| G*x*\_CATT_RATE        | _num_  | 组别 _x_ 合计率                  | 否       |
+| G*x*\_CATT_FREQ_FMT    | _char_ | 组别 _x_ 合计频数格式化值        | 否       |
+| G*x*\_CATT_RATE_FMT    | _char_ | 组别 _x_ 合计率格式化值          | 否       |
+| G*x*\_CATT_VALUE       | _char_ | 组别 _x_ 合计输出值              | **是**   |
+| ALL_CAT&y.\_FREQ       | _num_  | 分类 _y_ 频数                    | 否       |
+| ALL_CAT&y.\_RATE       | _num_  | 分类 _y_ 率                      | 否       |
+| ALL_CAT&y.\_FREQ_FMT   | _char_ | 分类 _y_ 频数格式化值            | 否       |
+| ALL_CAT&y.\_RATE_FMT   | _char_ | 分类 _y_ 率格式化值              | 否       |
+| ALL_CAT&y.\_VALUE      | _char_ | 分类 _y_ 输出值                  | **是**   |
+| \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>               | 否       |
 
 G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
 
