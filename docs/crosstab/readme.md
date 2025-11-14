@@ -73,21 +73,32 @@ indata = analysis
 
 将所有生成的变量列举于此，以便后续调试参考之用：
 
-| 变量名                 | 类型   | 含义                             | 是否保留 |
-| ---------------------- | ------ | -------------------------------- | -------- |
-| ITEM                   | _char_ | 行分类名称                       | 是       |
-| G*x*\_CAT*y*\_FREQ     | _num_  | 组别 _x_ 列分类 _y_ 频数         | 否       |
-| G*x*\_CAT*y*\_RATE     | _num_  | 组别 _x_ 列分类 _y_ 率           | 否       |
-| G*x*\_CAT*y*\_FREQ_FMT | _char_ | 组别 _x_ 列分类 _y_ 频数格式化值 | 否       |
-| G*x*\_CAT*y*\_RATE_FMT | _char_ | 组别 _x_ 列分类 _y_ 率格式化值   | 否       |
-| G*x*\_CAT*y*\_VALUE    | _char_ | 组别 _x_ 列分类 _y_ 频数（率）   | 是       |
-| \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>               | 否       |
+| 变量名                 | 类型   | 含义                                | 是否保留 |
+| ---------------------- | ------ | ----------------------------------- | -------- |
+| ITEM                   | _char_ | 行分类名称                          | ✅       |
+| G*x*\_CAT*y*\_FREQ     | _num_  | 组别 _x_ 列分类 _y_ 频数            | ❎       |
+| G*x*\_CAT*y*\_RATE     | _num_  | 组别 _x_ 列分类 _y_ 率              | 否       |
+| G*x*\_CAT*y*\_FREQ_FMT | _char_ | 组别 _x_ 列分类 _y_ 频数格式化值    | 否       |
+| G*x*\_CAT*y*\_RATE_FMT | _char_ | 组别 _x_ 列分类 _y_ 率格式化值      | 否       |
+| G*x*\_CAT*y*\_VALUE    | _char_ | 组别 _x_ 列分类 _y_ 输出值          | **是**   |
+| G*x*\_CATM_FREQ        | _num_  | 组别 _x_ 列分类 `缺失` 频数         | 否       |
+| G*x*\_CATM_RATE        | _num_  | 组别 _x_ 列分类 `缺失` 率           | 否       |
+| G*x*\_CATM_FREQ_FMT    | _char_ | 组别 _x_ 列分类 `缺失` 频数格式化值 | 否       |
+| G*x*\_CATM_RATE_FMT    | _char_ | 组别 _x_ 列分类 `缺失` 率格式化值   | 否       |
+| G*x*\_CATM_VALUE       | _char_ | 组别 _x_ 列分类 `缺失` 输出值       | **是**   |
+| ALL_CAT&y.\_FREQ       | _num_  | 合计列分类 _y_ 频数                 | 否       |
+| ALL_CAT&y.\_RATE       | _num_  | 合计列分类 _y_ 率                   | 否       |
+| ALL_CAT&y.\_FREQ_FMT   | _char_ | 合计列分类 _y_ 频数格式化值         | 否       |
+| ALL_CAT&y.\_RATE_FMT   | _char_ | 合计列分类 _y_ 率格式化值           | 否       |
+| ALL_CAT&y.\_VALUE      | _char_ | 合计列分类 _y_ 输出值               | **是**   |
+| \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>                  | 否       |
 
 G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
 
 > [!NOTE]
 >
 > 1. 占位符的作用是简化宏内 `PROC SQL` 语句的拼接。
+> 2. 如果不需要输出合计列结果，可指定数据集选项 `drop = ALL_:`。
 
 **Usage** :
 
@@ -346,3 +357,76 @@ format_rate = 8.3
 > [!NOTE]
 >
 > 这是一个用于开发者调试的参数，通常不需要关注。
+
+## 示例
+
+以下代码是调用示例程序前的前置程序：
+
+```sas
+proc format;
+    picture srate(round)
+            low - < -1 = '#ERROR'(noedit)
+            -1         = '-100.00'(noedit)
+            -1 < - < 0 = '-09.99'(multiplier = 10000 prefix = '-')
+            0 - < 1    = '09.99'(multiplier = 10000)
+            1          = '100.00'(noedit)
+            1 < - high = '#ERROR'(noedit);
+
+    picture sstat(round)
+            0          = '0.0000'(noedit)
+            0 < - high = '09.9999'
+            low - < 0  = '009.9999'(prefix = '-');
+
+    value armn
+        1 = "试验组"
+        2 = "对照组";
+
+    value clsign
+        1 = "正常"
+        2 = "NCS"
+        3 = "CS"
+        4 = "未查";
+run;
+
+proc sql noprint;
+    create table analysis as
+        select
+            a.usubjid,
+            a.siteid,
+            a.arm,
+            a.armn,
+            b.avisit,
+            b.avisitn,
+            b.param,
+            b.paramn,
+            b.clsig,
+            (case when b.clsig = "正常"           then "正常"
+                  when b.clsig = "异常无临床意义" then "NCS"
+                  when b.clsig = "异常有临床意义" then "CS"
+                  when b.clsig in ("未查", "")    then "未查"
+            end) as clsig_d,
+            b.bclsig,
+            (case when b.bclsig = "正常"           then "正常"
+                  when b.bclsig = "异常无临床意义" then "NCS"
+                  when b.bclsig = "异常有临床意义" then "CS"
+                  when b.bclsig in ("未查", "")    then "未查"
+            end) as bclsig_d
+        from adam.adsl(where = (saffl = "Y")) as a left join adam.adlb(where = (avisit = "术后0~7D" and param = "尿素氮")) as b on a.usubjid = b.usubjid;
+quit;
+```
+
+### Example 1 单组试验
+
+```sas
+%crosstab(indata          = analysis,
+          outdata         = out,
+          rowcat          = clsig_d,
+          colcat          = bclsig_d,
+          rowcat_by       = clsign.,
+          colcat_by       = clsign.,
+          rowcat_missing  = false,
+          colcat_missing  = false,
+          format_rate     = srate.);
+```
+
+![Example-1](./assets/Example-1.png)
