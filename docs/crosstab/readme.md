@@ -96,6 +96,16 @@ indata = analysis
 | ALL_CAT&y.\_FREQ_FMT   | _char_ | 分类 _y_ 频数格式化值            | 否       |
 | ALL_CAT&y.\_RATE_FMT   | _char_ | 分类 _y_ 率格式化值              | 否       |
 | ALL_CAT&y.\_VALUE      | _char_ | 分类 _y_ 输出值                  | **是**   |
+| ALL_CATM_FREQ          | _num_  | 缺失频数                         | 否       |
+| ALL_CATM_RATE          | _num_  | 缺失率                           | 否       |
+| ALL_CATM_FREQ_FMT      | _char_ | 缺失频数格式化值                 | 否       |
+| ALL_CATM_RATE_FMT      | _char_ | 缺失率格式化值                   | 否       |
+| ALL_CATM_VALUE         | _char_ | 缺失输出值                       | **是**   |
+| ALL_CATT_FREQ          | _num_  | 合计频数                         | 否       |
+| ALL_CATT_RATE          | _num_  | 合计率                           | 否       |
+| ALL_CATT_FREQ_FMT      | _char_ | 合计频数格式化值                 | 否       |
+| ALL_CATT_RATE_FMT      | _char_ | 合计率格式化值                   | 否       |
+| ALL_CATT_VALUE         | _char_ | 合计输出值                       | **是**   |
 | \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>               | 否       |
 
 G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
@@ -373,7 +383,7 @@ proc format;
             -1         = '-100.00'(noedit)
             -1 < - < 0 = '-09.99'(multiplier = 10000 prefix = '-')
             0 - < 1    = '09.99'(multiplier = 10000)
-            1          = '100.00'(noedit)
+            1          = '100.00'(noedit);
 
     value armn
         1 = "试验组"
@@ -381,9 +391,8 @@ proc format;
 
     value clsign
         1 = "正常"
-        2 = "NCS"
-        3 = "CS"
-        4 = "未查";
+        2 = "异常无临床意义"
+        3 = "异常有临床意义";
 run;
 
 proc sql noprint;
