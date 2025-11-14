@@ -16,7 +16,7 @@
                 rowcat_missing = true,
                 colcat_missing = true,
                 rowcat_total   = true,
-                colcal_total   = true,
+                colcat_total   = true,
                 arm            = #null,
                 arm_by         = #null,
                 format_freq    = best12.,
@@ -32,7 +32,7 @@
      *  rowcat_missing:         是否统计行分类变量的缺失值
      *  colcat_missing:         是否统计列分类变量的缺失值
      *  rowcat_total:           是否统计行分类变量的合计值
-     *  colcal_total:           是否统计列分类变量的合计值
+     *  colcat_total:           是否统计列分类变量的合计值
      *  arm:                    组别变量，#null 表示单组
      *  arm_by:                 组别变量字典，应当是一个 format，#null 表示单组
      *  format_freq:            频数的输出格式
@@ -57,8 +57,8 @@
     %let colcat_by       = %upcase(%sysfunc(strip(%bquote(&colcat_by))));
     %let rowcat_missing  = %upcase(%sysfunc(strip(%bquote(&rowcat_missing))));
     %let colcat_missing  = %upcase(%sysfunc(strip(%bquote(&colcat_missing))));
-    %let rowcat_total    = %upcase(%sysfunc(strip(%bquote(&rowcat_missing))));
-    %let colcat_total    = %upcase(%sysfunc(strip(%bquote(&colcat_missing))));
+    %let rowcat_total    = %upcase(%sysfunc(strip(%bquote(&rowcat_total))));
+    %let colcat_total    = %upcase(%sysfunc(strip(%bquote(&colcat_total))));
     %let arm             = %upcase(%sysfunc(strip(%bquote(&arm))));
     %let arm_by          = %upcase(%sysfunc(strip(%bquote(&arm_by))));
     %let format_freq     = %upcase(%sysfunc(strip(%bquote(&format_freq))));
@@ -175,6 +175,11 @@
         %goto exit;
     %end;
 
+    /*arm*/
+    %if %superq(arm) = #NULL %then %do;
+        %let arm_n = 0;
+    %end;
+
     /*arm_by*/
     %if %superq(arm) ^= #NULL %then %do;
         %if %superq(arm_by) = #NULL %then %do;
@@ -271,6 +276,18 @@
                      G&i._CATT_RATE       num(8)                label = %unquote(%str(%')%superq(arm_&i)-合计-率%str(%')),
                  %end;
              %end;
+             %do j = 1 %to &colcat_n;
+                 ALL_CAT&j._FREQ          num(8)                label = %unquote(%str(%')%superq(colcat_&j)-例数%str(%')),
+                 ALL_CAT&j._RATE          num(8)                label = %unquote(%str(%')%superq(colcat_&j)-率%str(%')),
+             %end;
+             %if %superq(colcat_missing) = TRUE %then %do;
+                 ALL_CATM_FREQ            num(8)                label = %unquote(%str(%')缺失-例数%str(%')),
+                 ALL_CATM_RATE            num(8)                label = %unquote(%str(%')缺失-率%str(%')),
+             %end;
+             %if %superq(colcat_total) = TRUE %then %do;
+                 ALL_CATT_FREQ            num(8)                label = %unquote(%str(%')合计-例数%str(%')),
+                 ALL_CATT_RATE            num(8)                label = %unquote(%str(%')合计-率%str(%')),
+             %end;
              _PLACEHOLDER_                char(1)
             );
 
@@ -289,6 +306,15 @@
                             G&j._CATT_FREQ   = (select count(*) from tmp_indata_arm_&j where %superq(rowcat) = %unquote(%str(%')%superq(rowcat_&i)%str(%'))),
                         %end;
                     %end;
+                    %do k = 1 %to &colcat_n;
+                        ALL_CAT&k._FREQ = (select count(*) from tmp_indata where %superq(rowcat) = %unquote(%str(%')%superq(rowcat_&i)%str(%')) and %superq(colcat) = %unquote(%str(%')%superq(colcat_&k)%str(%'))),
+                    %end;
+                    %if %superq(colcat_missing) = TRUE %then %do;
+                        ALL_CATM_FREQ   = (select count(*) from tmp_indata where %superq(rowcat) = %unquote(%str(%')%superq(rowcat_&i)%str(%')) and missing(%superq(colcat))),
+                    %end;
+                    %if %superq(colcat_total) = TRUE %then %do;
+                        ALL_CATT_FREQ   = (select count(*) from tmp_indata where %superq(rowcat) = %unquote(%str(%')%superq(rowcat_&i)%str(%'))),
+                    %end;
                     _PLACEHOLDER_            = ""
                     ;
         %end;
@@ -305,6 +331,15 @@
                         %if %superq(colcat_total) = TRUE %then %do;
                             G&j._CATT_FREQ   = (select count(*) from tmp_indata_arm_&j where missing(%superq(rowcat))),
                         %end;
+                    %end;
+                    %do k = 1 %to &colcat_n;
+                        ALL_CAT&k._FREQ = (select count(*) from tmp_indata where missing(%superq(rowcat)) and %superq(colcat) = %unquote(%str(%')%superq(colcat_&k)%str(%'))),
+                    %end;
+                    %if %superq(colcat_missing) = TRUE %then %do;
+                        ALL_CATM_FREQ   = (select count(*) from tmp_indata where missing(%superq(rowcat)) and missing(%superq(colcat))),
+                    %end;
+                    %if %superq(colcat_total) = TRUE %then %do;
+                        ALL_CATT_FREQ   = (select count(*) from tmp_indata where missing(%superq(rowcat))),
                     %end;
                     _PLACEHOLDER_            = ""
                     ;
@@ -323,6 +358,15 @@
                             G&j._CATT_FREQ   = (select count(*) from tmp_indata_arm_&j),
                         %end;
                     %end;
+                    %do k = 1 %to &colcat_n;
+                        ALL_CAT&k._FREQ = (select count(*) from tmp_indata where %superq(colcat) = %unquote(%str(%')%superq(colcat_&k)%str(%'))),
+                    %end;
+                    %if %superq(colcat_missing) = TRUE %then %do;
+                        ALL_CATM_FREQ   = (select count(*) from tmp_indata where missing(%superq(colcat))),
+                    %end;
+                    %if %superq(colcat_total) = TRUE %then %do;
+                        ALL_CATT_FREQ   = (select count(*) from tmp_indata),
+                    %end;
                     _PLACEHOLDER_            = ""
                     ;
         %end;
@@ -339,6 +383,15 @@
                     %if %superq(colcat_total) = TRUE %then %do;
                         G&j._CATT_RATE   = G&j._CATT_FREQ / &&arm_&j._subj_n,
                     %end;
+                %end;
+                %do k = 1 %to &colcat_n;
+                    ALL_CAT&k._RATE = ALL_CAT&k._FREQ / &subj_n,
+                %end;
+                %if %superq(colcat_missing) = TRUE %then %do;
+                    ALL_CATM_RATE   = ALL_CATM_FREQ / &subj_n,
+                %end;
+                %if %superq(colcat_total) = TRUE %then %do;
+                    ALL_CATT_RATE   = ALL_CATT_FREQ / &subj_n,
                 %end;
                 _PLACEHOLDER_            = ""
                 ;
@@ -385,6 +438,42 @@
                         %end;
                     %end;
                 %end;
+                %do k = 1 %to &colcat_n;
+                    ALL_CAT&k._FREQ,
+                    ALL_CAT&k._RATE,
+                    %if %superq(output_rate) = TRUE %then %do;
+                        kstrip(put(ALL_CAT&k._FREQ, %superq(format_freq)))                                                   as ALL_CAT&k._FREQ_FMT  label = %unquote(%str(%')%superq(colcat_&k)-频数（C）%str(%')),
+                        kstrip(put(ALL_CAT&k._RATE, %superq(format_rate)))                                                   as ALL_CAT&k._RATE_FMT  label = %unquote(%str(%')%superq(colcat_&k)-率（C）%str(%')),
+                        kstrip(calculated ALL_CAT&k._FREQ_FMT) || "(" || kstrip(calculated ALL_CAT&k._RATE_FMT) || ")"       as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)-频数（率）%str(%')),
+                    %end;
+                    %else %do;
+                        kstrip(put(ALL_CAT&k._FREQ, %superq(format_freq)))                                                   as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)-频数（率）%str(%')),
+                    %end;
+                %end;
+                %if %superq(colcat_missing) = TRUE %then %do;
+                    ALL_CATM_FREQ,
+                    ALL_CATM_RATE,
+                    %if %superq(output_rate) = TRUE %then %do;
+                        kstrip(put(ALL_CATM_FREQ, %superq(format_freq)))                                                     as ALL_CATM_FREQ_FMT    label = %unquote(%str(%')缺失-频数（C）%str(%')),
+                        kstrip(put(ALL_CATM_RATE, %superq(format_rate)))                                                     as ALL_CATM_RATE_FMT    label = %unquote(%str(%')缺失-率（C）%str(%')),
+                        kstrip(calculated ALL_CATM_FREQ_FMT) || "(" || kstrip(calculated ALL_CATM_RATE_FMT) || ")"           as ALL_CATM_VALUE       label = %unquote(%str(%')缺失-频数（率）%str(%')),
+                    %end;
+                    %else %do;
+                        kstrip(put(ALL_CATM_FREQ, %superq(format_freq)))                                                     as ALL_CATM_VALUE       label = %unquote(%str(%')缺失-频数%str(%')),
+                    %end;
+                %end;
+                %if %superq(colcat_total) = TRUE %then %do;
+                    ALL_CATT_FREQ,
+                    ALL_CATT_RATE,
+                    %if %superq(output_rate) = TRUE %then %do;
+                        kstrip(put(ALL_CATT_FREQ, %superq(format_freq)))                                                     as ALL_CATT_FREQ_FMT    label = %unquote(%str(%')合计-频数（C）%str(%')),
+                        kstrip(put(ALL_CATT_RATE, %superq(format_rate)))                                                     as ALL_CATT_RATE_FMT    label = %unquote(%str(%')合计-率（C）%str(%')),
+                        kstrip(calculated ALL_CATT_FREQ_FMT) || "(" || kstrip(calculated ALL_CATT_RATE_FMT) || ")"           as ALL_CATT_VALUE       label = %unquote(%str(%')合计-频数（率）%str(%')),
+                    %end;
+                    %else %do;
+                        kstrip(put(ALL_CATT_FREQ, %superq(format_freq)))                                                     as ALL_CATT_VALUE       label = %unquote(%str(%')合计-频数%str(%')),
+                    %end;
+                %end;
                 _PLACEHOLDER_            = ""
             from tmp_crosstab
             ;
@@ -405,6 +494,15 @@
                 %if %superq(colcat_total) = TRUE %then %do;
                     G&j._CATT_VALUE
                 %end;
+             %end;
+             %do k = 1 %to &colcat_n;
+                 ALL_CAT&k._VALUE
+             %end;
+             %if %superq(colcat_missing) = TRUE %then %do;
+                 ALL_CATM_VALUE
+             %end;
+             %if %superq(colcat_total) = TRUE %then %do;
+                 ALL_CATT_VALUE
              %end;
              ;
     run;
