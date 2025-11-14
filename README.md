@@ -30,5 +30,5 @@
 | `%quantify`            | 单组定量汇总            | [↗️](docs/quantify/readme.md)            |
 | `%quantify_multi`      | 多组定量汇总            | [↗️](docs/quantify_multi/readme.md)      |
 | `%quantify_multi_test` | 多组定量汇总 + 假设检验 | [↗️](docs/quantify_multi_test/readme.md) |
-| `%cross_table`         | 列联表                  | [↗️](docs/cross_table/readme.md)         |
+| `%crosstab`            | 交叉表                  | [↗️](docs/crosstab/readme.md)            |
 | `%desc_coun`           | 单组定性分层汇总        | [↗️](docs/desc_coun/readme.md)           |
