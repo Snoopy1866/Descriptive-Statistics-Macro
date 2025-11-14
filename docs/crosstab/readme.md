@@ -137,13 +137,22 @@ colcat = bclsig
 
 ```sas
 proc format;
-    value 1 = "正常"
-          2 = "异常无临床意义"
-          3 = "异常有临床意义";
+    value clsign
+        1 = "正常"
+        2 = "异常无临床意义"
+        3 = "异常有临床意义";
 run;
 ```
 
 [outdata](#outdata) 中行分类的值将按照上述 `format` 中对应数值的大小按顺序排列，`asc`, `ascending` 表示正序排列，`desc`, `descending` 表示逆序排列，若未指定，默认为 `ascending`。
+
+**Exammples** :
+
+```sas
+rowcat_by = clsign.
+rowcat_by = clsign.(asc)
+rowcat_by = clsign.(descending)
+```
 
 ---
 
@@ -152,9 +161,20 @@ run;
 **Syntax** :
 
 - _format_
-- _format_<(asc | desc \<ending>)>
+- _format_(asc)
+- _format_(ascending)
+- _format_(desc)
+- _format_(descending)
 
-指定列分类变量字典，它应当是一个 `format`，用法同 [rowcat_by](#rowcat_by)。
+指定列分类变量字典，用法同 [rowcat_by](#rowcat_by)。
+
+**Exammples** :
+
+```sas
+colcat_by = clsign.
+colcat_by = clsign.(asc)
+colcat_by = clsign.(descending)
+```
 
 ---
 
@@ -218,17 +238,15 @@ arm = arm
 
 #### arm_by
 
-**Syntax** : _format_<(asc | desc \<ending>)>
+**Syntax** :
 
-指定组别变量字典，它应当是一个 `format`，可以通过以下语句定义：
+- _format_
+- _format_(asc)
+- _format_(ascending)
+- _format_(desc)
+- _format_(descending)
 
-```sas
-proc format;
-    value armn
-        1 = "试验组"
-        2 = "对照组";
-run;
-```
+指定组别变量字典，用法同 [rowcat_by](#rowcat_by)。
 
 **Default** : `#null`
 
