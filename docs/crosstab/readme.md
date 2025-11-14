@@ -112,8 +112,8 @@ G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
 
 > [!NOTE]
 >
-> - 若指定 `colcat_missing = true`，则不生成变量 G*x*\_CATM_VALUE, ALL_CATM_VALUE；
-> - 若指定 `colcat_total = true`，则不生成变量 G*x*\_CATT_VALUE, ALL_CATT_VALUE；
+> - 若指定 `colcat_missing = true`，则不生成变量 --CATM--；
+> - 若指定 `colcat_total = true`，则不生成变量 --CATT--；
 > - 占位符的作用是简化宏内 `PROC SQL` 语句的拼接。
 
 > [!TIP]
