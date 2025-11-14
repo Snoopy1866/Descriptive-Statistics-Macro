@@ -365,17 +365,10 @@ format_rate = 8.3
 ```sas
 proc format;
     picture srate(round)
-            low - < -1 = '#ERROR'(noedit)
             -1         = '-100.00'(noedit)
             -1 < - < 0 = '-09.99'(multiplier = 10000 prefix = '-')
             0 - < 1    = '09.99'(multiplier = 10000)
             1          = '100.00'(noedit)
-            1 < - high = '#ERROR'(noedit);
-
-    picture sstat(round)
-            0          = '0.0000'(noedit)
-            0 < - high = '09.9999'
-            low - < 0  = '009.9999'(prefix = '-');
 
     value armn
         1 = "试验组"
