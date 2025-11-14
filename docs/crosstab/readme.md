@@ -186,6 +186,12 @@ colcat_by = clsign.(descending)
 
 **Default** : `true`
 
+**Usage** :
+
+```sas
+rowcat_missing = false
+```
+
 ---
 
 #### colcat_missing
@@ -195,6 +201,12 @@ colcat_by = clsign.(descending)
 指定是否统计列分类变量的缺失值。
 
 **Default** : `true`
+
+**Usage** :
+
+```sas
+colcat_missing = false
+```
 
 ---
 
@@ -206,6 +218,12 @@ colcat_by = clsign.(descending)
 
 **Default** : `true`
 
+**Usage** :
+
+```sas
+rowcat_total = false
+```
+
 ---
 
 #### colcat_total
@@ -215,6 +233,12 @@ colcat_by = clsign.(descending)
 指定是否统计列分类变量的合计值。
 
 **Default** : `true`
+
+**Usage** :
+
+```sas
+colcat_total = false
+```
 
 ---
 
@@ -286,6 +310,12 @@ format_freq = 8.
 指定是否输出率。
 
 **Default** : `true`
+
+**Usage** :
+
+```sas
+output_rate = false
+```
 
 ---
 
