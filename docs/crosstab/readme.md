@@ -106,13 +106,15 @@ indata = analysis
 | ALL_CATT_FREQ_FMT       | _char_ | 不区分组别，合计频数格式化值      | 否       |
 | ALL_CATT_RATE_FMT       | _char_ | 不区分组别，合计率格式化值        | 否       |
 | **ALL_CATT_VALUE**      | _char_ | 不区分组别，合计输出值            | **是**   |
-| \_PLACEHOLDER\_         | _char_ | 占位符<sup>1</sup>                | 否       |
+| \_PLACEHOLDER\_         | _char_ | 占位符                            | 否       |
 
 G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
 
 > [!NOTE]
 >
-> 1. 占位符的作用是简化宏内 `PROC SQL` 语句的拼接。
+> - 若指定 `colcat_missing = true`，则不生成变量 G*x*\_CATM_VALUE, ALL_CATM_VALUE；
+> - 若指定 `colcat_total = true`，则不生成变量 G*x*\_CATT_VALUE, ALL_CATT_VALUE；
+> - 占位符的作用是简化宏内 `PROC SQL` 语句的拼接。
 
 > [!TIP]
 > 如果不需要输出“不区分组别”的结果，可指定数据集选项 `drop = ALL_:`。
