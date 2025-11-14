@@ -146,7 +146,7 @@ run;
 
 [outdata](#outdata) 中行分类的值将按照上述 `format` 中对应数值的大小按顺序排列，`asc`, `ascending` 表示正序排列，`desc`, `descending` 表示逆序排列，若未指定，默认为 `ascending`。
 
-**Exammples** :
+**Usage** :
 
 ```sas
 rowcat_by = clsign.
@@ -168,7 +168,7 @@ rowcat_by = clsign.(descending)
 
 指定列分类变量字典，用法同 [rowcat_by](#rowcat_by)。
 
-**Exammples** :
+**Usage** :
 
 ```sas
 colcat_by = clsign.
