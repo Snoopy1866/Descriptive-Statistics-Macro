@@ -45,7 +45,7 @@
 >
 > [indata](#indata) 必须包含所有需要纳入分析的对象，如果指定了 `rowcat_missing = true` 或 `colcat_missing = true`，则需要包括数据缺失的对象，详见 [rowcat_missing](#rowcat_missing) 和 [colcat_missing](#colcat_missing)。
 >
-> 举例，如果需要输出血红蛋白含量随访期与基线检查结果临床意义的交叉表，则参考以下代码构建分析数据集：
+> 举例，如果需要输出血红蛋白含量随访期与基线检查结果临床意义的交叉表，可参考以下代码构建分析数据集：
 >
 > ```sas
 > data analysis;
@@ -83,6 +83,8 @@ indata = analysis
 | G*x*\_CAT*y*\_VALUE    | _char_ | 组别 _x_ 列分类 _y_ 频数（率）   | 是       |
 | \_PLACEHOLDER\_        | _char_ | 占位符<sup>1</sup>               | 否       |
 
+G*x* 表示第 _x_ 个组别，CAT*y* 表示第 _y_ 个分类。
+
 > [!NOTE]
 >
 > 1. 占位符的作用是简化宏内 `PROC SQL` 语句的拼接。
@@ -104,7 +106,7 @@ outdata = out
 **Usage** :
 
 ```sas
-aesoc = clsig
+rowcat = clsig
 ```
 
 ---
@@ -118,14 +120,20 @@ aesoc = clsig
 **Usage** :
 
 ```sas
-aesoc = bclsig
+colcat = bclsig
 ```
 
 #### rowcat_by
 
-**Syntax** : _format_<(asc | desc \<ending>)>
+**Syntax** :
 
-指定行分类变量字典，它应当是一个 `format`，可以通过以下语句定义：
+- _format_
+- _format_(asc)
+- _format_(ascending)
+- _format_(desc)
+- _format_(descending)
+
+指定行分类变量字典，它应当是一个 `format`，`format` 可以通过以下语句定义：
 
 ```sas
 proc format;
@@ -135,19 +143,22 @@ proc format;
 run;
 ```
 
-[outdata](#outdata) 中行分类的值将按照上述 `format` 中对应数值的大小按顺序排列，`asc`, `ascending` 表示正序排列，`desc`, `descending` 表示逆序排列。
+[outdata](#outdata) 中行分类的值将按照上述 `format` 中对应数值的大小按顺序排列，`asc`, `ascending` 表示正序排列，`desc`, `descending` 表示逆序排列，若未指定，默认为 `ascending`。
 
 ---
 
 #### colcat_by
 
-**Syntax** : _format_<(asc | desc \<ending>)>
+**Syntax** :
+
+- _format_
+- _format_<(asc | desc \<ending>)>
 
 指定列分类变量字典，它应当是一个 `format`，用法同 [rowcat_by](#rowcat_by)。
 
 ---
 
-### rowcat_missing
+#### rowcat_missing
 
 **Syntax** : `true` | `false`
 
@@ -157,7 +168,7 @@ run;
 
 ---
 
-### colcat_missing
+#### colcat_missing
 
 **Syntax** : `true` | `false`
 
@@ -167,7 +178,7 @@ run;
 
 ---
 
-### rowcat_total
+#### rowcat_total
 
 **Syntax** : `true` | `false`
 
@@ -177,7 +188,7 @@ run;
 
 ---
 
-### colcat_total
+#### colcat_total
 
 **Syntax** : `true` | `false`
 
