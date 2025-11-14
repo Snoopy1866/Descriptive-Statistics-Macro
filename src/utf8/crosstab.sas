@@ -407,10 +407,10 @@
                         %if %superq(output_rate) = TRUE %then %do;
                             kstrip(put(G&j._CAT&k._FREQ, %superq(format_freq)))                                              as G&j._CAT&k._FREQ_FMT label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)-频数（C）%str(%')),
                             kstrip(put(G&j._CAT&k._RATE, %superq(format_rate)))                                              as G&j._CAT&k._RATE_FMT label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)-率（C）%str(%')),
-                            kstrip(calculated G&j._CAT&k._FREQ_FMT) || "(" || kstrip(calculated G&j._CAT&k._RATE_FMT) || ")" as G&j._CAT&k._VALUE    label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)-频数（率）%str(%')),
+                            kstrip(calculated G&j._CAT&k._FREQ_FMT) || "(" || kstrip(calculated G&j._CAT&k._RATE_FMT) || ")" as G&j._CAT&k._VALUE    label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)%str(%')),
                         %end;
                         %else %do;
-                            kstrip(put(G&j._CAT&k._FREQ, %superq(format_freq)))                                              as G&j._CAT&k._VALUE    label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)-频数%str(%')),
+                            kstrip(put(G&j._CAT&k._FREQ, %superq(format_freq)))                                              as G&j._CAT&k._VALUE    label = %unquote(%str(%')%superq(arm_&j)-%superq(colcat_&k)%str(%')),
                         %end;
                     %end;
                     %if %superq(colcat_missing) = TRUE %then %do;
@@ -419,10 +419,10 @@
                         %if %superq(output_rate) = TRUE %then %do;
                             kstrip(put(G&j._CATM_FREQ, %superq(format_freq)))                                                as G&j._CATM_FREQ_FMT   label = %unquote(%str(%')%superq(arm_&j)-缺失-频数（C）%str(%')),
                             kstrip(put(G&j._CATM_RATE, %superq(format_rate)))                                                as G&j._CATM_RATE_FMT   label = %unquote(%str(%')%superq(arm_&j)-缺失-率（C）%str(%')),
-                            kstrip(calculated G&j._CATM_FREQ_FMT) || "(" || kstrip(calculated G&j._CATM_RATE_FMT) || ")"     as G&j._CATM_VALUE      label = %unquote(%str(%')%superq(arm_&j)-缺失-频数（率）%str(%')),
+                            kstrip(calculated G&j._CATM_FREQ_FMT) || "(" || kstrip(calculated G&j._CATM_RATE_FMT) || ")"     as G&j._CATM_VALUE      label = %unquote(%str(%')%superq(arm_&j)-缺失%str(%')),
                         %end;
                         %else %do;
-                            kstrip(put(G&j._CATM_FREQ, %superq(format_freq)))                                                as G&j._CATM_VALUE      label = %unquote(%str(%')%superq(arm_&j)-缺失-频数%str(%')),
+                            kstrip(put(G&j._CATM_FREQ, %superq(format_freq)))                                                as G&j._CATM_VALUE      label = %unquote(%str(%')%superq(arm_&j)-缺失%str(%')),
                         %end;
                     %end;
                     %if %superq(colcat_total) = TRUE %then %do;
@@ -431,10 +431,10 @@
                         %if %superq(output_rate) = TRUE %then %do;
                             kstrip(put(G&j._CATT_FREQ, %superq(format_freq)))                                                as G&j._CATT_FREQ_FMT   label = %unquote(%str(%')%superq(arm_&j)-合计-频数（C）%str(%')),
                             kstrip(put(G&j._CATT_RATE, %superq(format_rate)))                                                as G&j._CATT_RATE_FMT   label = %unquote(%str(%')%superq(arm_&j)-合计-率（C）%str(%')),
-                            kstrip(calculated G&j._CATT_FREQ_FMT) || "(" || kstrip(calculated G&j._CATT_RATE_FMT) || ")"     as G&j._CATT_VALUE      label = %unquote(%str(%')%superq(arm_&j)-合计-频数（率）%str(%')),
+                            kstrip(calculated G&j._CATT_FREQ_FMT) || "(" || kstrip(calculated G&j._CATT_RATE_FMT) || ")"     as G&j._CATT_VALUE      label = %unquote(%str(%')%superq(arm_&j)-合计%str(%')),
                         %end;
                         %else %do;
-                            kstrip(put(G&j._CATT_FREQ, %superq(format_freq)))                                                as G&j._CATT_VALUE      label = %unquote(%str(%')%superq(arm_&j)-合计-频数%str(%')),
+                            kstrip(put(G&j._CATT_FREQ, %superq(format_freq)))                                                as G&j._CATT_VALUE      label = %unquote(%str(%')%superq(arm_&j)-合计%str(%')),
                         %end;
                     %end;
                 %end;
@@ -444,10 +444,10 @@
                     %if %superq(output_rate) = TRUE %then %do;
                         kstrip(put(ALL_CAT&k._FREQ, %superq(format_freq)))                                                   as ALL_CAT&k._FREQ_FMT  label = %unquote(%str(%')%superq(colcat_&k)-频数（C）%str(%')),
                         kstrip(put(ALL_CAT&k._RATE, %superq(format_rate)))                                                   as ALL_CAT&k._RATE_FMT  label = %unquote(%str(%')%superq(colcat_&k)-率（C）%str(%')),
-                        kstrip(calculated ALL_CAT&k._FREQ_FMT) || "(" || kstrip(calculated ALL_CAT&k._RATE_FMT) || ")"       as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)-频数（率）%str(%')),
+                        kstrip(calculated ALL_CAT&k._FREQ_FMT) || "(" || kstrip(calculated ALL_CAT&k._RATE_FMT) || ")"       as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)%str(%')),
                     %end;
                     %else %do;
-                        kstrip(put(ALL_CAT&k._FREQ, %superq(format_freq)))                                                   as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)-频数（率）%str(%')),
+                        kstrip(put(ALL_CAT&k._FREQ, %superq(format_freq)))                                                   as ALL_CAT&k._VALUE     label = %unquote(%str(%')%superq(colcat_&k)%str(%')),
                     %end;
                 %end;
                 %if %superq(colcat_missing) = TRUE %then %do;
@@ -456,10 +456,10 @@
                     %if %superq(output_rate) = TRUE %then %do;
                         kstrip(put(ALL_CATM_FREQ, %superq(format_freq)))                                                     as ALL_CATM_FREQ_FMT    label = %unquote(%str(%')缺失-频数（C）%str(%')),
                         kstrip(put(ALL_CATM_RATE, %superq(format_rate)))                                                     as ALL_CATM_RATE_FMT    label = %unquote(%str(%')缺失-率（C）%str(%')),
-                        kstrip(calculated ALL_CATM_FREQ_FMT) || "(" || kstrip(calculated ALL_CATM_RATE_FMT) || ")"           as ALL_CATM_VALUE       label = %unquote(%str(%')缺失-频数（率）%str(%')),
+                        kstrip(calculated ALL_CATM_FREQ_FMT) || "(" || kstrip(calculated ALL_CATM_RATE_FMT) || ")"           as ALL_CATM_VALUE       label = %unquote(%str(%')缺失%str(%')),
                     %end;
                     %else %do;
-                        kstrip(put(ALL_CATM_FREQ, %superq(format_freq)))                                                     as ALL_CATM_VALUE       label = %unquote(%str(%')缺失-频数%str(%')),
+                        kstrip(put(ALL_CATM_FREQ, %superq(format_freq)))                                                     as ALL_CATM_VALUE       label = %unquote(%str(%')缺失%str(%')),
                     %end;
                 %end;
                 %if %superq(colcat_total) = TRUE %then %do;
@@ -468,10 +468,10 @@
                     %if %superq(output_rate) = TRUE %then %do;
                         kstrip(put(ALL_CATT_FREQ, %superq(format_freq)))                                                     as ALL_CATT_FREQ_FMT    label = %unquote(%str(%')合计-频数（C）%str(%')),
                         kstrip(put(ALL_CATT_RATE, %superq(format_rate)))                                                     as ALL_CATT_RATE_FMT    label = %unquote(%str(%')合计-率（C）%str(%')),
-                        kstrip(calculated ALL_CATT_FREQ_FMT) || "(" || kstrip(calculated ALL_CATT_RATE_FMT) || ")"           as ALL_CATT_VALUE       label = %unquote(%str(%')合计-频数（率）%str(%')),
+                        kstrip(calculated ALL_CATT_FREQ_FMT) || "(" || kstrip(calculated ALL_CATT_RATE_FMT) || ")"           as ALL_CATT_VALUE       label = %unquote(%str(%')合计%str(%')),
                     %end;
                     %else %do;
-                        kstrip(put(ALL_CATT_FREQ, %superq(format_freq)))                                                     as ALL_CATT_VALUE       label = %unquote(%str(%')合计-频数%str(%')),
+                        kstrip(put(ALL_CATT_FREQ, %superq(format_freq)))                                                     as ALL_CATT_VALUE       label = %unquote(%str(%')合计%str(%')),
                     %end;
                 %end;
                 _PLACEHOLDER_            = ""
