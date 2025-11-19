@@ -261,7 +261,7 @@
 
     /*复制 indata*/
     data tmp_indata;
-        set %superq(indata);
+        set %unquote(%superq(indata));
     run;
 
     /*创建各组别子集数据集，计算受试者数量*/
