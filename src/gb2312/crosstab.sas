@@ -89,6 +89,10 @@
         proc sql noprint;
             select libname, memname, source into :rowcat_by_fmt_libname, :rowcat_by_fmt_memname, :rowcat_by_fmt_source from dictionary.formats where fmtname = "&rowcat_by_fmt";
         quit;
+        %if &sqlobs = 0 %then %do;
+            %put ERROR: (ROWCAT_BY) &rowcat_by_fmt 未定义！;
+            %goto exit;
+        %end;
 
         proc format library = &rowcat_by_fmt_libname..&rowcat_by_fmt_memname cntlout = tmp_rowcat_by_fmt;
             select &rowcat_by_fmt;
@@ -143,6 +147,10 @@
         proc sql noprint;
             select libname, memname, source into :colcat_by_fmt_libname, :colcat_by_fmt_memname, :colcat_by_fmt_source from dictionary.formats where fmtname = "&colcat_by_fmt";
         quit;
+        %if &sqlobs = 0 %then %do;
+            %put ERROR: (COLCAT_BY) &colcat_by_fmt 未定义！;
+            %goto exit;
+        %end;
 
         proc format library = &colcat_by_fmt_libname..&colcat_by_fmt_memname cntlout = tmp_colcat_by_fmt;
             select &colcat_by_fmt;
