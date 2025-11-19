@@ -249,6 +249,16 @@
         %end;
     %end;
 
+    /*rowcat_missing*/
+    %if %superq(rowcat_missing) = TRUE %then %do;
+        %let rowcat_len_max = %sysfunc(max(%length(缺失), &rowcat_len_max));
+    %end;
+
+    /*rowcat_total*/
+    %if %superq(rowcat_total) = TRUE %then %do;
+        %let rowcat_len_max = %sysfunc(max(%length(合计), &rowcat_len_max));
+    %end;
+
     /*复制 indata*/
     data tmp_indata;
         set %superq(indata);
