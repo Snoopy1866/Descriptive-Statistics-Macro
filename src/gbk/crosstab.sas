@@ -215,6 +215,10 @@
                 proc sql noprint;
                     select libname, memname, source into :arm_by_fmt_libname, :arm_by_fmt_memname, :arm_by_fmt_source from dictionary.formats where fmtname = "&arm_by_fmt";
                 quit;
+                %if &sqlobs = 0 %then %do;
+                    %put ERROR: (ARM_BY) &arm_by_fmt Œ¥∂®“Â£°;
+                    %goto exit;
+                %end;
 
                 proc format library = &arm_by_fmt_libname..&arm_by_fmt_memname cntlout = tmp_arm_by_fmt;
                     select &arm_by_fmt;
