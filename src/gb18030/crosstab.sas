@@ -249,6 +249,16 @@
         %end;
     %end;
 
+    /*rowcat_missing*/
+    %if %superq(rowcat_missing) = TRUE %then %do;
+        %let rowcat_len_max = %sysfunc(max(%length(È±Ê§), &rowcat_len_max));
+    %end;
+
+    /*rowcat_total*/
+    %if %superq(rowcat_total) = TRUE %then %do;
+        %let rowcat_len_max = %sysfunc(max(%length(ºÏ¼Æ), &rowcat_len_max));
+    %end;
+
     /*¸´ÖÆ indata*/
     data tmp_indata;
         set %superq(indata);
