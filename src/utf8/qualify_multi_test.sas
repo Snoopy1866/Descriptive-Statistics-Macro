@@ -20,7 +20,7 @@
                           suffix           = #auto,
                           chisq_note       = "卡方检验",
                           fisher_note      = "Fisher精确检验",
-                          fisher_stat_ph   = "",
+                          fisher_stat_ph   = "-",
                           total            = false,
                           debug            = false
                           ) / parmbuff;
