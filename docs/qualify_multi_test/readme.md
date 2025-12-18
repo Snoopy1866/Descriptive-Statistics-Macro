@@ -177,12 +177,12 @@ fisher_note = "Fisher"
 >
 > 该选项仅在使用 _fisher_ 精确检验时生效。
 
-**Default** : `""`
+**Default** : `"-"`
 
 **Usage** :
 
 ```sas
-fisher_stat_ph = "-"
+fisher_stat_ph = "/"
 ```
 
 ---
