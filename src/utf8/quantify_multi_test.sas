@@ -255,35 +255,35 @@
             %put NOTE: 方差不齐，使用 Satterthwaite t 检验！;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "不等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances in ("不等于", "Unequal"); /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
                         value_1 = "t检验",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "不等于"), &ts_format));
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances in ("不等于", "Unequal")), &ts_format));
                 insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
-                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "不等于"), &p_format));
+                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances in ("不等于", "Unequal")), &p_format));
             quit;
         %end;
         %else %do;
             proc sql noprint;
                 %if %superq(ts_format) = #AUTO %then %do;
-                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances = "等于"; /*计算输出格式的宽度*/
+                    select max(ceil(log10(abs(tValue))), 1) + 6 into : ts_fmt_width from tmp_qmt_ttests where Variances in ("等于", "Equal"); /*计算输出格式的宽度*/
                     %let ts_format = &ts_fmt_width..4;
                 %end;
                 insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 1,
                         item    = &note_stat,
                         value_1 = "t检验",
-                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances = "等于"), &ts_format));
+                        value_2 = strip(put((select tValue from tmp_qmt_ttests where Variances in ("等于", "Equal")), &ts_format));
                 insert into tmp_qmt_stat
                     set seq     = &desc_seq_max + 2,
                         item    = &note_pvalue,
-                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances = "等于"), &p_format));
+                        value_1 = strip(put((select Probt from tmp_qmt_ttests where Variances in ("等于", "Equal")), &p_format));
             quit;
         %end;
     %end;
