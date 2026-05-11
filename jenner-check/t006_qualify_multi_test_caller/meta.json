@@ -1,0 +1,8 @@
+{
+  "bundle": "t006_qualify_multi_test_caller",
+  "source_file": "src/utf8/qualify_multi_test.sas",
+  "source_blob_sha": "843ac3081fea422eefc7bafcf41225a6e957d43c",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the PROC FREQ /CHISQ FISHER analysis that %qualify_multi_test uses internally. Adds Pearson Chi-Square test on a 3x2 contingency table (ECG clinical significance x arm), captured via OUTPUT chisq dataset."
+}

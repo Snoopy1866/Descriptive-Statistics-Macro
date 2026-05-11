@@ -1,0 +1,8 @@
+{
+  "bundle": "t004_quantify_multi_caller",
+  "source_file": "src/utf8/quantify_multi.sas",
+  "source_blob_sha": "213e6dc41311c51d65b0d0896592cba562aa4f7f",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the core PROC MEANS CLASS analysis that %quantify_multi wraps. Uses the docs/quantify_multi 'general usage' example pattern (indata=adsl, var=age, group=arm), producing descriptive statistics for age by treatment arm."
+}

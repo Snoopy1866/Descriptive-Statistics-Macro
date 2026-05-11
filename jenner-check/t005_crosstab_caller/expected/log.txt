@@ -1,0 +1,20 @@
+Jenner 0.1.0 (Unlicensed - limited to 100 observations)
+Get a license at https://jenneranalytics.com/license
+
+NOTE: Option OBS changed to 100.
+NOTE: DATA adsl
+
+NOTE: Processing inline DATALINES (18 lines)
+
+NOTE: Read 18 rows from DATALINES.
+NOTE: Wrote adsl (18 rows, 4 columns).
+NOTE: DATA elapsed:
+  wall  0.00 seconds
+  cpu   0.00 seconds
+NOTE: PROC FREQ
+NOTE: Output dataset res_sex_arm has 4 observations and 8 variables.
+NOTE: ODS plot written: freq_mosaic_sex_arm.spec.json
+NOTE: PROC FREQ statement used.
+NOTE: PROC PRINT data=res_sex_arm
+
+NOTE: PROC PRINT completed: 4 observations printed, 8 variables

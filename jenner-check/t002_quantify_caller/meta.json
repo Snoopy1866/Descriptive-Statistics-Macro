@@ -1,0 +1,8 @@
+{
+  "bundle": "t002_quantify_caller",
+  "source_file": "src/utf8/quantify.sas",
+  "source_blob_sha": "ba76819e6c8fa11d32f9d23cd5e3a11b3124a9b0",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the core PROC MEANS analysis that %quantify wraps. Uses the docs/quantify 'general usage' example pattern (indata=adsl, var=age) with a small mock ADSL dataset. Produces n / mean / std / median / q1 / q3 / min / max — the canonical statistics set the macro exposes."
+}

@@ -1,0 +1,8 @@
+{
+  "bundle": "t003_qualify_multi_caller",
+  "source_file": "src/utf8/qualify_multi.sas",
+  "source_blob_sha": "58620701cecdfdc9c0327cc99f386a600f6a76ce",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the core PROC FREQ cross-tab analysis that %qualify_multi wraps. Uses the docs/qualify_multi 'general usage' example pattern (indata=adsl, var=ecgcsig, group=arm), producing frequencies and row/column percentages for ECG clinical-significance classification by treatment arm."
+}

@@ -1,0 +1,8 @@
+{
+  "_captured_at": "2026-05-11T10:11:48Z",
+  "_captured_run_id": "local-jenner-1778494309",
+  "status": "ok",
+  "exit_code": 0,
+  "log_does_not_contain": ["ERROR:", "[JENNER-ERROR"],
+  "diagnostics": {"parse_warnings": [], "runtime_warnings": []}
+}

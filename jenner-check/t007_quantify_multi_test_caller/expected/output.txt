@@ -1,0 +1,19 @@
+               The TTEST Procedure                
+                  Variable:  age                  
+
+Class              N      Mean   Std Dev   Std Err
+----------  --------  --------  --------  --------
+ACTIVE            10   44.9000    7.9645    2.5186
+PLACEBO           10   58.2000    5.0728    1.6042
+Diff (1-2)            -13.3000                    
+
+Method         Variances        DF   t Value  Pr > |t|
+-------------  ---------  --------  --------  --------
+Pooled         Equal            18     -4.45    0.0003
+Satterthwaite  Unequal        15.3     -4.45    0.0004
+
+   Equality of Variances    
+
+Method     F Value    Pr > F
+--------  --------  --------
+Folded F      2.47    0.1951

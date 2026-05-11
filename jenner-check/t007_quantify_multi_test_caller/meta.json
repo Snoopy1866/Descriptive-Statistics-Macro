@@ -1,0 +1,8 @@
+{
+  "bundle": "t007_quantify_multi_test_caller",
+  "source_file": "src/utf8/quantify_multi_test.sas",
+  "source_blob_sha": "84ee8942f57191d39a0e1e058d830e72dd56c7a3",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the PROC TTEST + PROC MEANS analyses that %quantify_multi_test uses internally for the two-sample mean comparison. Uses age × arm on mock ADSL FAS data, producing both descriptive statistics by class and pooled / Satterthwaite t-tests."
+}

@@ -1,0 +1,8 @@
+{
+  "bundle": "t001_qualify_caller",
+  "source_file": "src/utf8/qualify.sas",
+  "source_blob_sha": "fa3bd9973875268d8df69199aecce25f4b171de8",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the core PROC FREQ analysis that %qualify wraps. Uses the docs/qualify 'general usage' example pattern (indata=adsl(where=(FASFL='Y')), var=ecgcsig) with a small mock ADSL dataset. The full %qualify macro uses %sysfunc(prxparse/prxmatch) in macro context which is not yet supported, so we exercise the underlying PROC FREQ directly with the macro's parameter conventions."
+}

@@ -1,0 +1,8 @@
+{
+  "bundle": "t005_crosstab_caller",
+  "source_file": "src/utf8/crosstab.sas",
+  "source_blob_sha": "da52d500eb48612a9331f0728376d72d3537558d",
+  "source_commit": "fe81ffd6182dad1a0a60518ebd8a39329abb1b9e",
+  "tier": "macro_caller_with_mock_data",
+  "notes": "Caller exercising the core PROC FREQ TABLES row*col analysis that %crosstab wraps. Uses a sex × arm cross-tab on mock ADSL data, with default frequency, percentage, row %, and column % output."
+}
