@@ -25,6 +25,7 @@
 - [label](#label)
 - [indent](#indent)
 - [suffix](#suffix)
+- [total](#total)
 
 ### 调试参数
 
@@ -224,6 +225,12 @@ outdata = t1(keep = seq item value_1 value_2 value_sum times_1 times_2 times_sum
 ### suffix
 
 用法同 [suffix](../qualify/readme.md#suffix)。
+
+---
+
+### total
+
+用法同 [total](../qualify/readme.md#total)。
 
 ---
 

@@ -25,6 +25,7 @@
 - [label](#label)
 - [indent](#indent)
 - [suffix](#suffix)
+- [total](#total)
 - [chisq_note](#chisq_note)
 - [fisher_note](#fisher_note)
 - [fisher_stat_ph](#fisher_stat_ph)
@@ -128,6 +129,12 @@
 ### suffix
 
 用法同 [suffix](../qualify/readme.md#suffix)。
+
+---
+
+### total
+
+用法同 [total](../qualify/readme.md#total)。
 
 ---
 
