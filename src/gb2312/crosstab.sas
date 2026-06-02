@@ -67,6 +67,10 @@
     %let debug           = %upcase(%sysfunc(strip(%bquote(&debug))));
 
 
+    /*声明局部变量*/
+    %local i j k;
+
+
     /*参数预处理*/
     /*rowcat_by*/
     %let reg_rowcat_by_id = %sysfunc(prxparse(%bquote(/^(?:([A-Za-z_][A-Za-z_\d]*)\.)(?:\(\s*((?:DESC|ASC)(?:ENDING)?)\s*\))?$/)));
@@ -276,8 +280,6 @@
             select count(*) into :arm_&i._subj_n trimmed from tmp_indata_arm_&i;
         %end;
     quit;
-
-    %local i j k;
 
     /*构建交叉表*/
     proc sql noprint;
